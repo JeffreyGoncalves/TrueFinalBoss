@@ -50,7 +50,7 @@ int motClef(){
 {Entier} 			{ yylval.I = atoi(yytext); return(Cste); }
 {Symbole}			{ return(yytext[0]); }
 {Lower}{LC}*		{ return motClef();}
-{Upper}{LC}*		{ yylval.S = strdup(yytext), return(IdClass); }
+{Upper}{LC}*		{ yylval.S = strdup(yytext); return(IdClass); }
 ":="				{ return(AFF); }
 
 "="					{ yylval.C = EQ; return(RelOp); }
@@ -72,7 +72,7 @@ int motClef(){
 "}"					{ return('}'); }
 ":"					{ return(':'); }
 ","					{ return(','); }
-
+{Guill}				{ return('"'); }
 
 
 {Comm1}|{Comm2}		{}

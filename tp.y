@@ -2,7 +2,7 @@
 
 %token IS CLASS VAR EXTENDS DEF OVERRIDE IF THEN ELSE AFF OBJECT
 %token ADD MIN MUL DIV
-%token ';' ',' '.' ':' '{' '}' '(' ')' 
+%token ';' ',' '.' ':' '{' '}' '(' ')'
 %token<S> Id IdClass
 %token<I> Cste
 %token<C> RelOp
