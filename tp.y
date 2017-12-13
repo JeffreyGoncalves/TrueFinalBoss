@@ -1,5 +1,5 @@
 /* attention: NEW est defini dans tp.h Utilisez un autre nom de token */
-%token IS OBJECT CLASS VAR EXTENDS DEF OVERRIDE IF THEN ELSE AFF RETURN
+%token IS OBJECT CLASS VAR EXTENDS DEF OVERRIDE IF THEN ELSE AFF RETURN CHAINECRACTERE
 %token ',' ':' '(' ')' '{' '}' ';' '.'
 %token ADD SUB MUL DIV
 %token<S> ID CLASSID

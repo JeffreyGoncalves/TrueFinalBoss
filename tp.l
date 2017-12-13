@@ -16,6 +16,8 @@ StrChar		[^\"\n]
 InterComm	{NotStar}|{Star}*{NotStarPar}*
 Comm1		"/*"{InterComm}"*/"
 Comm2		"//"{StrChar}*"\n"
+ChaineCarac	{Guill}{PasBSG}*{Guill}
+
 
 %{
 #include <string.h>
@@ -53,6 +55,7 @@ int motClef(){
 {Lower}{LC}*		{ return motClef();}
 {Upper}{LC}*		{ yylval.S = strdup(yytext); return(CLASSID); }
 ":="				{ return(AFF); }
+{ChaineCarac}		{ return(CHAINECRACTERE); }
 
 "="					{ yylval.C = EQ; return(RELOP); }
 "<>"				{ yylval.C = NE; return(RELOP); }
@@ -74,7 +77,6 @@ int motClef(){
 ":"					{ return(':'); }
 ","					{ return(','); }
 {Guill}				{ return('"'); }
-
 
 {Comm1}|{Comm2}		{}
 %%
