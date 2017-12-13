@@ -1,9 +1,11 @@
 /* attention: NEW est defini dans tp.h Utilisez un autre nom de token */
-%token IS CLASS VAR EXTENDS DEF OVERRIDE IF THEN ELSE AFF
+
+%token IS CLASS VAR EXTENDS DEF OVERRIDE IF THEN ELSE AFF OBJECT
+%token ADD MIN MUL DIV
+%token ';' ',' '.' ':' '{' '}' '(' ')' 
 %token<S> Id
 %token<I> Cste
 %token<C> RelOp
-
 
 %{
 #include "tp.h"
