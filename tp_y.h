@@ -1,8 +1,8 @@
-/* A Bison parser, made by GNU Bison 3.0.4.  */
+/* A Bison parser, made by GNU Bison 3.0.  */
 
 /* Bison interface for Yacc-like parsers in C
 
-   Copyright (C) 1984, 1989-1990, 2000-2015 Free Software Foundation, Inc.
+   Copyright (C) 1984, 1989-1990, 2000-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -46,24 +46,25 @@ extern int yydebug;
   enum yytokentype
   {
     IS = 258,
-    CLASS = 259,
-    VAR = 260,
-    EXTENDS = 261,
-    DEF = 262,
-    OVERRIDE = 263,
-    IF = 264,
-    THEN = 265,
-    ELSE = 266,
-    AFF = 267,
-    OBJECT = 268,
-    ADD = 269,
-    MIN = 270,
-    MUL = 271,
-    DIV = 272,
-    Id = 273,
-    IdClass = 274,
-    Cste = 275,
-    RelOp = 276
+    OBJECT = 259,
+    CLASS = 260,
+    VAR = 261,
+    EXTENDS = 262,
+    DEF = 263,
+    OVERRIDE = 264,
+    IF = 265,
+    THEN = 266,
+    ELSE = 267,
+    AFF = 268,
+    RETURN = 269,
+    ADD = 270,
+    SUB = 271,
+    MUL = 272,
+    DIV = 273,
+    ID = 274,
+    CLASSID = 275,
+    CSTE = 276,
+    RELOP = 277
   };
 #endif
 

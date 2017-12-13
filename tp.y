@@ -1,11 +1,13 @@
 /* attention: NEW est defini dans tp.h Utilisez un autre nom de token */
+%token IS OBJECT CLASS VAR EXTENDS DEF OVERRIDE IF THEN ELSE AFF RETURN
+%token ',' ':' '(' ')' '{' '}' ';' '.'
+%token ADD SUB MUL DIV
+%token<S> ID CLASSID
+%token<I> CSTE
+%token<C> RELOP
 
-%token IS CLASS VAR EXTENDS DEF OVERRIDE IF THEN ELSE AFF OBJECT
-%token ADD MIN MUL DIV
-%token ';' ',' '.' ':' '{' '}' '(' ')'
-%token<S> Id IdClass
-%token<I> Cste
-%token<C> RelOp
+%left ADD SUB
+%left MUL DIV
 
 %{
 #include "tp.h"
@@ -16,11 +18,92 @@ extern void yyerror(char *);
 %}
 
 %%
-Prog : classLOpt block
+///////////////////////////////////////////////////////////////////////////////////////////
+//Declaration d'une classe
+
+declClass : CLASS CLASSID '(' ListParamClause ')' extendsClause constructorClause IS block
 ;
 
-classLOpt:
+ListParamClause : ListParam
+| ;
+
+ListParam : Param ',' ListParam 
+| Param ;
+
+Param : Var ID':' CLASSID Init
 ;
 
-block:
+Var : VAR
+| ;
+
+Init : AFF Expr
+| ;
+
+extendsClause : EXTENDS CLASSID '(' ListArgClause ')'
 ;
+
+ListArgClause : ListArg
+| ;
+
+ListArg : Arg ',' ListArg 
+| Arg;
+
+Arg : Expr		 					//A voir (cas new Point(4,5))
+;
+
+constructorClause : block		//?
+| ;
+///////////////////////////////////////////////////////////////////////////////////////////
+//Declaration d'objet isole
+
+declObject : OBJECT ID IS block //?
+;
+///////////////////////////////////////////////////////////////////////////////////////////
+//Declaration d'une methode
+
+
+declMethod : Override DEF ID'(' ListParamClause ')' ':' ID ADD Expr
+| Override DEF ID'(' ListParamClause ')' ClassClause IS block
+
+Override : OVERRIDE
+| ;
+
+ClassClause : ':' CLASSID
+| ;
+///////////////////////////////////////////////////////////////////////////////////////////
+
+Prog : classLOpt block;
+
+classLOpt: ListDeclClass
+| ;
+
+ListDeclClass : declClass ListDeclClass
+| declClass;
+
+block: '{' ListInstClause '}';
+
+ListInstClause : ListInst
+| ;
+
+ListInst : Inst ListInst 
+| Inst;
+
+Inst : ITE 
+| block 
+| RETURN ';'
+| cible ';'
+| Expr ';' ;
+
+ITE : IF Expr THEN Inst else;
+
+else : ELSE Inst 
+| ;
+
+cible : ID AFF Expr ;
+
+Expr : Expr ADD Expr
+| Expr SUB Expr
+| Expr MUL Expr
+| Expr DIV Expr
+;
+

@@ -39,29 +39,30 @@ int motClef(){
 	if( strcmp("if",yytext) == 0){return IF;}
 	if( strcmp("then",yytext) == 0){return THEN;}
 	if( strcmp("else",yytext) == 0){return ELSE;}
+	if( strcmp("return",yytext) == 0){return RETURN;}
 	
 	yylval.S = strdup(yytext);
-	return Id;
+	return ID;
 }
 
 %}
 
 %%
-{Entier} 			{ yylval.I = atoi(yytext); return(Cste); }
+{Entier} 			{ yylval.I = atoi(yytext); return(CSTE); }
 {Symbole}			{ return(yytext[0]); }
 {Lower}{LC}*		{ return motClef();}
-{Upper}{LC}*		{ yylval.S = strdup(yytext); return(IdClass); }
+{Upper}{LC}*		{ yylval.S = strdup(yytext); return(CLASSID); }
 ":="				{ return(AFF); }
 
-"="					{ yylval.C = EQ; return(RelOp); }
-"<>"				{ yylval.C = NE; return(RelOp); }
-"<="				{ yylval.C = LE; return(RelOp); }
-">="				{ yylval.C = GE; return(RelOp); }
-">"					{ yylval.C = GT; return(RelOp); }
-"<"					{ yylval.C = LT; return(RelOp); }
+"="					{ yylval.C = EQ; return(RELOP); }
+"<>"				{ yylval.C = NE; return(RELOP); }
+"<="				{ yylval.C = LE; return(RELOP); }
+">="				{ yylval.C = GE; return(RELOP); }
+">"					{ yylval.C = GT; return(RELOP); }
+"<"					{ yylval.C = LT; return(RELOP); }
 
 "+"					{ return(ADD); }
-"-"					{ return(MIN); }
+"-"					{ return(SUB); }
 "/"					{ return(DIV); }
 "*"					{ return(MUL); }
 "("					{ return('('); }
