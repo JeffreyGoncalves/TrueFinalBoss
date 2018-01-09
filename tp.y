@@ -34,15 +34,13 @@ ListParamClause : ListParam
 ListParam : Param ',' ListParam 
 | Param ;
 
-Param :
-| Var Way':' CLASSID Init
-| Var CallMethod':' CLASSID Init
+Param : Var Object':' CLASSID Init
 ;
 
 Var : VAR
 | ;
 
-Init : AFF Expr
+Init : AFF ExprRelop
 | ;
 
 extendsClause : EXTENDS CLASSID '(' ListArgClause ')'
@@ -54,7 +52,7 @@ ListArgClause : ListArg
 ListArg : Arg ',' ListArg 
 | Arg;
 
-Arg : Expr	 					//A voir (cas new Point(4,5))
+Arg : ExprRelop	 					//A voir (cas new Point(4,5))
 ;
 
 constructorClause : block		//?
@@ -68,7 +66,7 @@ declObject : OBJECT ID IS block //?
 //Declaration d'une methode
 
 
-declMethod : Override DEF ID'(' ListParamClause ')' ':' ID ADD Expr
+declMethod : Override DEF ID'(' ListParamClause ')' ':' ID ADD ExprRelop
 | Override DEF ID'(' ListParamClause ')' ClassClause IS block
 
 Override : OVERRIDE
@@ -79,10 +77,11 @@ ClassClause : ':' CLASSID
 
 //Appel d'une methode
 
-CallMethod : CallMethod'.'ID'('ListArgClause')'
-| Way'.'ID'('ListArgClause')'
+CallMethod : Object'.'ID'('ListArgClause')'
 | CSTE'.'ID'('ListArgClause')'
 ;
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 
 classLOpt: ListDeclClass
@@ -105,27 +104,30 @@ Inst : ITE
 | block 
 | RETURN ';'
 | cible ';'
-| Expr ';' ;
-
-ITE : IF Expr THEN Inst ELSE Inst 
+| ExprRelop ';' 
 ;
 
-cible : Way AFF Expr ;
+ITE : IF ExprRelop THEN Inst ELSE Inst 
+;
+
+cible : Object AFF ExprRelop ;
 
 Way : ID
-| Way'.'ID
-| CallMethod'.'ID
+| Object'.'ID
 ;
 
 Object : Way
 | CallMethod
 ;
 
+ExprRelop : Expr RELOP Expr
+| Expr
+;
+
 Expr : Expr ADD Expr
 | Expr SUB Expr
 | Expr MUL Expr
-| Expr DIV Expr
-| Expr RELOP Expr
+| Expr DIV Expr 
 | '('Expr')'
 | Object
 | CSTE
