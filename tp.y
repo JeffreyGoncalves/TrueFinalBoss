@@ -89,6 +89,8 @@ ListInst : Inst ListInst
 | Inst;
 
 Inst : ITE 
+| declObject
+| declMethod
 | block 
 | RETURN ';'
 | cible ';'

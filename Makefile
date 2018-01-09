@@ -3,7 +3,7 @@ CC=gcc
 CFLAGS=-Wall -ansi -I./ -g 
 LDFLAGS= -g -lfl
 
-all : tp clean
+all : tp
 
 tp : $(OBJ)
 	$(CC) -o tp $(OBJ) $(LDFLAGS)
