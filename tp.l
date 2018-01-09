@@ -30,6 +30,12 @@ extern YYSTYPE yylval;
 extern int yylineno;
 extern int yylex();
 
+void lexError(char c) {
+  fprintf(stderr, "Error: Skipping invalid character '%c' on line %d\n",
+          c, yylineno);
+  setError(LEXICAL_ERROR);
+}
+
 int motClef(){
 	if( strcmp("class",yytext) == 0){return CLASS;}
 	if( strcmp("extends",yytext) == 0){return EXTENDS;}
