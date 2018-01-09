@@ -96,10 +96,11 @@ Inst : ITE
 | cible ';'
 | Expr ';' ;
 
-ITE : IF Expr THEN Inst else;
+ITE : IF Expr THEN Inst ELSE Inst 
+;
 
-else : ELSE Inst 
-| ;
+//else : ELSE Inst 
+//| ;
 
 cible : ID AFF Expr ;
 
@@ -107,6 +108,8 @@ Expr : Expr ADD Expr
 | Expr SUB Expr
 | Expr MUL Expr
 | Expr DIV Expr
+| '('Expr RELOP Expr')'
+| '('Expr')'
 | ID
 | CSTE
 ;

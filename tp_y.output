@@ -2,10 +2,6 @@ Terminaux inutilisés dans la grammaire
 
    CHAINECRACTERE
    '.'
-   RELOP
-
-
-État 63 conflits: 1 décalage/réduction
 
 
 Grammaire
@@ -76,17 +72,16 @@ Grammaire
    41     | cible ';'
    42     | Expr ';'
 
-   43 ITE: IF Expr THEN Inst else
+   43 ITE: IF Expr THEN Inst ELSE Inst
 
-   44 else: ELSE Inst
-   45     | %empty
+   44 cible: ID AFF Expr
 
-   46 cible: ID AFF Expr
-
-   47 Expr: Expr ADD Expr
-   48     | Expr SUB Expr
-   49     | Expr MUL Expr
-   50     | Expr DIV Expr
+   45 Expr: Expr ADD Expr
+   46     | Expr SUB Expr
+   47     | Expr MUL Expr
+   48     | Expr DIV Expr
+   49     | '(' Expr RELOP Expr ')'
+   50     | '(' Expr ')'
    51     | ID
    52     | CSTE
 
@@ -94,8 +89,8 @@ Grammaire
 Terminaux, suivis des règles où ils apparaissent
 
 $end (0) 0
-'(' (40) 2 12 21 22
-')' (41) 2 12 21 22
+'(' (40) 2 12 21 22 49 50
+')' (41) 2 12 21 22 49 50
 ',' (44) 5 15
 '.' (46)
 ':' (58) 7 21 25
@@ -112,18 +107,18 @@ DEF (263) 21 22
 OVERRIDE (264) 23
 IF (265) 43
 THEN (266) 43
-ELSE (267) 44
-AFF (268) 10 46
+ELSE (267) 43
+AFF (268) 10 44
 RETURN (269) 40
 CHAINECRACTERE (270)
-ADD (271) 21 47
-SUB (272) 48
-MUL (273) 49
-DIV (274) 50
-ID (275) 7 20 21 22 46 51
+ADD (271) 21 45
+SUB (272) 46
+MUL (273) 47
+DIV (274) 48
+ID (275) 7 20 21 22 44 51
 CLASSID (276) 2 7 12 25
 CSTE (277) 52
-RELOP (278)
+RELOP (278) 49
 
 
 Non-terminaux, suivis des règles où ils apparaissent
@@ -173,16 +168,14 @@ ListInstClause (52)
 ListInst (53)
     à gauche: 34 35, à droite: 32 34
 Inst (54)
-    à gauche: 36 37 38 39 40 41 42, à droite: 34 35 43 44
+    à gauche: 36 37 38 39 40 41 42, à droite: 34 35 43
 ITE (55)
     à gauche: 43, à droite: 36
-else (56)
-    à gauche: 44 45, à droite: 43
-cible (57)
-    à gauche: 46, à droite: 41
-Expr (58)
-    à gauche: 47 48 49 50 51 52, à droite: 10 17 21 42 43 46 47 48
-    49 50
+cible (56)
+    à gauche: 44, à droite: 41
+Expr (57)
+    à gauche: 45 46 47 48 49 50 51 52, à droite: 10 17 21 42 43 44
+    45 46 47 48 49 50
 
 
 État 0
@@ -271,23 +264,24 @@ Expr (58)
     OVERRIDE  décalage et aller à l'état 13
     IF        décalage et aller à l'état 14
     RETURN    décalage et aller à l'état 15
+    '('       décalage et aller à l'état 16
     '{'       décalage et aller à l'état 9
-    ID        décalage et aller à l'état 16
-    CSTE      décalage et aller à l'état 17
+    ID        décalage et aller à l'état 17
+    CSTE      décalage et aller à l'état 18
 
     '}'       réduction par utilisation de la règle 33 (ListInstClause)
     $défaut  réduction par utilisation de la règle 24 (Override)
 
-    declObject      aller à l'état 18
-    declMethod      aller à l'état 19
-    Override        aller à l'état 20
-    block           aller à l'état 21
-    ListInstClause  aller à l'état 22
-    ListInst        aller à l'état 23
-    Inst            aller à l'état 24
-    ITE             aller à l'état 25
-    cible           aller à l'état 26
-    Expr            aller à l'état 27
+    declObject      aller à l'état 19
+    declMethod      aller à l'état 20
+    Override        aller à l'état 21
+    block           aller à l'état 22
+    ListInstClause  aller à l'état 23
+    ListInst        aller à l'état 24
+    Inst            aller à l'état 25
+    ITE             aller à l'état 26
+    cible           aller à l'état 27
+    Expr            aller à l'état 28
 
 
 État 10
@@ -301,22 +295,22 @@ Expr (58)
 
     2 declClass: CLASS CLASSID '(' . ListParamClause ')' extendsClause constructorClause IS block
 
-    VAR  décalage et aller à l'état 28
+    VAR  décalage et aller à l'état 29
 
     ID        réduction par utilisation de la règle 9 (Var)
     $défaut  réduction par utilisation de la règle 4 (ListParamClause)
 
-    ListParamClause  aller à l'état 29
-    ListParam        aller à l'état 30
-    Param            aller à l'état 31
-    Var              aller à l'état 32
+    ListParamClause  aller à l'état 30
+    ListParam        aller à l'état 31
+    Param            aller à l'état 32
+    Var              aller à l'état 33
 
 
 État 12
 
    20 declObject: OBJECT . ID IS block
 
-    ID  décalage et aller à l'état 33
+    ID  décalage et aller à l'état 34
 
 
 État 13
@@ -328,82 +322,95 @@ Expr (58)
 
 État 14
 
-   43 ITE: IF . Expr THEN Inst else
+   43 ITE: IF . Expr THEN Inst ELSE Inst
 
-    ID    décalage et aller à l'état 34
-    CSTE  décalage et aller à l'état 17
+    '('   décalage et aller à l'état 16
+    ID    décalage et aller à l'état 35
+    CSTE  décalage et aller à l'état 18
 
-    Expr  aller à l'état 35
+    Expr  aller à l'état 36
 
 
 État 15
 
    40 Inst: RETURN . ';'
 
-    ';'  décalage et aller à l'état 36
+    ';'  décalage et aller à l'état 37
 
 
 État 16
 
-   46 cible: ID . AFF Expr
+   49 Expr: '(' . Expr RELOP Expr ')'
+   50     | '(' . Expr ')'
+
+    '('   décalage et aller à l'état 16
+    ID    décalage et aller à l'état 35
+    CSTE  décalage et aller à l'état 18
+
+    Expr  aller à l'état 38
+
+
+État 17
+
+   44 cible: ID . AFF Expr
    51 Expr: ID .
 
-    AFF  décalage et aller à l'état 37
+    AFF  décalage et aller à l'état 39
 
     $défaut  réduction par utilisation de la règle 51 (Expr)
 
 
-État 17
+État 18
 
    52 Expr: CSTE .
 
     $défaut  réduction par utilisation de la règle 52 (Expr)
 
 
-État 18
+État 19
 
    37 Inst: declObject .
 
     $défaut  réduction par utilisation de la règle 37 (Inst)
 
 
-État 19
+État 20
 
    38 Inst: declMethod .
 
     $défaut  réduction par utilisation de la règle 38 (Inst)
 
 
-État 20
+État 21
 
    21 declMethod: Override . DEF ID '(' ListParamClause ')' ':' ID ADD Expr
    22           | Override . DEF ID '(' ListParamClause ')' ClassClause IS block
 
-    DEF  décalage et aller à l'état 38
+    DEF  décalage et aller à l'état 40
 
 
-État 21
+État 22
 
    39 Inst: block .
 
     $défaut  réduction par utilisation de la règle 39 (Inst)
 
 
-État 22
+État 23
 
    31 block: '{' ListInstClause . '}'
 
-    '}'  décalage et aller à l'état 39
+    '}'  décalage et aller à l'état 41
 
 
-État 23
+État 24
 
    32 ListInstClause: ListInst .
 
     $défaut  réduction par utilisation de la règle 32 (ListInstClause)
 
 
-État 24
+État 25
 
    34 ListInst: Inst . ListInst
    35         | Inst .
@@ -412,357 +419,399 @@ Expr (58)
     OVERRIDE  décalage et aller à l'état 13
     IF        décalage et aller à l'état 14
     RETURN    décalage et aller à l'état 15
+    '('       décalage et aller à l'état 16
     '{'       décalage et aller à l'état 9
-    ID        décalage et aller à l'état 16
-    CSTE      décalage et aller à l'état 17
+    ID        décalage et aller à l'état 17
+    CSTE      décalage et aller à l'état 18
 
     '}'       réduction par utilisation de la règle 35 (ListInst)
     $défaut  réduction par utilisation de la règle 24 (Override)
 
-    declObject  aller à l'état 18
-    declMethod  aller à l'état 19
-    Override    aller à l'état 20
-    block       aller à l'état 21
-    ListInst    aller à l'état 40
-    Inst        aller à l'état 24
-    ITE         aller à l'état 25
-    cible       aller à l'état 26
-    Expr        aller à l'état 27
+    declObject  aller à l'état 19
+    declMethod  aller à l'état 20
+    Override    aller à l'état 21
+    block       aller à l'état 22
+    ListInst    aller à l'état 42
+    Inst        aller à l'état 25
+    ITE         aller à l'état 26
+    cible       aller à l'état 27
+    Expr        aller à l'état 28
 
 
-État 25
+État 26
 
    36 Inst: ITE .
 
     $défaut  réduction par utilisation de la règle 36 (Inst)
 
 
-État 26
+État 27
 
    41 Inst: cible . ';'
 
-    ';'  décalage et aller à l'état 41
-
-
-État 27
-
-   42 Inst: Expr . ';'
-   47 Expr: Expr . ADD Expr
-   48     | Expr . SUB Expr
-   49     | Expr . MUL Expr
-   50     | Expr . DIV Expr
-
-    ';'  décalage et aller à l'état 42
-    ADD  décalage et aller à l'état 43
-    SUB  décalage et aller à l'état 44
-    MUL  décalage et aller à l'état 45
-    DIV  décalage et aller à l'état 46
+    ';'  décalage et aller à l'état 43
 
 
 État 28
+
+   42 Inst: Expr . ';'
+   45 Expr: Expr . ADD Expr
+   46     | Expr . SUB Expr
+   47     | Expr . MUL Expr
+   48     | Expr . DIV Expr
+
+    ';'  décalage et aller à l'état 44
+    ADD  décalage et aller à l'état 45
+    SUB  décalage et aller à l'état 46
+    MUL  décalage et aller à l'état 47
+    DIV  décalage et aller à l'état 48
+
+
+État 29
 
     8 Var: VAR .
 
     $défaut  réduction par utilisation de la règle 8 (Var)
 
 
-État 29
+État 30
 
     2 declClass: CLASS CLASSID '(' ListParamClause . ')' extendsClause constructorClause IS block
 
-    ')'  décalage et aller à l'état 47
+    ')'  décalage et aller à l'état 49
 
 
-État 30
+État 31
 
     3 ListParamClause: ListParam .
 
     $défaut  réduction par utilisation de la règle 3 (ListParamClause)
 
 
-État 31
+État 32
 
     5 ListParam: Param . ',' ListParam
     6          | Param .
 
-    ','  décalage et aller à l'état 48
+    ','  décalage et aller à l'état 50
 
     $défaut  réduction par utilisation de la règle 6 (ListParam)
 
 
-État 32
+État 33
 
     7 Param: Var . ID ':' CLASSID Init
 
-    ID  décalage et aller à l'état 49
-
-
-État 33
-
-   20 declObject: OBJECT ID . IS block
-
-    IS  décalage et aller à l'état 50
+    ID  décalage et aller à l'état 51
 
 
 État 34
+
+   20 declObject: OBJECT ID . IS block
+
+    IS  décalage et aller à l'état 52
+
+
+État 35
 
    51 Expr: ID .
 
     $défaut  réduction par utilisation de la règle 51 (Expr)
 
 
-État 35
-
-   43 ITE: IF Expr . THEN Inst else
-   47 Expr: Expr . ADD Expr
-   48     | Expr . SUB Expr
-   49     | Expr . MUL Expr
-   50     | Expr . DIV Expr
-
-    THEN  décalage et aller à l'état 51
-    ADD   décalage et aller à l'état 43
-    SUB   décalage et aller à l'état 44
-    MUL   décalage et aller à l'état 45
-    DIV   décalage et aller à l'état 46
-
-
 État 36
+
+   43 ITE: IF Expr . THEN Inst ELSE Inst
+   45 Expr: Expr . ADD Expr
+   46     | Expr . SUB Expr
+   47     | Expr . MUL Expr
+   48     | Expr . DIV Expr
+
+    THEN  décalage et aller à l'état 53
+    ADD   décalage et aller à l'état 45
+    SUB   décalage et aller à l'état 46
+    MUL   décalage et aller à l'état 47
+    DIV   décalage et aller à l'état 48
+
+
+État 37
 
    40 Inst: RETURN ';' .
 
     $défaut  réduction par utilisation de la règle 40 (Inst)
 
 
-État 37
-
-   46 cible: ID AFF . Expr
-
-    ID    décalage et aller à l'état 34
-    CSTE  décalage et aller à l'état 17
-
-    Expr  aller à l'état 52
-
-
 État 38
+
+   45 Expr: Expr . ADD Expr
+   46     | Expr . SUB Expr
+   47     | Expr . MUL Expr
+   48     | Expr . DIV Expr
+   49     | '(' Expr . RELOP Expr ')'
+   50     | '(' Expr . ')'
+
+    ')'    décalage et aller à l'état 54
+    ADD    décalage et aller à l'état 45
+    SUB    décalage et aller à l'état 46
+    MUL    décalage et aller à l'état 47
+    DIV    décalage et aller à l'état 48
+    RELOP  décalage et aller à l'état 55
+
+
+État 39
+
+   44 cible: ID AFF . Expr
+
+    '('   décalage et aller à l'état 16
+    ID    décalage et aller à l'état 35
+    CSTE  décalage et aller à l'état 18
+
+    Expr  aller à l'état 56
+
+
+État 40
 
    21 declMethod: Override DEF . ID '(' ListParamClause ')' ':' ID ADD Expr
    22           | Override DEF . ID '(' ListParamClause ')' ClassClause IS block
 
-    ID  décalage et aller à l'état 53
+    ID  décalage et aller à l'état 57
 
 
-État 39
+État 41
 
    31 block: '{' ListInstClause '}' .
 
     $défaut  réduction par utilisation de la règle 31 (block)
 
 
-État 40
+État 42
 
    34 ListInst: Inst ListInst .
 
     $défaut  réduction par utilisation de la règle 34 (ListInst)
 
 
-État 41
+État 43
 
    41 Inst: cible ';' .
 
     $défaut  réduction par utilisation de la règle 41 (Inst)
 
 
-État 42
+État 44
 
    42 Inst: Expr ';' .
 
     $défaut  réduction par utilisation de la règle 42 (Inst)
 
 
-État 43
-
-   47 Expr: Expr ADD . Expr
-
-    ID    décalage et aller à l'état 34
-    CSTE  décalage et aller à l'état 17
-
-    Expr  aller à l'état 54
-
-
-État 44
-
-   48 Expr: Expr SUB . Expr
-
-    ID    décalage et aller à l'état 34
-    CSTE  décalage et aller à l'état 17
-
-    Expr  aller à l'état 55
-
-
 État 45
 
-   49 Expr: Expr MUL . Expr
+   45 Expr: Expr ADD . Expr
 
-    ID    décalage et aller à l'état 34
-    CSTE  décalage et aller à l'état 17
+    '('   décalage et aller à l'état 16
+    ID    décalage et aller à l'état 35
+    CSTE  décalage et aller à l'état 18
 
-    Expr  aller à l'état 56
+    Expr  aller à l'état 58
 
 
 État 46
 
-   50 Expr: Expr DIV . Expr
+   46 Expr: Expr SUB . Expr
 
-    ID    décalage et aller à l'état 34
-    CSTE  décalage et aller à l'état 17
+    '('   décalage et aller à l'état 16
+    ID    décalage et aller à l'état 35
+    CSTE  décalage et aller à l'état 18
 
-    Expr  aller à l'état 57
+    Expr  aller à l'état 59
 
 
 État 47
 
-    2 declClass: CLASS CLASSID '(' ListParamClause ')' . extendsClause constructorClause IS block
+   47 Expr: Expr MUL . Expr
 
-    EXTENDS  décalage et aller à l'état 58
+    '('   décalage et aller à l'état 16
+    ID    décalage et aller à l'état 35
+    CSTE  décalage et aller à l'état 18
 
-    extendsClause  aller à l'état 59
+    Expr  aller à l'état 60
 
 
 État 48
 
-    5 ListParam: Param ',' . ListParam
+   48 Expr: Expr DIV . Expr
 
-    VAR  décalage et aller à l'état 28
+    '('   décalage et aller à l'état 16
+    ID    décalage et aller à l'état 35
+    CSTE  décalage et aller à l'état 18
 
-    $défaut  réduction par utilisation de la règle 9 (Var)
-
-    ListParam  aller à l'état 60
-    Param      aller à l'état 31
-    Var        aller à l'état 32
+    Expr  aller à l'état 61
 
 
 État 49
 
-    7 Param: Var ID . ':' CLASSID Init
+    2 declClass: CLASS CLASSID '(' ListParamClause ')' . extendsClause constructorClause IS block
 
-    ':'  décalage et aller à l'état 61
+    EXTENDS  décalage et aller à l'état 62
+
+    extendsClause  aller à l'état 63
 
 
 État 50
+
+    5 ListParam: Param ',' . ListParam
+
+    VAR  décalage et aller à l'état 29
+
+    $défaut  réduction par utilisation de la règle 9 (Var)
+
+    ListParam  aller à l'état 64
+    Param      aller à l'état 32
+    Var        aller à l'état 33
+
+
+État 51
+
+    7 Param: Var ID . ':' CLASSID Init
+
+    ':'  décalage et aller à l'état 65
+
+
+État 52
 
    20 declObject: OBJECT ID IS . block
 
     '{'  décalage et aller à l'état 9
 
-    block  aller à l'état 62
+    block  aller à l'état 66
 
 
-État 51
+État 53
 
-   43 ITE: IF Expr THEN . Inst else
+   43 ITE: IF Expr THEN . Inst ELSE Inst
 
     OBJECT    décalage et aller à l'état 12
     OVERRIDE  décalage et aller à l'état 13
     IF        décalage et aller à l'état 14
     RETURN    décalage et aller à l'état 15
+    '('       décalage et aller à l'état 16
     '{'       décalage et aller à l'état 9
-    ID        décalage et aller à l'état 16
-    CSTE      décalage et aller à l'état 17
+    ID        décalage et aller à l'état 17
+    CSTE      décalage et aller à l'état 18
 
     $défaut  réduction par utilisation de la règle 24 (Override)
 
-    declObject  aller à l'état 18
-    declMethod  aller à l'état 19
-    Override    aller à l'état 20
-    block       aller à l'état 21
-    Inst        aller à l'état 63
-    ITE         aller à l'état 25
-    cible       aller à l'état 26
-    Expr        aller à l'état 27
-
-
-État 52
-
-   46 cible: ID AFF Expr .
-   47 Expr: Expr . ADD Expr
-   48     | Expr . SUB Expr
-   49     | Expr . MUL Expr
-   50     | Expr . DIV Expr
-
-    ADD  décalage et aller à l'état 43
-    SUB  décalage et aller à l'état 44
-    MUL  décalage et aller à l'état 45
-    DIV  décalage et aller à l'état 46
-
-    $défaut  réduction par utilisation de la règle 46 (cible)
-
-
-État 53
-
-   21 declMethod: Override DEF ID . '(' ListParamClause ')' ':' ID ADD Expr
-   22           | Override DEF ID . '(' ListParamClause ')' ClassClause IS block
-
-    '('  décalage et aller à l'état 64
+    declObject  aller à l'état 19
+    declMethod  aller à l'état 20
+    Override    aller à l'état 21
+    block       aller à l'état 22
+    Inst        aller à l'état 67
+    ITE         aller à l'état 26
+    cible       aller à l'état 27
+    Expr        aller à l'état 28
 
 
 État 54
 
-   47 Expr: Expr . ADD Expr
-   47     | Expr ADD Expr .
-   48     | Expr . SUB Expr
-   49     | Expr . MUL Expr
-   50     | Expr . DIV Expr
-
-    MUL  décalage et aller à l'état 45
-    DIV  décalage et aller à l'état 46
-
-    $défaut  réduction par utilisation de la règle 47 (Expr)
-
-
-État 55
-
-   47 Expr: Expr . ADD Expr
-   48     | Expr . SUB Expr
-   48     | Expr SUB Expr .
-   49     | Expr . MUL Expr
-   50     | Expr . DIV Expr
-
-    MUL  décalage et aller à l'état 45
-    DIV  décalage et aller à l'état 46
-
-    $défaut  réduction par utilisation de la règle 48 (Expr)
-
-
-État 56
-
-   47 Expr: Expr . ADD Expr
-   48     | Expr . SUB Expr
-   49     | Expr . MUL Expr
-   49     | Expr MUL Expr .
-   50     | Expr . DIV Expr
-
-    $défaut  réduction par utilisation de la règle 49 (Expr)
-
-
-État 57
-
-   47 Expr: Expr . ADD Expr
-   48     | Expr . SUB Expr
-   49     | Expr . MUL Expr
-   50     | Expr . DIV Expr
-   50     | Expr DIV Expr .
+   50 Expr: '(' Expr ')' .
 
     $défaut  réduction par utilisation de la règle 50 (Expr)
 
 
+État 55
+
+   49 Expr: '(' Expr RELOP . Expr ')'
+
+    '('   décalage et aller à l'état 16
+    ID    décalage et aller à l'état 35
+    CSTE  décalage et aller à l'état 18
+
+    Expr  aller à l'état 68
+
+
+État 56
+
+   44 cible: ID AFF Expr .
+   45 Expr: Expr . ADD Expr
+   46     | Expr . SUB Expr
+   47     | Expr . MUL Expr
+   48     | Expr . DIV Expr
+
+    ADD  décalage et aller à l'état 45
+    SUB  décalage et aller à l'état 46
+    MUL  décalage et aller à l'état 47
+    DIV  décalage et aller à l'état 48
+
+    $défaut  réduction par utilisation de la règle 44 (cible)
+
+
+État 57
+
+   21 declMethod: Override DEF ID . '(' ListParamClause ')' ':' ID ADD Expr
+   22           | Override DEF ID . '(' ListParamClause ')' ClassClause IS block
+
+    '('  décalage et aller à l'état 69
+
+
 État 58
 
-   12 extendsClause: EXTENDS . CLASSID '(' ListArgClause ')'
+   45 Expr: Expr . ADD Expr
+   45     | Expr ADD Expr .
+   46     | Expr . SUB Expr
+   47     | Expr . MUL Expr
+   48     | Expr . DIV Expr
 
-    CLASSID  décalage et aller à l'état 65
+    MUL  décalage et aller à l'état 47
+    DIV  décalage et aller à l'état 48
+
+    $défaut  réduction par utilisation de la règle 45 (Expr)
 
 
 État 59
+
+   45 Expr: Expr . ADD Expr
+   46     | Expr . SUB Expr
+   46     | Expr SUB Expr .
+   47     | Expr . MUL Expr
+   48     | Expr . DIV Expr
+
+    MUL  décalage et aller à l'état 47
+    DIV  décalage et aller à l'état 48
+
+    $défaut  réduction par utilisation de la règle 46 (Expr)
+
+
+État 60
+
+   45 Expr: Expr . ADD Expr
+   46     | Expr . SUB Expr
+   47     | Expr . MUL Expr
+   47     | Expr MUL Expr .
+   48     | Expr . DIV Expr
+
+    $défaut  réduction par utilisation de la règle 47 (Expr)
+
+
+État 61
+
+   45 Expr: Expr . ADD Expr
+   46     | Expr . SUB Expr
+   47     | Expr . MUL Expr
+   48     | Expr . DIV Expr
+   48     | Expr DIV Expr .
+
+    $défaut  réduction par utilisation de la règle 48 (Expr)
+
+
+État 62
+
+   12 extendsClause: EXTENDS . CLASSID '(' ListArgClause ')'
+
+    CLASSID  décalage et aller à l'état 70
+
+
+État 63
 
     2 declClass: CLASS CLASSID '(' ListParamClause ')' extendsClause . constructorClause IS block
 
@@ -770,346 +819,361 @@ Expr (58)
 
     $défaut  réduction par utilisation de la règle 19 (constructorClause)
 
-    constructorClause  aller à l'état 66
-    block              aller à l'état 67
+    constructorClause  aller à l'état 71
+    block              aller à l'état 72
 
 
-État 60
+État 64
 
     5 ListParam: Param ',' ListParam .
 
     $défaut  réduction par utilisation de la règle 5 (ListParam)
 
 
-État 61
+État 65
 
     7 Param: Var ID ':' . CLASSID Init
 
-    CLASSID  décalage et aller à l'état 68
+    CLASSID  décalage et aller à l'état 73
 
 
-État 62
+État 66
 
    20 declObject: OBJECT ID IS block .
 
     $défaut  réduction par utilisation de la règle 20 (declObject)
 
 
-État 63
+État 67
 
-   43 ITE: IF Expr THEN Inst . else
+   43 ITE: IF Expr THEN Inst . ELSE Inst
 
-    ELSE  décalage et aller à l'état 69
-
-    ELSE      [réduction par utilisation de la règle 45 (else)]
-    $défaut  réduction par utilisation de la règle 45 (else)
-
-    else  aller à l'état 70
+    ELSE  décalage et aller à l'état 74
 
 
-État 64
+État 68
+
+   45 Expr: Expr . ADD Expr
+   46     | Expr . SUB Expr
+   47     | Expr . MUL Expr
+   48     | Expr . DIV Expr
+   49     | '(' Expr RELOP Expr . ')'
+
+    ')'  décalage et aller à l'état 75
+    ADD  décalage et aller à l'état 45
+    SUB  décalage et aller à l'état 46
+    MUL  décalage et aller à l'état 47
+    DIV  décalage et aller à l'état 48
+
+
+État 69
 
    21 declMethod: Override DEF ID '(' . ListParamClause ')' ':' ID ADD Expr
    22           | Override DEF ID '(' . ListParamClause ')' ClassClause IS block
 
-    VAR  décalage et aller à l'état 28
+    VAR  décalage et aller à l'état 29
 
     ID        réduction par utilisation de la règle 9 (Var)
     $défaut  réduction par utilisation de la règle 4 (ListParamClause)
 
-    ListParamClause  aller à l'état 71
-    ListParam        aller à l'état 30
-    Param            aller à l'état 31
-    Var              aller à l'état 32
+    ListParamClause  aller à l'état 76
+    ListParam        aller à l'état 31
+    Param            aller à l'état 32
+    Var              aller à l'état 33
 
 
-État 65
+État 70
 
    12 extendsClause: EXTENDS CLASSID . '(' ListArgClause ')'
 
-    '('  décalage et aller à l'état 72
+    '('  décalage et aller à l'état 77
 
 
-État 66
+État 71
 
     2 declClass: CLASS CLASSID '(' ListParamClause ')' extendsClause constructorClause . IS block
 
-    IS  décalage et aller à l'état 73
+    IS  décalage et aller à l'état 78
 
 
-État 67
+État 72
 
    18 constructorClause: block .
 
     $défaut  réduction par utilisation de la règle 18 (constructorClause)
 
 
-État 68
+État 73
 
     7 Param: Var ID ':' CLASSID . Init
 
-    AFF  décalage et aller à l'état 74
+    AFF  décalage et aller à l'état 79
 
     $défaut  réduction par utilisation de la règle 11 (Init)
 
-    Init  aller à l'état 75
+    Init  aller à l'état 80
 
 
-État 69
+État 74
 
-   44 else: ELSE . Inst
+   43 ITE: IF Expr THEN Inst ELSE . Inst
 
     OBJECT    décalage et aller à l'état 12
     OVERRIDE  décalage et aller à l'état 13
     IF        décalage et aller à l'état 14
     RETURN    décalage et aller à l'état 15
+    '('       décalage et aller à l'état 16
     '{'       décalage et aller à l'état 9
-    ID        décalage et aller à l'état 16
-    CSTE      décalage et aller à l'état 17
+    ID        décalage et aller à l'état 17
+    CSTE      décalage et aller à l'état 18
 
     $défaut  réduction par utilisation de la règle 24 (Override)
 
-    declObject  aller à l'état 18
-    declMethod  aller à l'état 19
-    Override    aller à l'état 20
-    block       aller à l'état 21
-    Inst        aller à l'état 76
-    ITE         aller à l'état 25
-    cible       aller à l'état 26
-    Expr        aller à l'état 27
+    declObject  aller à l'état 19
+    declMethod  aller à l'état 20
+    Override    aller à l'état 21
+    block       aller à l'état 22
+    Inst        aller à l'état 81
+    ITE         aller à l'état 26
+    cible       aller à l'état 27
+    Expr        aller à l'état 28
 
 
-État 70
+État 75
 
-   43 ITE: IF Expr THEN Inst else .
+   49 Expr: '(' Expr RELOP Expr ')' .
 
-    $défaut  réduction par utilisation de la règle 43 (ITE)
+    $défaut  réduction par utilisation de la règle 49 (Expr)
 
 
-État 71
+État 76
 
    21 declMethod: Override DEF ID '(' ListParamClause . ')' ':' ID ADD Expr
    22           | Override DEF ID '(' ListParamClause . ')' ClassClause IS block
 
-    ')'  décalage et aller à l'état 77
+    ')'  décalage et aller à l'état 82
 
 
-État 72
+État 77
 
    12 extendsClause: EXTENDS CLASSID '(' . ListArgClause ')'
 
-    ID    décalage et aller à l'état 34
-    CSTE  décalage et aller à l'état 17
+    '('   décalage et aller à l'état 16
+    ID    décalage et aller à l'état 35
+    CSTE  décalage et aller à l'état 18
 
     $défaut  réduction par utilisation de la règle 14 (ListArgClause)
 
-    ListArgClause  aller à l'état 78
-    ListArg        aller à l'état 79
-    Arg            aller à l'état 80
-    Expr           aller à l'état 81
+    ListArgClause  aller à l'état 83
+    ListArg        aller à l'état 84
+    Arg            aller à l'état 85
+    Expr           aller à l'état 86
 
 
-État 73
+État 78
 
     2 declClass: CLASS CLASSID '(' ListParamClause ')' extendsClause constructorClause IS . block
 
     '{'  décalage et aller à l'état 9
 
-    block  aller à l'état 82
+    block  aller à l'état 87
 
 
-État 74
+État 79
 
    10 Init: AFF . Expr
 
-    ID    décalage et aller à l'état 34
-    CSTE  décalage et aller à l'état 17
+    '('   décalage et aller à l'état 16
+    ID    décalage et aller à l'état 35
+    CSTE  décalage et aller à l'état 18
 
-    Expr  aller à l'état 83
+    Expr  aller à l'état 88
 
 
-État 75
+État 80
 
     7 Param: Var ID ':' CLASSID Init .
 
     $défaut  réduction par utilisation de la règle 7 (Param)
 
 
-État 76
+État 81
 
-   44 else: ELSE Inst .
+   43 ITE: IF Expr THEN Inst ELSE Inst .
 
-    $défaut  réduction par utilisation de la règle 44 (else)
+    $défaut  réduction par utilisation de la règle 43 (ITE)
 
 
-État 77
+État 82
 
    21 declMethod: Override DEF ID '(' ListParamClause ')' . ':' ID ADD Expr
    22           | Override DEF ID '(' ListParamClause ')' . ClassClause IS block
 
-    ':'  décalage et aller à l'état 84
+    ':'  décalage et aller à l'état 89
 
     $défaut  réduction par utilisation de la règle 26 (ClassClause)
 
-    ClassClause  aller à l'état 85
+    ClassClause  aller à l'état 90
 
 
-État 78
+État 83
 
    12 extendsClause: EXTENDS CLASSID '(' ListArgClause . ')'
 
-    ')'  décalage et aller à l'état 86
+    ')'  décalage et aller à l'état 91
 
 
-État 79
+État 84
 
    13 ListArgClause: ListArg .
 
     $défaut  réduction par utilisation de la règle 13 (ListArgClause)
 
 
-État 80
+État 85
 
    15 ListArg: Arg . ',' ListArg
    16        | Arg .
 
-    ','  décalage et aller à l'état 87
+    ','  décalage et aller à l'état 92
 
     $défaut  réduction par utilisation de la règle 16 (ListArg)
 
 
-État 81
+État 86
 
    17 Arg: Expr .
-   47 Expr: Expr . ADD Expr
-   48     | Expr . SUB Expr
-   49     | Expr . MUL Expr
-   50     | Expr . DIV Expr
+   45 Expr: Expr . ADD Expr
+   46     | Expr . SUB Expr
+   47     | Expr . MUL Expr
+   48     | Expr . DIV Expr
 
-    ADD  décalage et aller à l'état 43
-    SUB  décalage et aller à l'état 44
-    MUL  décalage et aller à l'état 45
-    DIV  décalage et aller à l'état 46
+    ADD  décalage et aller à l'état 45
+    SUB  décalage et aller à l'état 46
+    MUL  décalage et aller à l'état 47
+    DIV  décalage et aller à l'état 48
 
     $défaut  réduction par utilisation de la règle 17 (Arg)
 
 
-État 82
+État 87
 
     2 declClass: CLASS CLASSID '(' ListParamClause ')' extendsClause constructorClause IS block .
 
     $défaut  réduction par utilisation de la règle 2 (declClass)
 
 
-État 83
+État 88
 
    10 Init: AFF Expr .
-   47 Expr: Expr . ADD Expr
-   48     | Expr . SUB Expr
-   49     | Expr . MUL Expr
-   50     | Expr . DIV Expr
+   45 Expr: Expr . ADD Expr
+   46     | Expr . SUB Expr
+   47     | Expr . MUL Expr
+   48     | Expr . DIV Expr
 
-    ADD  décalage et aller à l'état 43
-    SUB  décalage et aller à l'état 44
-    MUL  décalage et aller à l'état 45
-    DIV  décalage et aller à l'état 46
+    ADD  décalage et aller à l'état 45
+    SUB  décalage et aller à l'état 46
+    MUL  décalage et aller à l'état 47
+    DIV  décalage et aller à l'état 48
 
     $défaut  réduction par utilisation de la règle 10 (Init)
 
 
-État 84
+État 89
 
    21 declMethod: Override DEF ID '(' ListParamClause ')' ':' . ID ADD Expr
    25 ClassClause: ':' . CLASSID
 
-    ID       décalage et aller à l'état 88
-    CLASSID  décalage et aller à l'état 89
+    ID       décalage et aller à l'état 93
+    CLASSID  décalage et aller à l'état 94
 
 
-État 85
+État 90
 
    22 declMethod: Override DEF ID '(' ListParamClause ')' ClassClause . IS block
 
-    IS  décalage et aller à l'état 90
+    IS  décalage et aller à l'état 95
 
 
-État 86
+État 91
 
    12 extendsClause: EXTENDS CLASSID '(' ListArgClause ')' .
 
     $défaut  réduction par utilisation de la règle 12 (extendsClause)
 
 
-État 87
+État 92
 
    15 ListArg: Arg ',' . ListArg
 
-    ID    décalage et aller à l'état 34
-    CSTE  décalage et aller à l'état 17
+    '('   décalage et aller à l'état 16
+    ID    décalage et aller à l'état 35
+    CSTE  décalage et aller à l'état 18
 
-    ListArg  aller à l'état 91
-    Arg      aller à l'état 80
-    Expr     aller à l'état 81
+    ListArg  aller à l'état 96
+    Arg      aller à l'état 85
+    Expr     aller à l'état 86
 
 
-État 88
+État 93
 
    21 declMethod: Override DEF ID '(' ListParamClause ')' ':' ID . ADD Expr
 
-    ADD  décalage et aller à l'état 92
+    ADD  décalage et aller à l'état 97
 
 
-État 89
+État 94
 
    25 ClassClause: ':' CLASSID .
 
     $défaut  réduction par utilisation de la règle 25 (ClassClause)
 
 
-État 90
+État 95
 
    22 declMethod: Override DEF ID '(' ListParamClause ')' ClassClause IS . block
 
     '{'  décalage et aller à l'état 9
 
-    block  aller à l'état 93
+    block  aller à l'état 98
 
 
-État 91
+État 96
 
    15 ListArg: Arg ',' ListArg .
 
     $défaut  réduction par utilisation de la règle 15 (ListArg)
 
 
-État 92
+État 97
 
    21 declMethod: Override DEF ID '(' ListParamClause ')' ':' ID ADD . Expr
 
-    ID    décalage et aller à l'état 34
-    CSTE  décalage et aller à l'état 17
+    '('   décalage et aller à l'état 16
+    ID    décalage et aller à l'état 35
+    CSTE  décalage et aller à l'état 18
 
-    Expr  aller à l'état 94
+    Expr  aller à l'état 99
 
 
-État 93
+État 98
 
    22 declMethod: Override DEF ID '(' ListParamClause ')' ClassClause IS block .
 
     $défaut  réduction par utilisation de la règle 22 (declMethod)
 
 
-État 94
+État 99
 
    21 declMethod: Override DEF ID '(' ListParamClause ')' ':' ID ADD Expr .
-   47 Expr: Expr . ADD Expr
-   48     | Expr . SUB Expr
-   49     | Expr . MUL Expr
-   50     | Expr . DIV Expr
+   45 Expr: Expr . ADD Expr
+   46     | Expr . SUB Expr
+   47     | Expr . MUL Expr
+   48     | Expr . DIV Expr
 
-    ADD  décalage et aller à l'état 43
-    SUB  décalage et aller à l'état 44
-    MUL  décalage et aller à l'état 45
-    DIV  décalage et aller à l'état 46
+    ADD  décalage et aller à l'état 45
+    SUB  décalage et aller à l'état 46
+    MUL  décalage et aller à l'état 47
+    DIV  décalage et aller à l'état 48
 
     $défaut  réduction par utilisation de la règle 21 (declMethod)
