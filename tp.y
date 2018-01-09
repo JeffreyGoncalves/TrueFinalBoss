@@ -6,6 +6,8 @@
 %token<I> CSTE
 %token<C> RELOP
 
+%right '.'
+
 %left ADD SUB
 %left MUL DIV
 
@@ -32,7 +34,9 @@ ListParamClause : ListParam
 ListParam : Param ',' ListParam 
 | Param ;
 
-Param : Var ID':' CLASSID Init
+Param :
+| Var Way':' CLASSID Init
+| Var CallMethod':' CLASSID Init
 ;
 
 Var : VAR
@@ -50,7 +54,7 @@ ListArgClause : ListArg
 ListArg : Arg ',' ListArg 
 | Arg;
 
-Arg : Expr		 					//A voir (cas new Point(4,5))
+Arg : Expr	 					//A voir (cas new Point(4,5))
 ;
 
 constructorClause : block		//?
@@ -72,6 +76,13 @@ Override : OVERRIDE
 
 ClassClause : ':' CLASSID
 | ;
+
+//Appel d'une methode
+
+CallMethod : CallMethod'.'ID'('ListArgClause')'
+| Way'.'ID'('ListArgClause')'
+| CSTE'.'ID'('ListArgClause')'
+;
 ///////////////////////////////////////////////////////////////////////////////////////////
 
 classLOpt: ListDeclClass
@@ -99,15 +110,24 @@ Inst : ITE
 ITE : IF Expr THEN Inst ELSE Inst 
 ;
 
-cible :  AFF Expr ;
+cible : Way AFF Expr ;
+
+Way : ID
+| Way'.'ID
+| CallMethod'.'ID
+;
+
+Object : Way
+| CallMethod
+;
 
 Expr : Expr ADD Expr
 | Expr SUB Expr
 | Expr MUL Expr
 | Expr DIV Expr
-| '('Expr RELOP Expr')'
+| Expr RELOP Expr
 | '('Expr')'
-| ID
+| Object
 | CSTE
 ;
 
