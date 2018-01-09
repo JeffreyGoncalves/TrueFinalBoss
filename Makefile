@@ -2,6 +2,9 @@ OBJ=tp.o tp_l.o tp_y.o verif.o code.o
 CC=gcc
 CFLAGS=-Wall -ansi -I./ -g 
 LDFLAGS= -g -lfl
+
+all : tp clean
+
 tp : $(OBJ)
 	$(CC) -o tp $(OBJ) $(LDFLAGS)
 

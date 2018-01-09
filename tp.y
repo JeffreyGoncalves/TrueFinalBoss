@@ -18,6 +18,8 @@ extern void yyerror(char *);
 %}
 
 %%
+Prog : classLOpt block;
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 //Declaration d'une classe
 
@@ -72,8 +74,6 @@ ClassClause : ':' CLASSID
 | ;
 ///////////////////////////////////////////////////////////////////////////////////////////
 
-Prog : classLOpt block;
-
 classLOpt: ListDeclClass
 | ;
 
@@ -105,5 +105,7 @@ Expr : Expr ADD Expr
 | Expr SUB Expr
 | Expr MUL Expr
 | Expr DIV Expr
+| ID
+| CSTE
 ;
 

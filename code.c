@@ -5,4 +5,4 @@
 
 extern char* strdup(const char *);
 
-//Ceci est un commentaire
+
