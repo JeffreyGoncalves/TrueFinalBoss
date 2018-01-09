@@ -99,10 +99,7 @@ Inst : ITE
 ITE : IF Expr THEN Inst ELSE Inst 
 ;
 
-//else : ELSE Inst 
-//| ;
-
-cible : ID AFF Expr ;
+cible :  AFF Expr ;
 
 Expr : Expr ADD Expr
 | Expr SUB Expr
