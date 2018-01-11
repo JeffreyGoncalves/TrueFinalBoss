@@ -3,7 +3,7 @@ CC=gcc
 CFLAGS=-Wall -ansi -I./ -g 
 LDFLAGS= -g -lfl
 
-all : tp
+all : tp clean
 
 tp : $(OBJ)
 	$(CC) -o tp $(OBJ) $(LDFLAGS)
@@ -35,5 +35,5 @@ tp_y.h tp_y.c : tp.y tp.h
 .Phony: clean
 
 clean:
-	rm -f *~ tp.exe* ./tp *.o tp_l.* tp_y.*
+	rm -f *~ tp.exe* *.o tp_l.* tp_y.*
 	rm -f test/*~ test/*.out test/*/*~ test/*/*.out

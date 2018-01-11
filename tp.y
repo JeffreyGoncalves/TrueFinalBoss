@@ -1,8 +1,8 @@
 /* attention: NEW est defini dans tp.h Utilisez un autre nom de token */
-%token IS OBJECT CLASS VAR EXTENDS DEF OVERRIDE IF THEN ELSE AFF RETURN CHAINECRACTERE
+%token IS OBJECT CLASS VAR EXTENDS DEF OVERRIDE IF THEN ELSE AFF RETURN NEWV
 %token ',' ':' '(' ')' '{' '}' ';' '.'
 %token ADD SUB MUL DIV
-%token<S> ID CLASSID
+%token<S> ID
 %token<I> CSTE
 %token<C> RELOP
 
@@ -20,21 +20,32 @@ extern void yyerror(char *);
 %}
 
 %%
-Prog : classLOpt block;
+//Structure du programme
+Prog : listClassObj block;
 
-///////////////////////////////////////////////////////////////////////////////////////////
-//Declaration d'une classe
+//Gestion des Objets et Classes
+listClassObj : listClassObj ClassObj
+| ;
 
-declClass : CLASS CLASSID '(' ListParamClause ')' extendsClause constructorClause IS block
+ClassObj : declClass
+| declObject;
+
+declClass : CLASS ID '(' ListParamClause ')' extendsClause constructorClause IS classObjBlock
 ;
 
+declObject : OBJECT ID IS classObjBlock;
+
+constructorClause : block		
+| ;
+
+////// Parametres //////
 ListParamClause : ListParam
 | ;
 
 ListParam : Param ',' ListParam 
 | Param ;
 
-Param : Var Object':' CLASSID Init
+Param : Var ID':' ID Init
 ;
 
 Var : VAR
@@ -42,9 +53,11 @@ Var : VAR
 
 Init : AFF ExprRelop
 | ;
+/////////////////////////
 
-extendsClause : EXTENDS CLASSID '(' ListArgClause ')'
-;
+// Mot cle EXTENDS //
+extendsClause : EXTENDS ID '(' ListArgClause ')'
+| ;
 
 ListArgClause : ListArg
 | ;
@@ -52,43 +65,41 @@ ListArgClause : ListArg
 ListArg : Arg ',' ListArg 
 | Arg;
 
-Arg : ExprRelop	 					//A voir (cas new Point(4,5))
+Arg : ExprRelop
 ;
+////////////////////
 
-constructorClause : block		//?
+// Bloc d'un objet ou classe //
+classObjBlock : '{' ListVarDef '}'
+
+ListVarDef : VarDef ListVarDef
 | ;
-///////////////////////////////////////////////////////////////////////////////////////////
-//Declaration d'objet isole
 
-declObject : OBJECT ID IS block //?
-;
-///////////////////////////////////////////////////////////////////////////////////////////
-//Declaration d'une methode
+VarDef : declMethod 
+| Champ ;
+///////////////////////////////
 
+// Declaration d'une methode //
 
-declMethod : Override DEF ID'(' ListParamClause ')' ':' ID ADD ExprRelop
-| Override DEF ID'(' ListParamClause ')' ClassClause IS block
+declMethod : Override DEF ID'(' ListParamClause ')' ':' ID AFF ExprRelop
+| Override DEF ID'(' ListParamClause ')' ClassClause IS block;
 
 Override : OVERRIDE
 | ;
 
-ClassClause : ':' CLASSID
+ClassClause : ':' ID
 | ;
+//////////////////////////////
+
+//Champ dans un objet
+Champ : VAR ID ':' ID Init ';' ;
+////////////////////////////////
 
 //Appel d'une methode
 
 CallMethod : Object'.'ID'('ListArgClause')'
 | CSTE'.'ID'('ListArgClause')'
 ;
-
-
-///////////////////////////////////////////////////////////////////////////////////////////
-
-classLOpt: ListDeclClass
-| ;
-
-ListDeclClass : declClass ListDeclClass
-| declClass;
 
 block: '{' ListInstClause '}';
 
@@ -99,12 +110,11 @@ ListInst : Inst ListInst
 | Inst;
 
 Inst : ITE 
-| declObject
-| declMethod
 | block 
 | RETURN ';'
 | cible ';'
 | ExprRelop ';' 
+| Champ
 ;
 
 ITE : IF ExprRelop THEN Inst ELSE Inst 
@@ -127,9 +137,14 @@ ExprRelop : Expr RELOP Expr
 Expr : Expr ADD Expr
 | Expr SUB Expr
 | Expr MUL Expr
-| Expr DIV Expr 
-| '('Expr')'
+| Expr DIV ExprS
+| Instanciation
 | Object
 | CSTE
+| Champ
+| '('ExprRelop')'
 ;
+
+
+Instanciation : NEWV ID '('ListArgClause')'
 

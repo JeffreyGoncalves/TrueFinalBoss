@@ -12,9 +12,9 @@ Guill		"\""
 Star  		"*"
 NotStar		[^*]
 NotStarPar  [^*/]
-StrChar		[^\"\n]
-InterComm	{NotStar}|{Star}*{NotStarPar}*
-Comm1		"/*"{InterComm}"*/"
+StrChar		[^\n]
+InterComm	{NotStar}|{Star}*{NotStarPar}
+Comm1		"/*"{InterComm}*"*/"
 Comm2		"//"{StrChar}*"\n"
 ChaineCarac	{Guill}{PasBSG}*{Guill}
 
@@ -36,11 +36,22 @@ void lexError(char c) {
   setError(LEXICAL_ERROR);
 }
 
+void removeComma(char *str) {
+
+    char *src, *dst;
+    for (src = dst = str; *src != '\0'; src++) {
+        *dst = *src;
+        if (*dst != '"') dst++;
+    }
+    *dst = '\0';
+}
+
 int motClef(){
 	if( strcmp("class",yytext) == 0){return CLASS;}
 	if( strcmp("extends",yytext) == 0){return EXTENDS;}
 	if( strcmp("is",yytext) == 0){return IS;}
 	if( strcmp("var",yytext) == 0){return VAR;}
+	if( strcmp("new",yytext) == 0){return NEWV;}
 	if( strcmp("object",yytext) == 0){return OBJECT;}
 	if( strcmp("override",yytext) == 0){return OVERRIDE;}
 	if( strcmp("def",yytext) == 0){return DEF;}
@@ -58,10 +69,12 @@ int motClef(){
 %%
 {Entier} 			{ yylval.I = atoi(yytext); return(CSTE); }
 {Symbole}			{ return(yytext[0]); }
-{Lower}{LC}*		{ return motClef();}
-{Upper}{LC}*		{ yylval.S = strdup(yytext); return(CLASSID); }
+{Lettre}{LC}*		{ return motClef();}
 ":="				{ return(AFF); }
-{ChaineCarac}		{ return(CHAINECRACTERE); }
+{ChaineCarac}		{ char *word = strdup(yytext);
+					  removeComma(word);
+					  yylval.S = word;			
+					  return(ID); }
 
 "="					{ yylval.C = EQ; return(RELOP); }
 "<>"				{ yylval.C = NE; return(RELOP); }
@@ -84,5 +97,7 @@ int motClef(){
 ","					{ return(','); }
 {Guill}				{ return('"'); }
 
-{Comm1}|{Comm2}		{}
+{Comm1}|{Comm2}|{Delim}*		{}
+
+.					{lexError(yytext[0]);}
 %%
