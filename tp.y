@@ -1,6 +1,6 @@
 /* attention: NEW est defini dans tp.h Utilisez un autre nom de token */
-%token IS OBJECT CLASS VAR EXTENDS DEF OVERRIDE IF THEN ELSE AFF RETURN NEWV
-%token ',' ':' '(' ')' '{' '}' ';' '.'
+%token IS OBJECT CLASS VAR EXTENDS DEF OVERRIDE IF THEN ELSE AFF RETURN NEWV 
+%token ',' ':' '(' ')' '{' '}' ';' '.' '&' 
 %token ADD SUB MUL DIV
 %token<S> ID
 %token<I> CSTE
@@ -10,6 +10,7 @@
 
 %left ADD SUB
 %left MUL DIV
+%left UNAIRE
 
 %{
 #include "tp.h"
@@ -99,9 +100,11 @@ Champ : VAR ID ':' ID Init ';' ;
 
 CallMethod : Object'.'ID'('ListArgClause')'
 | CSTE'.'ID'('ListArgClause')'
+| Instanciation'.'ID'('ListArgClause')'
 ;
 
-block: '{' ListInstClause '}';
+block: '{' ListInstClause '}'
+| '{' ListInst IS ListInst '}';
 
 ListInstClause : ListInst
 | ;
@@ -130,6 +133,7 @@ Object : Way
 | CallMethod
 ;
 
+
 ExprRelop : Expr RELOP Expr
 | Expr
 ;
@@ -137,14 +141,14 @@ ExprRelop : Expr RELOP Expr
 Expr : Expr ADD Expr
 | Expr SUB Expr
 | Expr MUL Expr
-| Expr DIV ExprS
+| Expr DIV Expr
+| Object '&' Object
 | Instanciation
 | Object
 | CSTE
-| Champ
-| '('ExprRelop')'
+| ADD CSTE %prec UNAIRE
+| SUB CSTE %prec UNAIRE
 ;
 
 
 Instanciation : NEWV ID '('ListArgClause')'
-

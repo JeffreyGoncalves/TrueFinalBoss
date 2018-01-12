@@ -39,7 +39,7 @@ class Point(var x: Integer, var y: Integer := 0, var name: String := "")
       if verbose then "Inside Point::print".println(); else { }
       /* Exemples avec l'operateur & de concatenation de chaines */
       name.print();
-      ( "= (" & x.toString() & ", " & y.toString() & ")" ).println();
+      //( "= (" & x.toString() & ", " & y.toString() & ")" ).println();
   }
 
   /* par defaut, on ajoute un ' au nom de l'objet. On pourra le changer
@@ -48,7 +48,7 @@ class Point(var x: Integer, var y: Integer := 0, var name: String := "")
   def clone() : Point is
   { this.clone = 1;
     /* On memorise le dernier clone construit à partir de cet objet */
-    this.clone := new Point(x, y, this.name & "'");
+    //this.clone := new Point(x, y, this.name & "'");
     result := this.clone;
   }
 
@@ -220,7 +220,7 @@ class A2() extends A() is {
 { /* Bloc qui correspond au programme principal */
   var p1: Point := new Point(1, 5, "p1");
   var p2: Point := new Point(2, 3, "p2");
-  var p3 : Point := new Point(); /* utilise toutes les valeurs par defaut */
+  var p3: Point := new Point(); /* utilise toutes les valeurs par defaut */
   /* Incorrect: les types ne sont pas consideres quand on decide s'il faut
    * utiliser les valeurs par defaut. Si on donne un argument, ca doit
    * forcement correspondre au premier parametre, etc. Ci-dessous, on ne

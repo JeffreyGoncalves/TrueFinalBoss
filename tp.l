@@ -7,7 +7,7 @@ LC 			({Lettre}|{Chiffre})
 Delim   	[ \t\n\r]
 Symbole 	[&]
 BS      	\\.
-PasBSG 		[^\\"]
+PasBSG 		[^"]
 Guill		"\""
 Star  		"*"
 NotStar		[^*]
@@ -17,7 +17,7 @@ InterComm	{NotStar}|{Star}*{NotStarPar}
 Comm1		"/*"{InterComm}*"*/"
 Comm2		"//"{StrChar}*"\n"
 ChaineCarac	{Guill}{PasBSG}*{Guill}
-
+And			"&"
 
 %{
 #include <string.h>
@@ -41,7 +41,9 @@ void removeComma(char *str) {
     char *src, *dst;
     for (src = dst = str; *src != '\0'; src++) {
         *dst = *src;
-        if (*dst != '"') dst++;
+        if (*dst != '"')
+        
+			dst ++;
     }
     *dst = '\0';
 }
@@ -68,12 +70,12 @@ int motClef(){
 
 %%
 {Entier} 			{ yylval.I = atoi(yytext); return(CSTE); }
-{Symbole}			{ return(yytext[0]); }
 {Lettre}{LC}*		{ return motClef();}
 ":="				{ return(AFF); }
 {ChaineCarac}		{ char *word = strdup(yytext);
 					  removeComma(word);
-					  yylval.S = word;			
+					  yylval.S = word;
+					  printf("%s\n%s\n", yytext, word);	
 					  return(ID); }
 
 "="					{ yylval.C = EQ; return(RELOP); }
@@ -82,7 +84,7 @@ int motClef(){
 ">="				{ yylval.C = GE; return(RELOP); }
 ">"					{ yylval.C = GT; return(RELOP); }
 "<"					{ yylval.C = LT; return(RELOP); }
-
+"&"					{ return('&'); }
 "+"					{ return(ADD); }
 "-"					{ return(SUB); }
 "/"					{ return(DIV); }
@@ -96,6 +98,7 @@ int motClef(){
 ":"					{ return(':'); }
 ","					{ return(','); }
 {Guill}				{ return('"'); }
+
 
 {Comm1}|{Comm2}|{Delim}*		{}
 
