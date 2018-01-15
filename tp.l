@@ -7,7 +7,8 @@ LC 			({Lettre}|{Chiffre})
 Delim   	[ \t\n\r]
 Symbole 	[&]
 BS      	\\.
-PasBSG 		[^"]
+PasBSG 		({PasGuill}|"\\".)
+PasGuill	[^"]
 Guill		"\""
 Star  		"*"
 NotStar		[^*]
@@ -42,8 +43,14 @@ void removeComma(char *str) {
     for (src = dst = str; *src != '\0'; src++) {
         *dst = *src;
         if (*dst != '"')
-        
+        {
+			if(*dst == '\\' && *(src+1) == '"')
+			{
+				src++;
+				*dst = *src;
+			}
 			dst ++;
+		}
     }
     *dst = '\0';
 }
@@ -75,7 +82,6 @@ int motClef(){
 {ChaineCarac}		{ char *word = strdup(yytext);
 					  removeComma(word);
 					  yylval.S = word;
-					  printf("%s\n%s\n", yytext, word);	
 					  return(ID); }
 
 "="					{ yylval.C = EQ; return(RELOP); }

@@ -8,6 +8,7 @@
 
 %right '.'
 
+%left '&'
 %left ADD SUB
 %left MUL DIV
 %left UNAIRE
@@ -99,8 +100,7 @@ Champ : VAR ID ':' ID Init ';' ;
 //Appel d'une methode
 
 CallMethod : Object'.'ID'('ListArgClause')'
-| CSTE'.'ID'('ListArgClause')'
-| Instanciation'.'ID'('ListArgClause')'
+| '('ExprRelop')''.'ID'('ListArgClause')'
 ;
 
 block: '{' ListInstClause '}'
@@ -125,12 +125,16 @@ ITE : IF ExprRelop THEN Inst ELSE Inst
 
 cible : Object AFF ExprRelop ;
 
-Way : ID
-| Object'.'ID
+Selection : Object'.'ID
+| '('ExprRelop')''.'ID
 ;
 
-Object : Way
+Object : Selection
 | CallMethod
+| Instanciation
+| CSTE
+| ID
+| Cast
 ;
 
 
@@ -142,13 +146,13 @@ Expr : Expr ADD Expr
 | Expr SUB Expr
 | Expr MUL Expr
 | Expr DIV Expr
-| Object '&' Object
-| Instanciation
+| Expr '&' Expr
 | Object
-| CSTE
 | ADD CSTE %prec UNAIRE
 | SUB CSTE %prec UNAIRE
+| '(' ExprRelop ')'
 ;
 
-
 Instanciation : NEWV ID '('ListArgClause')'
+
+Cast : '('ID Object')';

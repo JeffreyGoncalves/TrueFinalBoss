@@ -39,7 +39,7 @@ class Point(var x: Integer, var y: Integer := 0, var name: String := "")
       if verbose then "Inside Point::print".println(); else { }
       /* Exemples avec l'operateur & de concatenation de chaines */
       name.print();
-      //( "= (" & x.toString() & ", " & y.toString() & ")" ).println();
+      ( "= (" & x.toString() & ", " & y.toString() & ")" ).println();
   }
 
   /* par defaut, on ajoute un ' au nom de l'objet. On pourra le changer
@@ -48,7 +48,7 @@ class Point(var x: Integer, var y: Integer := 0, var name: String := "")
   def clone() : Point is
   { this.clone = 1;
     /* On memorise le dernier clone construit à partir de cet objet */
-    //this.clone := new Point(x, y, this.name & "'");
+    this.clone := new Point(x, y, this.name & "'");
     result := this.clone;
   }
 
@@ -172,6 +172,7 @@ object Test is {
       is
       p.print(true);
       p2.print(true);
+      ("ttt" & "ggg") & "rr";
       "Appel 1: ".println();
       if p2.colore() <> 0 then c := "colore";  else c := "gris";
       "Appel 2: ".println();
