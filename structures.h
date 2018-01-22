@@ -2,7 +2,7 @@
 
 typedef struct t_value{
 	enum{
-		INT, STRING, CLASS, VOID, OBJECT
+		Int, String, Class, Void, Object
 	}Type_enum;
 	union{
 		struct t_class* Class;
@@ -37,7 +37,7 @@ typedef struct t_affect{
 
 typedef struct t_expr {
 	enum{
-		AFFECT, ADD, SOUSTR, MULT, DIV, EQUAL, INEQ, AND, LEAF /*No operator*/
+		Affect, Add, Soustr, Mult, Div, Equal, Ineq, And, Leaf /*No operator*/
 	}label_op;
 	
 	union{
@@ -70,7 +70,7 @@ typedef struct t_instanciation{
 
 typedef struct t_instr{
 	enum {
-		BLOC, RETURN, AFFECTATION, IFTHENELSE
+		Bloc, Return, Affectation, IfThenElse
 	}Instr_enum;
 	union {
 		struct t_instr* bloc;
@@ -93,18 +93,3 @@ typedef struct t_cast{
     t_expr* expression;
     t_class* newType;
 }t_cast;
-
-/*typedef struct t_expr{
-	enum{
-		IDENT, CONSTANTE, SELECTION, INSTANCIATION
-	}Expr_enum;
-	union{
-		t_variable* ident;
-		t_value* constante;
-		struct {
-			struct t_varIdent* fieldName;
-			struct t_expr* expression;
-		}selection;
-		struct t_instanciation* instanciation;
-	};
-}t_expr;*/
