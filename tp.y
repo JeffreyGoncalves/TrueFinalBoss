@@ -117,7 +117,7 @@ Champ : VAR ID ':' ID Init ';'
 ;
 ////////////////////////////////
 
-//Appel d'une metpthode
+//Appel d'une metthode
 
 CallMethod : Object'.'ID'('ListArgClause')'
 | '('ExprRelop')''.'ID'('ListArgClause')'

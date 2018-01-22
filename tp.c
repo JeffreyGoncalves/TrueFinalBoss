@@ -141,7 +141,8 @@ TreeP makeTree(short op, int nbChildren, ...) {
   va_list args;
   TreeP tree = makeNode(nbChildren, op);
   va_start(args, nbChildren);
-  for(int i = 0; i < nbChildren; i++) {
+  int i;
+  for(i = 0; i < nbChildren; i++) {
     tree->u.children[i] = va_arg(args, TreeP);
   }
   va_end(args);
@@ -197,9 +198,9 @@ t_expr* makeExpr(short op, ...){
 	va_list args;
 	t_expr* expr = NEW(1, t_expr);
 	expr->label_op = op;
-
+  int i;
 	va_start(args, op);
-	for(int i = 0; i < 2; i++) {
+	for(i = 0; i < 2; i++) {
     		expr->elem.fils[i] = va_arg(args, t_expr*);
   	}
 	va_end(args);
