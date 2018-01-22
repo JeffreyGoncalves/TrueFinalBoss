@@ -2,7 +2,7 @@
 
 typedef struct t_value{
 	enum{
-		INT, STRING, CL, VOID, OBJ
+		INT, STRING, CLASS, VOID, OBJECT
 	}Type_enum;
 	union{
 		struct t_class* Class;
@@ -37,7 +37,7 @@ typedef struct t_affect{
 
 typedef struct t_expr {
 	enum{
-		AFFECT, PLUS, SOUSTR, MULT, DIV, EQUAL, INEQ, AND, LEAF /*No operator*/
+		AFFECT, ADD, SOUSTR, MULT, DIV, EQUAL, INEQ, AND, LEAF /*No operator*/
 	}label_op;
 	
 	union{

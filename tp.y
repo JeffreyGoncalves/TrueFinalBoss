@@ -13,6 +13,10 @@
 %left MUL DIV
 %left UNAIRE
 
+%type<t_inst> Inst ITE block RETURN cible Champ Init 
+%type<t_expr> Object Expr ExprRelop Arg Cast Instanciation Selection
+
+
 %{
 #include "tp.h"
 #include "tp_y.h"
@@ -27,10 +31,12 @@ Prog : listClassObj block;
 
 //Gestion des Objets et Classes
 listClassObj : listClassObj ClassObj
-| ;
+| 
+;
 
 ClassObj : declClass
-| declObject;
+| declObject
+;
 
 declClass : CLASS ID '(' ListParamClause ')' extendsClause constructorClause IS classObjBlock
 ;
@@ -38,34 +44,41 @@ declClass : CLASS ID '(' ListParamClause ')' extendsClause constructorClause IS 
 declObject : OBJECT ID IS classObjBlock;
 
 constructorClause : block		
-| ;
+| 
+;
 
 ////// Parametres //////
 ListParamClause : ListParam
-| ;
+| 
+;
 
 ListParam : Param ',' ListParam 
-| Param ;
+| Param 
+;
 
 Param : Var ID':' ID Init
 ;
 
 Var : VAR
-| ;
-
+| 
+;
 Init : AFF ExprRelop
-| ;
+| 
+;
 /////////////////////////
 
 // Mot cle EXTENDS //
 extendsClause : EXTENDS ID '(' ListArgClause ')'
-| ;
+| 
+;
 
 ListArgClause : ListArg
-| ;
+| 
+;
 
 ListArg : Arg ',' ListArg 
-| Arg;
+| Arg
+;
 
 Arg : ExprRelop
 ;
@@ -73,86 +86,99 @@ Arg : ExprRelop
 
 // Bloc d'un objet ou classe //
 classObjBlock : '{' ListVarDef '}'
+;
 
 ListVarDef : VarDef ListVarDef
-| ;
+| 
+;
 
 VarDef : declMethod 
-| Champ ;
+| Champ 
+;
 ///////////////////////////////
 
 // Declaration d'une methode //
 
 declMethod : Override DEF ID'(' ListParamClause ')' ':' ID AFF ExprRelop
-| Override DEF ID'(' ListParamClause ')' ClassClause IS block;
+| Override DEF ID'(' ListParamClause ')' ClassClause IS block
+;
 
 Override : OVERRIDE
-| ;
+| 
+;
 
 ClassClause : ':' ID
-| ;
+| 
+;
 //////////////////////////////
 
 //Champ dans un objet
-Champ : VAR ID ':' ID Init ';' ;
+Champ : VAR ID ':' ID Init ';' 
+;
 ////////////////////////////////
 
-//Appel d'une methode
+//Appel d'une metpthode
 
 CallMethod : Object'.'ID'('ListArgClause')'
 | '('ExprRelop')''.'ID'('ListArgClause')'
 ;
 
 block: '{' ListInstClause '}'
-| '{' ListInst IS ListInst '}';
+| '{' ListInst IS ListInst '}'
+;
 
 ListInstClause : ListInst
-| ;
+| 
+;
 
 ListInst : Inst ListInst 
-| Inst;
-
-Inst : ITE 
-| block 
-| RETURN ';'
-| cible ';'
-| ExprRelop ';' 
-| Champ
+| Inst
 ;
 
-ITE : IF ExprRelop THEN Inst ELSE Inst 
+Inst : ITE 			{ $$ = $1;}
+| block 			{ $$ = makeInstruction(0, $1);}
+| RETURN ';'			{ $$ = makeInstruction(1, $1);}
+| cible ';'			/*{ $$ = makeInstruction(2, $1);}*/
+| ExprRelop ';' 		{ $$ = makeInstruction($1);}
+| Champ				{ $$ = makeInstruction($1);}
 ;
 
-cible : Object AFF ExprRelop ;
+ITE : IF ExprRelop THEN Inst ELSE Inst { $$ = makeInstruction(3, $2, $4, $6);}
+;
+
+cible : Object AFF ExprRelop	{ $$ = makeAff($1, $3);}
+;	
 
 Selection : Object'.'ID
 | '('ExprRelop')''.'ID
 ;
 
-Object : Selection
-| CallMethod
-| Instanciation
-| CSTE
-| ID
-| Cast
+Object : Selection		{ $$ = makeExprSelect($1);}
+| CallMethod			/*{ $$ = makeExprVar($1);}*/
+| Instanciation			{ $$ = makeExprInst($1);}
+| CSTE				{ $$ = makeExprCste($1);}
+| ID				{ $$ = makeExprVar($1);}		
+| Cast				{ $$ = $1;}
 ;
 
 
-ExprRelop : Expr RELOP Expr
-| Expr
+ExprRelop : Expr RELOP Expr	/*{ $$ = makeExpr(5, $1, $3);}*/
+| Expr				{ $$ = $1;}
 ;
 
-Expr : Expr ADD Expr
-| Expr SUB Expr
-| Expr MUL Expr
-| Expr DIV Expr
-| Expr '&' Expr
-| Object
-| ADD CSTE %prec UNAIRE
-| SUB CSTE %prec UNAIRE
-| '(' ExprRelop ')'
+Expr : Expr ADD Expr		{ $$ = makeExpr(1, $1, $3);}
+| Expr SUB Expr			{ $$ = makeExpr(2, $1, $3);}
+| Expr MUL Expr			{ $$ = makeExpr(3, $1, $3);}
+| Expr DIV Expr			{ $$ = makeExpr(4, $1, $3);}
+| Expr '&' Expr			{ $$ = makeExpr(7, $1, $3);}
+| Object			{ $$ = $1;}
+| ADD CSTE %prec UNAIRE		/*{ $$ = makeExpr(2, $1, $3);}*/
+| SUB CSTE %prec UNAIRE		/*{ $$ = makeExpr(2, $1, $3);}*/
+| '(' ExprRelop ')'		{ $$ = $2;}
 ;
 
 Instanciation : NEWV ID '('ListArgClause')'
+;
 
-Cast : '('ID Object')';
+Cast : '('ID Object')'
+;
