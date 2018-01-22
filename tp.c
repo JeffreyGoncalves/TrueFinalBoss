@@ -139,10 +139,9 @@ TreeP makeNode(int nbChildren, short op) {
  */
 TreeP makeTree(short op, int nbChildren, ...) {
   va_list args;
-  int i;
   TreeP tree = makeNode(nbChildren, op);
   va_start(args, nbChildren);
-  for (int i = 0; i < nbChildren; i++) {
+  for(int i = 0; i < nbChildren; i++) {
     tree->u.children[i] = va_arg(args, TreeP);
   }
   va_end(args);
@@ -194,14 +193,14 @@ TreeP makeLeafLVar(short op, VarDeclP lvar) {
 /* FONCTIONS PERSO */
 
 /* Constructeur expression non feuille */
-t_expr makeExpr(short op, ...){
+t_expr* makeExpr(short op, ...){
 	va_list args;
-	t_expr expr = NEW(1, t_expr);
+	t_expr* expr = NEW(1, t_expr);
 	expr->label_op = op;
 
-	va_start(args, 2);
-	for (int i = 0; i < 2; i++) {
-    		expr->elem.fils[i] = va_arg(args, t_expr);
+	va_start(args, op);
+	for(int i = 0; i < 2; i++) {
+    		expr->elem.fils[i] = va_arg(args, t_expr*);
   	}
 	va_end(args);
 
@@ -209,32 +208,32 @@ t_expr makeExpr(short op, ...){
 }
 
 /* Constructeur expression feuille avec variable*/
-t_expr makeExprVar(t_variable var){
-	t_expr expr = NEW(1, t_expr);
+t_expr* makeExprVar(t_variable* var){
+	t_expr* expr = NEW(1, t_expr);
 	expr->label_op = 8;
 	expr->elem.ident = var;
 	return(expr);
 }
 
 /* Constructeur expression feuille avec constante*/
-t_expr makeExprCste(t_value cste){
-	t_expr expr = NEW(1, t_expr);
+t_expr* makeExprCste(t_value* cste){
+	t_expr* expr = NEW(1, t_expr);
 	expr->label_op = 8;
 	expr->elem.constante = cste;
 	return(expr);
 }
 
 /* Constructeur expression feuille avec instantation*/
-t_expr makeExprInst(t_instanciation inst){
-	t_expr expr = NEW(1, t_expr);
+t_expr* makeExprInst(t_instanciation* inst){
+	t_expr* expr = NEW(1, t_expr);
 	expr->label_op = 8;
-	expr->elem.selection = inst;
+	expr->elem.instanciation = inst;
 	return(expr);
 }
 
 /* Constructeur expression feuille avec selection*/
-t_expr makeExprSelect(t_varIdent varId, t_expr expres){
-	t_expr expr = NEW(1, t_expr);
+t_expr* makeExprSelect(t_varIdent* varId, t_expr* expres){
+	t_expr* expr = NEW(1, t_expr);
 	expr->label_op = 8;
 	expr->elem.selection.fieldName = varId;
 	expr->elem.selection.expression = expres;
@@ -242,42 +241,42 @@ t_expr makeExprSelect(t_varIdent varId, t_expr expres){
 }
 
 /* Constructeur affectation*/
-t_affect makeAff(t_variable var, t_expr expr){
-	t_affect aff = NEW(1, t_affect);
+t_affect* makeAff(t_variable* var, t_expr* expr){
+	t_affect* aff = NEW(1, t_affect);
 	aff->variable = var;
 	aff->valeur = expr;
 	return(aff);
 }
 
 /* Constructeur instruction*/
-t_instr makeInstruction(short cas, ...){
+t_instr* makeInstruction(short cas, ...){
 	va_list args;
-	t_instr instr = NEW(1, t_instr);
+	t_instr* instr = NEW(1, t_instr);
 	instr->Instr_enum = cas;
 	
 	switch(cas){
 		case 0: /*BLOC*/
-			va_start(args, 2);
+			/*va_start(args, 2);
 			for (int i = 0; i < 2; i++) {
 		    		instr->elem.fils[i] = va_arg(args, t_expr);
 		  	}
-			va_end(args);
+			va_end(args);*/
 
 		case 1: /*RETURN*/
-			va_start(args, 1);
-			instr->_return = va_arg(args, t_expr);
+			va_start(args, cas);
+			instr->instr._return = va_arg(args, t_expr*);
 			va_end(args);
 
 		case 2: /*AFFECTATION*/
-			va_start(args, 1);
-			instr->aff = va_arg(args, t_affect);
+			va_start(args, cas);
+			instr->instr.aff = va_arg(args, t_affect*);
 			va_end(args);
 
 		case 3:	/*IFTHENELSE*/
-			va_start(args, 3);
-			instr->ite.condition = va_arg(args, t_expr);
-			instr->ite.instrThen = va_arg(args, t_instr);
-			instr->ite.instrElse = va_arg(args, t_instr);
+			va_start(args, cas);
+			instr->instr.ite.condition = va_arg(args, t_expr*);
+			instr->instr.ite.instrThen = va_arg(args, t_instr*);
+			instr->instr.ite.instrElse = va_arg(args, t_instr*);
 			va_end(args);
 	}
 
