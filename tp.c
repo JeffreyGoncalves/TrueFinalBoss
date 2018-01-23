@@ -308,3 +308,17 @@ t_champ* makeChamp(t_variable* id1, t_variable* id2){
 	champ->ident2 = id2;
 	return(champ);
 }
+
+/* Constructeur Methode */
+t_method* makeMethod(char* name, t_class* returnType, short nbParametres, t_varIdent** parametres, int* isRedef) {
+    t_method* method = new(1, t_method);
+    method->name = name;
+    method->returnType = returnType;
+    method->nbParametres = nbParametres;
+    method->parametres = NEW(nbParametres, t_varIdent*);
+    for (int i = 0; i < nbParametres; i++) {
+        method->parametres[i] = parametres[i];
+    }
+    method->isRedef = isRedef;
+    return(method);
+} 
