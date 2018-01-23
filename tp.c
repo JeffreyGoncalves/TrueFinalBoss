@@ -288,3 +288,10 @@ t_instr* makeInstruction(short cas, ...){
 
 	return(instr);
 }
+
+t_init* makeInit(t_expr *expr)
+{
+	t_init* init = NEW(1, t_init);
+	init->expression_to_affect = expr;
+	return init;
+}

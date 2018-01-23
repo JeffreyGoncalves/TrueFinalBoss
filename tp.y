@@ -14,9 +14,10 @@
 %left UNAIRE
 
 %type<paffect> cible
-%type<pinstr> Inst ITE block RETURN Champ Init
+%type<pinstr> Inst ITE block RETURN Champ
 %type<pexpr> Object Expr ExprRelop Arg Cast Selection
 %type<pinstanciation> Instanciation
+%type<pinit> Init
 
 
 %{
@@ -64,7 +65,7 @@ Param : Var ID':' ID Init
 Var : VAR
 | 
 ;
-Init : AFF ExprRelop
+Init : AFF ExprRelop	{ $$ = makeInit($2);}
 | 
 ;
 /////////////////////////

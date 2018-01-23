@@ -165,6 +165,10 @@ typedef struct t_cast{
     t_class* newType;
 }t_cast;
 
+typedef struct t_init{
+	t_expr* expression_to_affect;
+}t_init;
+
 /* FIN PERSO */
 
 typedef union
@@ -183,6 +187,7 @@ typedef union
 	t_instanciation* pinstanciation;
 	t_instr* pinstr;
 	t_cast* pcast;
+	t_init* pinit;
 } YYSTYPE;
 
 #define YYSTYPE YYSTYPE
@@ -195,3 +200,4 @@ t_expr* makeExprInst(t_instanciation* inst);
 t_expr* makeExprCste(short op, t_value* cste);
 t_expr* makeExprVar(t_variable* var);
 t_expr* makeExpr(short op, ...);
+t_init* makeInit(t_expr *expr);
