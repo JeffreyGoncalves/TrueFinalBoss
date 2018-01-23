@@ -161,6 +161,11 @@ typedef struct t_varIdent{
 	t_class* _type;
 }t_varIdent;
 
+typedef struct t_listArg{
+    t_varIdent* varIdent;
+    t_listArg* listArg;
+}
+
 typedef struct t_cast{
     t_expr* expression;
     t_class* newType;
@@ -209,3 +214,4 @@ t_expr* makeExprVar(t_variable* var);
 t_expr* makeExpr(short op, ...);
 t_init* makeInit(t_expr *expr);
 t_champ* makeChamp(t_variable* id1, t_variable* id2);
+t_method* makeMethod(char* name, t_class* returnType, short nbParametres, t_varIdent** parametres, int* isRedef)
