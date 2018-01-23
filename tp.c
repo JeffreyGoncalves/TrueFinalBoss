@@ -227,7 +227,7 @@ t_expr* makeExprCste(short op, t_value* cste){			/*"op" car opérateur unaire*/
 /* Constructeur expression feuille avec instantation*/
 t_expr* makeExprInst(t_instanciation* inst){			
 	t_expr* expr = NEW(1, t_expr);
-	expr->label_op = 8;
+	expr->label_op = New;
 	expr->elem.instanciation = inst;
 	return(expr);
 }
@@ -239,6 +239,15 @@ t_expr* makeExprSelect(t_variable* varId, t_expr* expres){
 	expr->elem.selection.fieldName = varId;
 	expr->elem.selection.expression = expres;
 	return(expr);
+}
+
+/* Constructeur expression avec cast */
+t_expr* makeExprCast(t_cast* new_cast)
+{
+	t_expr* expr = NEW(1, t_expr);
+	expr->label_op = Cast;
+	expr->elem.cast = new_cast;
+	return expr;
 }
 
 /* Constructeur affectation*/
@@ -311,14 +320,24 @@ t_champ* makeChamp(t_variable* id1, t_variable* id2){
 
 /* Constructeur Methode */
 t_method* makeMethod(char* name, t_class* returnType, short nbParametres, t_varIdent** parametres, int* isRedef) {
-    t_method* method = new(1, t_method);
+    t_method* method = NEW(1, t_method);
     method->name = name;
     method->returnType = returnType;
-    method->nbParametres = nbParametres;
+    method->nbParametre = nbParametres;
     method->parametres = NEW(nbParametres, t_varIdent*);
-    for (int i = 0; i < nbParametres; i++) {
+    int i;
+    for (i = 0; i < nbParametres; i++) {
         method->parametres[i] = parametres[i];
     }
     method->isRedef = isRedef;
     return(method);
 } 
+
+/* Cast */
+t_cast* makeCast(t_variable* class_id, t_expr* expr_to_cast)
+{
+	t_cast* cast = NEW(1, t_cast);
+	cast->newType = class_id->ident->_type;
+	cast->expression = expr_to_cast;
+	return cast;
+}

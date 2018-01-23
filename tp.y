@@ -15,10 +15,11 @@
 
 %type<paffect> cible
 %type<pinstr> Inst ITE block RETURN
-%type<pexpr> Object Expr ExprRelop Arg Cast Selection
+%type<pexpr> Object Expr ExprRelop Arg Selection
 %type<pinstanciation> Instanciation
 %type<pinit> Init
 %type<pchamp> Champ
+%type<pcast> Cast
 
 
 %{
@@ -67,7 +68,7 @@ Var : VAR
 | 
 ;
 Init : AFF ExprRelop	{ $$ = makeInit($2);}
-| 
+| 						{ $$ = makeInit(NULL);}
 ;
 /////////////////////////
 
@@ -140,9 +141,9 @@ ListInst : Inst ListInst
 
 Inst : ITE 			{ $$ = $1;}
 | block 			{ $$ = makeInstruction(0, $1);}
-| RETURN ';'			{ $$ = makeInstruction(1, $1);}
+| RETURN ';'		{ $$ = makeInstruction(1, $1);}
 | cible ';'			{ $$ = makeInstruction(2, $1);}
-| ExprRelop ';' 		{ $$ = makeInstruction(4, $1);}
+| ExprRelop ';' 	{ $$ = makeInstruction(4, $1);}
 | Champ				{ $$ = makeInstruction(4, $1);}
 ;
 
@@ -159,10 +160,10 @@ Selection : Object'.'ID		{ $$ = makeExprSelect($3, $1);}
 Object : Selection		{ $$ = $1;}
 | CallMethod			/*{ $$ = makeExprVar($1);}*/
 | Instanciation			{ $$ = makeExprInst($1);}
-| CSTE				{ $$ = makeExprCste(8, $1);}
-| ID				{ $$ = makeExprVar($1);}		
-| Cast				{ $$ = $1;}
-;
+| CSTE					{ $$ = makeExprCste(8, $1);}
+| ID					{ $$ = makeExprVar($1);}		
+| Cast					{ $$ = makeExprCast($1);}
+;	
 
 
 ExprRelop : Expr RELOP Expr	/*{ $$ = makeExpr($2, $1, $3);}*/
@@ -170,18 +171,18 @@ ExprRelop : Expr RELOP Expr	/*{ $$ = makeExpr($2, $1, $3);}*/
 ;
 
 Expr : Expr ADD Expr		{ $$ = makeExpr(SUM, $1, $3);}
-| Expr SUB Expr			{ $$ = makeExpr(MIN, $1, $3);}
-| Expr MUL Expr			{ $$ = makeExpr(MULT, $1, $3);}
-| Expr DIV Expr			{ $$ = makeExpr(DIVI, $1, $3);}
-| Expr '&' Expr			{ $$ = makeExpr(AND, $1, $3);}
-| Object			{ $$ = $1;}
+| Expr SUB Expr				{ $$ = makeExpr(MIN, $1, $3);}
+| Expr MUL Expr				{ $$ = makeExpr(MULT, $1, $3);}
+| Expr DIV Expr				{ $$ = makeExpr(DIVI, $1, $3);}
+| Expr '&' Expr				{ $$ = makeExpr(AND, $1, $3);}
+| Object					{ $$ = $1;}
 | ADD CSTE %prec UNAIRE		{ $$ = makeExprCste(1, $2);}
 | SUB CSTE %prec UNAIRE		{ $$ = makeExprCste(2, $2);}
-| '(' ExprRelop ')'		{ $$ = $2;}
+| '(' ExprRelop ')'			{ $$ = $2;}
 ;
 
-Instanciation : NEWV ID '('ListArgClause')'
+Instanciation : NEWV ID '('ListArgClause')'		/*{ $$ = make*/
 ;
 
-Cast : '('ID Object')'
+Cast : '('ID Object')' 	{ $$ = makeCast($2, $3);}
 ;

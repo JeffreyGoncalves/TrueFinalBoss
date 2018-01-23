@@ -108,7 +108,7 @@ typedef struct t_affect{
 
 typedef struct t_expr {
 	enum{
-		Affect, Add, Soustr, Mult, Div, Equal, Ineq, And, Leaf /*No operator*/
+		Affect, Add, Soustr, Mult, Div, Equal, Ineq, And, Leaf, Cast, New /*No operator*/
 	}label_op;
 	
 	union{
@@ -120,6 +120,7 @@ typedef struct t_expr {
 			struct t_expr* expression;
 		}selection;
 		struct t_instanciation* instanciation;
+		struct t_cast* cast;
 	}elem;
 	
 }t_expr;
@@ -163,8 +164,8 @@ typedef struct t_varIdent{
 
 typedef struct t_listArg{
     t_varIdent* varIdent;
-    t_listArg* listArg;
-}
+    struct t_listArg* listArg;
+}t_listArg;
 
 typedef struct t_cast{
     t_expr* expression;
@@ -211,7 +212,10 @@ t_expr* makeExprSelect(t_variable* varId, t_expr* expres);
 t_expr* makeExprInst(t_instanciation* inst);
 t_expr* makeExprCste(short op, t_value* cste);
 t_expr* makeExprVar(t_variable* var);
+t_expr* makeExprCast(t_cast* new_cast);
 t_expr* makeExpr(short op, ...);
 t_init* makeInit(t_expr *expr);
 t_champ* makeChamp(t_variable* id1, t_variable* id2);
-t_method* makeMethod(char* name, t_class* returnType, short nbParametres, t_varIdent** parametres, int* isRedef)
+t_method* makeMethod(char* name, t_class* returnType, short nbParametres, t_varIdent** parametres, int* isRedef);
+t_cast* makeCast(t_variable* class_id, t_expr* expr_to_cast);
+/*t_instanciation* makeInstanciation();*/
