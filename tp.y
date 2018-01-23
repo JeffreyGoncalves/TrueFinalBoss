@@ -13,8 +13,9 @@
 %left MUL DIV
 %left UNAIRE
 
-%type<t_inst> Inst ITE block RETURN cible Champ Init 
-%type<t_expr> Object Expr ExprRelop Arg Cast Instanciation Selection
+%type<paffect> cible
+%type<pinstr> Inst ITE block RETURN Champ Init 
+%type<pexpr> Object Expr ExprRelop Arg Cast Instanciation Selection
 
 
 %{
@@ -117,7 +118,7 @@ Champ : VAR ID ':' ID Init ';'
 ;
 ////////////////////////////////
 
-//Appel d'une metthode
+//Appel d'une metpthode
 
 CallMethod : Object'.'ID'('ListArgClause')'
 | '('ExprRelop')''.'ID'('ListArgClause')'
@@ -138,7 +139,7 @@ ListInst : Inst ListInst
 Inst : ITE 			{ $$ = $1;}
 | block 			{ $$ = makeInstruction(0, $1);}
 | RETURN ';'			{ $$ = makeInstruction(1, $1);}
-| cible ';'			/*{ $$ = makeInstruction(2, $1);}*/
+| cible ';'			{ $$ = makeInstruction(2, $1);}
 | ExprRelop ';' 		{ $$ = makeInstruction($1);}
 | Champ				{ $$ = makeInstruction($1);}
 ;
@@ -149,14 +150,14 @@ ITE : IF ExprRelop THEN Inst ELSE Inst { $$ = makeInstruction(3, $2, $4, $6);}
 cible : Object AFF ExprRelop	{ $$ = makeAff($1, $3);}
 ;	
 
-Selection : Object'.'ID
-| '('ExprRelop')''.'ID
+Selection : Object'.'ID		{ $$ = makeExprSelect($3, $1);}
+| '('ExprRelop')''.'ID		{ $$ = makeExprSelect($5, $2);}
 ;
 
-Object : Selection		{ $$ = makeExprSelect($1);}
+Object : Selection		{ $$ = $1;}
 | CallMethod			/*{ $$ = makeExprVar($1);}*/
 | Instanciation			{ $$ = makeExprInst($1);}
-| CSTE				{ $$ = makeExprCste($1);}
+| CSTE				{ $$ = makeExprCste(8, $1);}
 | ID				{ $$ = makeExprVar($1);}		
 | Cast				{ $$ = $1;}
 ;
@@ -172,8 +173,8 @@ Expr : Expr ADD Expr		{ $$ = makeExpr(1, $1, $3);}
 | Expr DIV Expr			{ $$ = makeExpr(4, $1, $3);}
 | Expr '&' Expr			{ $$ = makeExpr(7, $1, $3);}
 | Object			{ $$ = $1;}
-| ADD CSTE %prec UNAIRE		/*{ $$ = makeExpr(2, $1, $3);}*/
-| SUB CSTE %prec UNAIRE		/*{ $$ = makeExpr(2, $1, $3);}*/
+| ADD CSTE %prec UNAIRE		{ $$ = makeExprCste(1, $2);}
+| SUB CSTE %prec UNAIRE		{ $$ = makeExprCste(2, $2);}
 | '(' ExprRelop ')'		{ $$ = $2;}
 ;
 

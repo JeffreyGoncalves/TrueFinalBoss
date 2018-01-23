@@ -6,7 +6,6 @@
 #include <string.h>
 #include "tp.h"
 #include "tp_y.h"
-#include "structures.h"
 
 extern int yyparse();
 extern int yylineno;
@@ -141,7 +140,7 @@ TreeP makeTree(short op, int nbChildren, ...) {
   va_list args;
   TreeP tree = makeNode(nbChildren, op);
   va_start(args, nbChildren);
-  int i;
+int i;
   for(i = 0; i < nbChildren; i++) {
     tree->u.children[i] = va_arg(args, TreeP);
   }
@@ -198,8 +197,9 @@ t_expr* makeExpr(short op, ...){
 	va_list args;
 	t_expr* expr = NEW(1, t_expr);
 	expr->label_op = op;
-  int i;
+
 	va_start(args, op);
+	int i;
 	for(i = 0; i < 2; i++) {
     		expr->elem.fils[i] = va_arg(args, t_expr*);
   	}
@@ -217,15 +217,15 @@ t_expr* makeExprVar(t_variable* var){
 }
 
 /* Constructeur expression feuille avec constante*/
-t_expr* makeExprCste(t_value* cste){
+t_expr* makeExprCste(short op, t_value* cste){			/*"op" car opérateur unaire*/		
 	t_expr* expr = NEW(1, t_expr);
-	expr->label_op = 8;
+	expr->label_op = op;
 	expr->elem.constante = cste;
 	return(expr);
 }
 
 /* Constructeur expression feuille avec instantation*/
-t_expr* makeExprInst(t_instanciation* inst){
+t_expr* makeExprInst(t_instanciation* inst){			
 	t_expr* expr = NEW(1, t_expr);
 	expr->label_op = 8;
 	expr->elem.instanciation = inst;
@@ -233,7 +233,7 @@ t_expr* makeExprInst(t_instanciation* inst){
 }
 
 /* Constructeur expression feuille avec selection*/
-t_expr* makeExprSelect(t_varIdent* varId, t_expr* expres){
+t_expr* makeExprSelect(t_varIdent* varId, t_expr* expres){		
 	t_expr* expr = NEW(1, t_expr);
 	expr->label_op = 8;
 	expr->elem.selection.fieldName = varId;
