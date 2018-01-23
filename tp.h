@@ -218,4 +218,4 @@ t_init* makeInit(t_expr *expr);
 t_champ* makeChamp(t_variable* id1, t_variable* id2);
 t_method* makeMethod(char* name, t_class* returnType, short nbParametres, t_varIdent** parametres, int* isRedef);
 t_cast* makeCast(t_variable* class_id, t_expr* expr_to_cast);
-/*t_instanciation* makeInstanciation();*/
+t_instanciation* makeInstanciation(t_variable* class_id, t_expr** args);

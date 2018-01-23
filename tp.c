@@ -341,3 +341,14 @@ t_cast* makeCast(t_variable* class_id, t_expr* expr_to_cast)
 	cast->expression = expr_to_cast;
 	return cast;
 }
+
+/* Instanciation via NEW */
+t_instanciation* makeInstanciation(t_variable* class_id, t_expr** args)
+{
+	t_instanciation* instanciation = NEW(1, t_instanciation);
+	instanciation->class = class_id->ident->_type;
+	instanciation->nbArgs = 0;
+	short *i = &(instanciation->nbArgs);
+	while(args[(int)(*i)] != NULL) (*i)++;
+	return instanciation;
+}
