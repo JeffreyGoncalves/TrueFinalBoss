@@ -24,13 +24,17 @@ typedef unsigned char bool;
  * Il y a surement des choses a recuperer en plus de ce que vous avez
  * produit pour le tp.
  */
-#define NE	1
-#define EQ	2
-#define LT	3
-#define LE	4
-#define GT	5
-#define GE	6
-
+#define SUM  1
+#define MIN  2
+#define MULT 3
+#define DIVI 4
+#define NE	5
+#define EQ	6
+#define LT	7
+#define LE	8
+#define GT	9
+#define GE	10
+#define AND 11
 
 
 /* Codes d'erreurs. Cette liste n'est pas obligatoire ni limitative */
@@ -112,7 +116,7 @@ typedef struct t_expr {
 		t_variable* ident;
 		t_value* constante;
 		struct {
-			struct t_varIdent* fieldName;
+			struct t_variable* fieldName;
 			struct t_expr* expression;
 		}selection;
 		struct t_instanciation* instanciation;

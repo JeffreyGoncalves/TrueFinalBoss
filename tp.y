@@ -100,7 +100,6 @@ VarDef : declMethod
 ///////////////////////////////
 
 // Declaration d'une methode //
-
 declMethod : Override DEF ID'(' ListParamClause ')' ':' ID AFF ExprRelop
 | Override DEF ID'(' ListParamClause ')' ClassClause IS block
 ;
@@ -119,7 +118,7 @@ Champ : VAR ID ':' ID Init ';'
 ;
 ////////////////////////////////
 
-//Appel d'une metpthode
+//Appel d'une methode
 
 CallMethod : Object'.'ID'('ListArgClause')'
 | '('ExprRelop')''.'ID'('ListArgClause')'
@@ -152,7 +151,7 @@ cible : Object AFF ExprRelop	{ $$ = makeAff($1, $3);}
 ;	
 
 Selection : Object'.'ID		{ $$ = makeExprSelect($3, $1);}
-| '('ExprRelop')''.'ID		{ $$ = makeExprSelect($5, $3);}
+| '('ExprRelop')''.'ID		{ $$ = makeExprSelect($5, $2);}
 ;
 
 Object : Selection		{ $$ = $1;}
@@ -164,15 +163,15 @@ Object : Selection		{ $$ = $1;}
 ;
 
 
-ExprRelop : Expr RELOP Expr	/*{ $$ = makeExpr(5, $1, $3);}*/
+ExprRelop : Expr RELOP Expr	/*{ $$ = makeExpr($2, $1, $3);}*/
 | Expr				{ $$ = $1;}
 ;
 
-Expr : Expr ADD Expr		{ $$ = makeExpr(1, $1, $3);}
-| Expr SUB Expr			{ $$ = makeExpr(2, $1, $3);}
-| Expr MUL Expr			{ $$ = makeExpr(3, $1, $3);}
-| Expr DIV Expr			{ $$ = makeExpr(4, $1, $3);}
-| Expr '&' Expr			{ $$ = makeExpr(7, $1, $3);}
+Expr : Expr ADD Expr		{ $$ = makeExpr(SUM, $1, $3);}
+| Expr SUB Expr			{ $$ = makeExpr(MIN, $1, $3);}
+| Expr MUL Expr			{ $$ = makeExpr(MULT, $1, $3);}
+| Expr DIV Expr			{ $$ = makeExpr(DIVI, $1, $3);}
+| Expr '&' Expr			{ $$ = makeExpr(AND, $1, $3);}
 | Object			{ $$ = $1;}
 | ADD CSTE %prec UNAIRE		{ $$ = makeExprCste(1, $2);}
 | SUB CSTE %prec UNAIRE		{ $$ = makeExprCste(2, $2);}

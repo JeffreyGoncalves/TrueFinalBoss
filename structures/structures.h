@@ -73,7 +73,7 @@ typedef struct t_instr{
 		BLOC, RETURN, AFFECTATION, IFTHENELSE
 	}Instr_enum;
 	union {
-		struct t_instr* bloc;
+		struct t_bloc* bloc;
 		t_expr* _return;
 		t_affect* aff;
 		struct {
@@ -83,6 +83,9 @@ typedef struct t_instr{
 		}ite;
 	}instr;
 }t_instr;
+
+typedef struct t_bloc{
+	
 
 typedef struct t_varIdent{
 	char* name;
