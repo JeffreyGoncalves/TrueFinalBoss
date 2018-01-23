@@ -284,6 +284,11 @@ t_instr* makeInstruction(short cas, ...){
 			va_start(args, cas);
 			instr->instr.expr = va_arg(args, t_expr*);
 			va_end(args);
+
+		case 5:	/*Champ*/
+			va_start(args, cas);
+			instr->instr.champ = va_arg(args, t_champ*);
+			va_end(args);
 	}
 
 	return(instr);
@@ -294,4 +299,12 @@ t_init* makeInit(t_expr *expr)
 	t_init* init = NEW(1, t_init);
 	init->expression_to_affect = expr;
 	return init;
+}
+
+/* Constructeur champ */
+t_champ* makeChamp(t_variable* id1, t_variable* id2){
+	t_champ* champ = NEW(1, t_champ);
+	champ->ident1 = id1;
+	champ->ident2 = id2;
+	return(champ);
 }

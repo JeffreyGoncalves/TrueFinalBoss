@@ -152,6 +152,7 @@ typedef struct t_instr{
 			struct t_instr* instrThen;
 			struct t_instr* instrElse;
 		}ite;
+		struct t_champ* champ;
 	}instr;
 }t_instr;
 
@@ -168,6 +169,11 @@ typedef struct t_cast{
 typedef struct t_init{
 	t_expr* expression_to_affect;
 }t_init;
+
+typedef struct t_champ{
+	t_variable* ident1;
+	t_variable* ident2;
+}t_champ;
 
 /* FIN PERSO */
 
@@ -188,6 +194,7 @@ typedef union
 	t_instr* pinstr;
 	t_cast* pcast;
 	t_init* pinit;
+	t_champ* pchamp;
 } YYSTYPE;
 
 #define YYSTYPE YYSTYPE
@@ -201,3 +208,4 @@ t_expr* makeExprCste(short op, t_value* cste);
 t_expr* makeExprVar(t_variable* var);
 t_expr* makeExpr(short op, ...);
 t_init* makeInit(t_expr *expr);
+t_champ* makeChamp(t_variable* id1, t_variable* id2);

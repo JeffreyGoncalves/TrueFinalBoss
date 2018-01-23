@@ -14,10 +14,11 @@
 %left UNAIRE
 
 %type<paffect> cible
-%type<pinstr> Inst ITE block RETURN Champ
+%type<pinstr> Inst ITE block RETURN
 %type<pexpr> Object Expr ExprRelop Arg Cast Selection
 %type<pinstanciation> Instanciation
 %type<pinit> Init
+%type<pchamp> Champ
 
 
 %{
@@ -115,7 +116,7 @@ ClassClause : ':' ID
 //////////////////////////////
 
 //Champ dans un objet
-Champ : VAR ID ':' ID Init ';' 
+Champ : VAR ID ':' ID Init ';' 	{ $$ = makeChamp($2, $4);}
 ;
 ////////////////////////////////
 
