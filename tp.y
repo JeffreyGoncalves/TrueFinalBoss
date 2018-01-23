@@ -2,8 +2,8 @@
 %token IS OBJECT CLASS VAR EXTENDS DEF OVERRIDE IF THEN ELSE AFF RETURN NEWV 
 %token ',' ':' '(' ')' '{' '}' ';' '.' '&' 
 %token ADD SUB MUL DIV
-%token<S> ID
-%token<I> CSTE
+%token<pvariable> ID
+%token<pvalue> CSTE
 %token<C> RELOP
 
 %right '.'
@@ -14,8 +14,9 @@
 %left UNAIRE
 
 %type<paffect> cible
-%type<pinstr> Inst ITE block RETURN Champ Init 
-%type<pexpr> Object Expr ExprRelop Arg Cast Instanciation Selection
+%type<pinstr> Inst ITE block RETURN Champ Init
+%type<pexpr> Object Expr ExprRelop Arg Cast Selection
+%type<pinstanciation> Instanciation
 
 
 %{
@@ -140,8 +141,8 @@ Inst : ITE 			{ $$ = $1;}
 | block 			{ $$ = makeInstruction(0, $1);}
 | RETURN ';'			{ $$ = makeInstruction(1, $1);}
 | cible ';'			{ $$ = makeInstruction(2, $1);}
-| ExprRelop ';' 		{ $$ = makeInstruction($1);}
-| Champ				{ $$ = makeInstruction($1);}
+| ExprRelop ';' 		{ $$ = makeInstruction(4, $1);}
+| Champ				{ $$ = makeInstruction(4, $1);}
 ;
 
 ITE : IF ExprRelop THEN Inst ELSE Inst { $$ = makeInstruction(3, $2, $4, $6);}
@@ -151,7 +152,7 @@ cible : Object AFF ExprRelop	{ $$ = makeAff($1, $3);}
 ;	
 
 Selection : Object'.'ID		{ $$ = makeExprSelect($3, $1);}
-| '('ExprRelop')''.'ID		{ $$ = makeExprSelect($5, $2);}
+| '('ExprRelop')''.'ID		{ $$ = makeExprSelect($5, $3);}
 ;
 
 Object : Selection		{ $$ = $1;}

@@ -233,7 +233,7 @@ t_expr* makeExprInst(t_instanciation* inst){
 }
 
 /* Constructeur expression feuille avec selection*/
-t_expr* makeExprSelect(t_varIdent* varId, t_expr* expres){		
+t_expr* makeExprSelect(t_variable* varId, t_expr* expres){		
 	t_expr* expr = NEW(1, t_expr);
 	expr->label_op = 8;
 	expr->elem.selection.fieldName = varId;
@@ -242,7 +242,7 @@ t_expr* makeExprSelect(t_varIdent* varId, t_expr* expres){
 }
 
 /* Constructeur affectation*/
-t_affect* makeAff(t_variable* var, t_expr* expr){
+t_affect* makeAff(t_expr* var, t_expr* expr){
 	t_affect* aff = NEW(1, t_affect);
 	aff->variable = var;
 	aff->valeur = expr;
@@ -265,7 +265,7 @@ t_instr* makeInstruction(short cas, ...){
 
 		case 1: /*RETURN*/
 			va_start(args, cas);
-			instr->instr._return = va_arg(args, t_expr*);
+			instr->instr.expr = va_arg(args, t_expr*);
 			va_end(args);
 
 		case 2: /*AFFECTATION*/
@@ -278,6 +278,11 @@ t_instr* makeInstruction(short cas, ...){
 			instr->instr.ite.condition = va_arg(args, t_expr*);
 			instr->instr.ite.instrThen = va_arg(args, t_instr*);
 			instr->instr.ite.instrElse = va_arg(args, t_instr*);
+			va_end(args);
+
+		case 4:	/*Expression;*/
+			va_start(args, cas);
+			instr->instr.expr = va_arg(args, t_expr*);
 			va_end(args);
 	}
 

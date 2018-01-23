@@ -98,7 +98,7 @@ typedef struct t_variable{
 }t_variable;
 
 typedef struct t_affect{
-	t_variable* variable;
+	struct t_expr* variable;
 	struct t_expr* valeur;
 }t_affect;
 
@@ -137,11 +137,11 @@ typedef struct t_instanciation{
 
 typedef struct t_instr{
 	enum {
-		Bloc, Return, Affectation, IfThenElse
+		Bloc, Return, Affectation, IfThenElse, Expression
 	}Instr_enum;
 	union {
 		struct t_instr* bloc;
-		t_expr* _return;
+		t_expr* expr;
 		t_affect* aff;
 		struct {
 			t_expr* condition;
@@ -169,10 +169,10 @@ typedef union
 	int I;
 	TreeP pT;
 	VarDeclP pV;
-	t_value pvalue;
+	t_value* pvalue;
 	t_object* pobject;
 	t_class* pclass;
-	t_variable pvariable;
+	t_variable*  pvariable;
 	t_affect* paffect;
 	t_expr* pexpr;
 	t_method* pmethod;
@@ -185,8 +185,8 @@ typedef union
 
 /* DECLARATION OF DOOM */
 t_instr* makeInstruction(short cas, ...);
-t_affect* makeAff(t_variable* var, t_expr* expr);
-t_expr* makeExprSelect(t_varIdent* varId, t_expr* expres);
+t_affect* makeAff(t_expr* var, t_expr* expr);
+t_expr* makeExprSelect(t_variable* varId, t_expr* expres);
 t_expr* makeExprInst(t_instanciation* inst);
 t_expr* makeExprCste(short op, t_value* cste);
 t_expr* makeExprVar(t_variable* var);
