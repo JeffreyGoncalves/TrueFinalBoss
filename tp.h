@@ -80,7 +80,6 @@ typedef struct _varDecl {
   struct _varDecl *next;
 } VarDecl, *VarDeclP;
 
-
 /* la structure d'un arbre (noeud ou feuille) */
 typedef struct _Tree {
   short op;         /* etiquette de l'operateur courant */
@@ -226,3 +225,4 @@ t_method* makeMethod(char* name, t_class* returnType, short nbParametres, t_varI
 TreeP makeLeafId(short op, t_variable* id);
 TreeP makeLeafInt(short op, int val);
 TreeP makeLeafLVar(short op, VarDeclP lvar);
+TreeP makeLeafStr(short op, char *str);

@@ -2,7 +2,7 @@
 %token IS OBJECT CLASS VAR EXTENDS DEF OVERRIDE IF THEN ELSE AFF RETURN NEWV 
 %token ',' ':' '(' ')' '{' '}' ';' '.' '&' 
 %token ADD SUB MUL DIV
-%token<pvariable> ID
+%token<S> ID
 %token<pvalue> CSTE
 %token<C> RELOP
 
@@ -13,9 +13,7 @@
 %left MUL DIV
 %left UNAIRE
 
-%type<pinit> Init
-%type<pbloc> ListInstClause ListInst
-%type<pT> Inst ITE RETURN cible ExprRelop Champ Expr Object Selection CallMethod Instanciation Cast Param ListParam ListParamClause
+%type<pT> Inst ITE RETURN cible ExprRelop Champ Expr Object Selection CallMethod Instanciation Cast Param ListParam ListParamClause ListArgClause Init ListInstClause ListInst ListArg Arg listClassObj constructorClause extendsClause ListVarDef Var VAR
 
 
 %{
@@ -32,7 +30,7 @@ Prog : listClassObj block;
 
 //Gestion des Objets et Classes
 listClassObj : listClassObj ClassObj
-| 
+|                               { $$ = NULL(Tree);}
 ;
 
 ClassObj : declClass
@@ -45,7 +43,7 @@ declClass : CLASS ID '(' ListParamClause ')' extendsClause constructorClause IS 
 declObject : OBJECT ID IS classObjBlock;
 
 constructorClause : block		
-| 
+|                               { $$ = NULL(Tree);}
 ;
 
 ////// Parametres //////
@@ -63,10 +61,10 @@ Param : Var ID':' ID Init   {   id1 = makeLeafId(_ID, $2);
 ;
 
 Var : VAR                           
-| 						
+| 			                { $$ = NULL(Tree);}			
 ;
-Init : AFF ExprRelop	{ $$ = makeInit($2);}
-| 						{ $$ = makeInit(NULL);}
+Init : AFF ExprRelop	    { $$ = $2;}
+| 					        { $$ = NULL(Tree);}	
 ;
 /////////////////////////
 
@@ -92,7 +90,7 @@ classObjBlock : '{' ListVarDef '}'
 ;
 
 ListVarDef : VarDef ListVarDef
-| 							
+| 					            { $$ = NULL(Tree);}		
 ;
 
 VarDef : declMethod 
