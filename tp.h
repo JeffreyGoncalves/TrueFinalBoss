@@ -41,6 +41,12 @@ typedef unsigned char bool;
 #define E_CAST 14
 #define E_CALL_METHOD 15
 
+#define LISTE_PARAM 16
+#define PARAM 17
+
+#define LISTE_ARG 16
+#define ARG 17
+
 #define I_ITE 20
 #define I_BLOC 21
 #define I_RETURN	22
@@ -70,7 +76,7 @@ typedef unsigned char bool;
 
 /* Adapt as needed. Currently it is simply a list of names ! */
 typedef struct _varDecl {
-  char *name;
+  t_varIdent* var;
   struct _varDecl *next;
 } VarDecl, *VarDeclP;
 
@@ -191,26 +197,6 @@ typedef struct t_varIdent{
 /* valeur à l'initialisation (faire en dernier)
  * booleen pour savoir si c'est un paramètre*/
 
-
-typedef struct t_listParam{
-    t_varIdent* varIdent;
-    struct t_listParam* listParam;
-}t_listParam;
-
-typedef struct t_cast{
-    t_expr* expression;
-    t_class* newType;
-}t_cast;
-
-typedef struct t_init{
-	t_expr* expression_to_affect;
-}t_init;
-
-typedef struct t_champ{
-	t_variable* ident1;
-	t_variable* ident2;
-}t_champ;
-
 /* FIN PERSO */
 
 typedef union
@@ -226,30 +212,17 @@ typedef union
 	t_affect* paffect;
 	t_expr* pexpr;
 	t_method* pmethod;
-	t_instanciation* pinstanciation;
 	t_instr* pinstr;
-	t_cast* pcast;
-	t_init* pinit;
-	t_champ* pchamp;
-	t_listParam* plistParam;
 } YYSTYPE;
 
 #define YYSTYPE YYSTYPE
 
 /* DECLARATION OF DOOM */
-t_instr* makeInstruction(short cas, ...);
-t_affect* makeAff(t_expr* var, t_expr* expr);
-t_expr* makeExprSelect(t_variable* varId, t_expr* expres);
-t_expr* makeExprInst(t_instanciation* inst);
-t_expr* makeExprCste(short op, t_value* cste);
-t_expr* makeExprVar(t_variable* var);
-t_expr* makeExprCast(t_cast* new_cast);
-t_expr* makeExpr(short op, ...);
-t_init* makeInit(t_expr *expr);
-t_champ* makeChamp(t_variable* id1, t_variable* id2);
+TreeP makeNode(int nbChildren, short op);
+TreeP makeTree(short op, int nbChildren, ...);
+void setChild(TreeP tree, int rank, TreeP arg);
+TreeP makeLeafStr(short op, char *str)
 t_method* makeMethod(char* name, t_class* returnType, short nbParametres, t_varIdent** parametres, int* isRedef);
-t_cast* makeCast(t_variable* class_id, t_expr* expr_to_cast);
-t_instanciation* makeInstanciation(t_variable* class_id, t_expr** args);
-t_expr* makeExprCallMethod(t_expr* expr1, t_variable* var, t_listArg* list);
-t_listParam* makeListParam(t_varIdent* var, t_listParam* list);
 TreeP makeLeafId(short op, t_variable* id);
+TreeP makeLeafInt(short op, int val);
+TreeP makeLeafLVar(short op, VarDeclP lvar);

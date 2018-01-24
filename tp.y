@@ -15,7 +15,7 @@
 
 %type<pinit> Init
 %type<pbloc> ListInstClause ListInst
-%type<pT> Inst ITE RETURN cible ExprRelop Champ Expr Object Selection CallMethod Instanciation Cast
+%type<pT> Inst ITE RETURN cible ExprRelop Champ Expr Object Selection CallMethod Instanciation Cast Param ListParam ListParamClause
 
 
 %{
@@ -49,18 +49,20 @@ constructorClause : block
 ;
 
 ////// Parametres //////
-ListParamClause : ListParam
-| 				
+ListParamClause : ListParam     { $$ = $1;}
+| 				                { $$ = NULL(Tree);}
 ;
 
-ListParam : Param ',' ListParam 
-| Param 
+ListParam : Param ',' ListParam { $$ = makeTree(LISTE_PARAM, 2, $1, $3);}
+| Param                         { $$ = makeTree(LISTE_PARAM, 1, $1);}
 ;
 
-Param : Var ID':' ID Init
+Param : Var ID':' ID Init   {   id1 = makeLeafId(_ID, $2);
+                                id2 = makeLeafId(_ID, $4);
+                                $$ = makeTree(PARAM, 3,  id1, id2, $5);}
 ;
 
-Var : VAR
+Var : VAR                           
 | 						
 ;
 Init : AFF ExprRelop	{ $$ = makeInit($2);}
@@ -70,18 +72,18 @@ Init : AFF ExprRelop	{ $$ = makeInit($2);}
 
 // Mot cle EXTENDS //
 extendsClause : EXTENDS ID '(' ListArgClause ')'
-| 							
+|                               { $$ = NULL(Tree);} 							
 ;
 
-ListArgClause : ListArg
-| 
+ListArgClause : ListArg         { $$ = $1;}
+|                               { $$ = NULL(Tree);}
 ;
 
-ListArg : Arg ',' ListArg 
-| Arg
+ListArg : Arg ',' ListArg       { $$ = makeTree(LISTE_ARG, 2, $1, $3);}
+| Arg                           { $$ = makeTree(LISTE_ARG, 1, $1);}
 ;
 
-Arg : ExprRelop
+Arg : ExprRelop                 { $$ = $1;}
 ;
 ////////////////////
 
@@ -138,7 +140,7 @@ ListInst : Inst ListInst
 ;
 
 Inst : ITE 			{ $$ = $1;}
-| block 			{ $$ = makeTree(0, $1);}
+| block 			{ $$ = $1;}
 | RETURN ';'		/*{ $$ = makeLeafId(_ID, NULL(t_variable));}*/
 | cible ';'			{ $$ = $1;}
 | ExprRelop ';' 	{ $$ = makeTree(I_EXPRRELOP, 1, $1);}
@@ -151,8 +153,10 @@ ITE : IF ExprRelop THEN Inst ELSE Inst { $$ = makeTree(I_ITE, 3, $2, $4, $6);}
 cible : Object AFF ExprRelop	{ $$ = makeTree(I_AFF, 2, $1, $3);}
 ;	
 
-Selection : Object'.'ID		{ $$ = makeExprSelect($3, $1);}
-| '('ExprRelop')''.'ID		{ $$ = makeExprSelect($5, $2);}
+Selection : Object'.'ID		{   id = makeLeafId(_ID, $3);
+                            $$ = makeTree(E_SELECT, 2, $1, id);}
+| '('ExprRelop')''.'ID		{   id = makeLeafId(_ID, $5);
+                            $$ = makeTree(E_SELECT, 2, $2, id);}
 ;
 
 Object : Selection		{ $$ = $1;}
