@@ -140,7 +140,7 @@ TreeP makeTree(short op, int nbChildren, ...) {
   va_list args;
   TreeP tree = makeNode(nbChildren, op);
   va_start(args, nbChildren);
-int i;
+    int i;
   for(i = 0; i < nbChildren; i++) {
     tree->u.children[i] = va_arg(args, TreeP);
   }
@@ -175,6 +175,12 @@ TreeP makeLeafStr(short op, char *str) {
   return tree;
 }
 
+/* Constructeur de feuille dont la valeur est une chaine de caracteres */
+TreeP makeLeafId(short op, t_variable* id) {
+  TreeP tree = makeNode(0, op);
+  tree->u.lid = id;
+  return tree;
+}
 
 /* Constructeur de feuille dont la valeur est un entier */
 TreeP makeLeafInt(short op, int val) {

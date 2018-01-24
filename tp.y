@@ -13,13 +13,9 @@
 %left MUL DIV
 %left UNAIRE
 
-%type<paffect> cible
-%type<pinstr> Inst ITE block RETURN
-%type<pexpr> Object Expr ExprRelop Arg Selection
-%type<pinstanciation> Instanciation
 %type<pinit> Init
-%type<pchamp> Champ
-%type<pcast> Cast
+%type<pbloc> ListInstClause ListInst
+%type<pT> Inst ITE RETURN cible ExprRelop Champ Expr Object Selection CallMethod Instanciation Cast
 
 
 %{
@@ -54,7 +50,7 @@ constructorClause : block
 
 ////// Parametres //////
 ListParamClause : ListParam
-| 
+| 				
 ;
 
 ListParam : Param ',' ListParam 
@@ -65,7 +61,7 @@ Param : Var ID':' ID Init
 ;
 
 Var : VAR
-| 
+| 						
 ;
 Init : AFF ExprRelop	{ $$ = makeInit($2);}
 | 						{ $$ = makeInit(NULL);}
@@ -74,7 +70,7 @@ Init : AFF ExprRelop	{ $$ = makeInit($2);}
 
 // Mot cle EXTENDS //
 extendsClause : EXTENDS ID '(' ListArgClause ')'
-| 
+| 							
 ;
 
 ListArgClause : ListArg
@@ -94,7 +90,7 @@ classObjBlock : '{' ListVarDef '}'
 ;
 
 ListVarDef : VarDef ListVarDef
-| 
+| 							
 ;
 
 VarDef : declMethod 
@@ -108,49 +104,51 @@ declMethod : Override DEF ID'(' ListParamClause ')' ':' ID AFF ExprRelop
 ;
 
 Override : OVERRIDE
-| 
+| 								
 ;
 
-ClassClause : ':' ID			{ $$ = NULL(bloc);}
-| 								{ $$ = NULL(bloc);}
+ClassClause : ':' ID			
+| 							
 ;
 //////////////////////////////
 
 //Champ dans un objet
-Champ : VAR ID ':' ID Init ';' 	{ $$ = makeChamp($2, $4);}
+Champ : VAR ID ':' ID Init ';' 	{   id1 = makeLeafId(_ID, $2);
+                                    id2 = makeLeafId(_ID, $4);
+                                    $$ = makeTree(I_CHAMP, 3, id1, id2, $5);}
 ;
 ////////////////////////////////
 
 //Appel d'une methode
 
-CallMethod : Object'.'ID'('ListArgClause')'	{ $$ = makeExprCallMethod($1, $3, $5);}
-| '('ExprRelop')''.'ID'('ListArgClause')'	{ $$ = makeExprCallMethod($2, $5, $7);}
+CallMethod : Object'.'ID'('ListArgClause')'	{ $$ = makeTree(E_CALL_METHOD, 3,  $1, $3, $5);}
+| '('ExprRelop')''.'ID'('ListArgClause')'	{ $$ = makeTree(E_CALL_METHOD, 3,  $2, $5, $7);}
 ;
 
-block: '{' ListInstClause '}'	{ $$ = NULL(bloc);}
-| '{' ListInst IS ListInst '}'	{ $$ = NULL(bloc);}
+block: '{' ListInstClause '}'
+| '{' ListInst IS ListInst '}'	
 ;
 
-ListInstClause : ListInst	{ $$ = $1;}
-| 							{ $$ = NULL(bloc);}
+ListInstClause : ListInst	
+| 							
 ;
 
-ListInst : Inst ListInst 	{ $$ = makeBloc($1, $2);}
-| Inst						{ $$ = makeBloc($1, NULL(bloc));}
+ListInst : Inst ListInst 
+| Inst						
 ;
 
 Inst : ITE 			{ $$ = $1;}
-| block 			{ $$ = makeInstruction(0, $1);}
-| RETURN ';'		{ $$ = makeInstruction(1, $1);}
-| cible ';'			{ $$ = makeInstruction(2, $1);}
-| ExprRelop ';' 	{ $$ = makeInstruction(4, $1);}
-| Champ				{ $$ = makeInstruction(4, $1);}
+| block 			{ $$ = makeTree(0, $1);}
+| RETURN ';'		/*{ $$ = makeLeafId(_ID, NULL(t_variable));}*/
+| cible ';'			{ $$ = $1;}
+| ExprRelop ';' 	{ $$ = makeTree(I_EXPRRELOP, 1, $1);}
+| Champ				{ $$ = $1;}
 ;
 
-ITE : IF ExprRelop THEN Inst ELSE Inst { $$ = makeInstruction(3, $2, $4, $6);}
+ITE : IF ExprRelop THEN Inst ELSE Inst { $$ = makeTree(I_ITE, 3, $2, $4, $6);}
 ;
 
-cible : Object AFF ExprRelop	{ $$ = makeAff($1, $3);}
+cible : Object AFF ExprRelop	{ $$ = makeTree(I_AFF, 2, $1, $3);}
 ;	
 
 Selection : Object'.'ID		{ $$ = makeExprSelect($3, $1);}
@@ -159,15 +157,15 @@ Selection : Object'.'ID		{ $$ = makeExprSelect($3, $1);}
 
 Object : Selection		{ $$ = $1;}
 | CallMethod			{ $$ = $1;}
-| Instanciation			{ $$ = makeExprInst($1);}
+| Instanciation			{ $$ = $1;}
 | CSTE					{ $$ = makeExprCste(8, $1);}
-| ID					{ $$ = makeExprVar($1);}		
-| Cast					{ $$ = makeExprCast($1);}
+| ID					{ $$ = makeLeafId(_ID, $1);	}
+| Cast					{ $$ = $1;}
 ;	
 
 
 ExprRelop : Expr RELOP Expr	{ $$ = makeExpr($2, $1, $3);}
-| Expr				{ $$ = $1;}
+| Expr						{ $$ = $1;}
 ;
 
 Expr : Expr ADD Expr		{ $$ = makeExpr(SUM, $1, $3);}
@@ -176,13 +174,16 @@ Expr : Expr ADD Expr		{ $$ = makeExpr(SUM, $1, $3);}
 | Expr DIV Expr				{ $$ = makeExpr(DIVI, $1, $3);}
 | Expr '&' Expr				{ $$ = makeExpr(AND, $1, $3);}
 | Object					{ $$ = $1;}
-| ADD CSTE %prec UNAIRE		{ $$ = makeExprCste(1, $2);}
-| SUB CSTE %prec UNAIRE		{ $$ = makeExprCste(2, $2);}
+| ADD CSTE %prec UNAIRE		{   cste = makeLeafInt(_CSTE, $2)
+                                $$ = makeTree(SUM, 1, cste);}
+| SUB CSTE %prec UNAIRE		{   cste = makeLeafInt(_CSTE, $2)
+                                $$ = makeTree(MIN, 1, cste);}
 | '(' ExprRelop ')'	 		{ $$ = $2;}
 ;
 
-Instanciation : NEWV ID '('ListArgClause')'		/*{ $$ = makeInstanciation($2, $4);}*/
+Instanciation : NEWV ID '('ListArgClause')'		{ $$ = makeTree(E_INST, 2, $2, $4);}
 ;
 
-Cast : '('ID Object')' 	{ $$ = makeCast($2, $3);}
+Cast : '('ID Object')' 	{   id = makeLeafId(_ID, $2);
+                            $$ = makeTree(E_CAST, 2, id, $3);}
 ;

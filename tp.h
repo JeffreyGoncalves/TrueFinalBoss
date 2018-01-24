@@ -36,6 +36,24 @@ typedef unsigned char bool;
 #define GE	10
 #define AND 11
 
+#define E_SELECT 12
+#define E_INST 13
+#define E_CAST 14
+#define E_CALL_METHOD 15
+
+#define I_ITE 20
+#define I_BLOC 21
+#define I_RETURN	22
+#define I_AFF 23
+#define I_EXPRRELOP	24
+#define I_CHAMP 25
+
+#define _ID 26
+#define _CSTE 27
+
+
+
+
 
 /* Codes d'erreurs. Cette liste n'est pas obligatoire ni limitative */
 #define NO_ERROR	0
@@ -64,6 +82,7 @@ typedef struct _Tree {
   union {
     char *str;      /* valeur de la feuille si op = Id ou STR */
     int val;        /* valeur de la feuille si op = Cste */
+    t_variable* lid;
     VarDeclP lvar;  /* ne pas utiliser tant qu'on n'en a pas besoin :-) */
     struct _Tree **children; /* tableau des sous-arbres */
   } u;
@@ -138,6 +157,9 @@ typedef struct t_method{
 	struct t_instr** instructions;
 	int* isRedef;
 }t_method;
+/* liste variables locales
+    La classe d'appartenance*/
+
 
 typedef struct t_instanciation{
 	t_class* class;
@@ -166,6 +188,9 @@ typedef struct t_varIdent{
 	char* name;
 	t_class* _type;
 }t_varIdent;
+/* valeur à l'initialisation (faire en dernier)
+ * booleen pour savoir si c'est un paramètre*/
+
 
 typedef struct t_listParam{
     t_varIdent* varIdent;
@@ -227,3 +252,4 @@ t_cast* makeCast(t_variable* class_id, t_expr* expr_to_cast);
 t_instanciation* makeInstanciation(t_variable* class_id, t_expr** args);
 t_expr* makeExprCallMethod(t_expr* expr1, t_variable* var, t_listArg* list);
 t_listParam* makeListParam(t_varIdent* var, t_listParam* list);
+TreeP makeLeafId(short op, t_variable* id);
