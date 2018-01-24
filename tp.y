@@ -111,8 +111,8 @@ Override : OVERRIDE
 | 
 ;
 
-ClassClause : ':' ID
-| 
+ClassClause : ':' ID			{ $$ = NULL(bloc);}
+| 								{ $$ = NULL(bloc);}
 ;
 //////////////////////////////
 
@@ -123,20 +123,20 @@ Champ : VAR ID ':' ID Init ';' 	{ $$ = makeChamp($2, $4);}
 
 //Appel d'une methode
 
-CallMethod : Object'.'ID'('ListArgClause')'
-| '('ExprRelop')''.'ID'('ListArgClause')'
+CallMethod : Object'.'ID'('ListArgClause')'	{ $$ = makeExprCallMethod($1, $3, $5);}
+| '('ExprRelop')''.'ID'('ListArgClause')'	{ $$ = makeExprCallMethod($2, $5, $7);}
 ;
 
-block: '{' ListInstClause '}'
-| '{' ListInst IS ListInst '}'
+block: '{' ListInstClause '}'	{ $$ = NULL(bloc);}
+| '{' ListInst IS ListInst '}'	{ $$ = NULL(bloc);}
 ;
 
-ListInstClause : ListInst
-| 
+ListInstClause : ListInst	{ $$ = $1;}
+| 							{ $$ = NULL(bloc);}
 ;
 
-ListInst : Inst ListInst 
-| Inst
+ListInst : Inst ListInst 	{ $$ = makeBloc($1, $2);}
+| Inst						{ $$ = makeBloc($1, NULL(bloc));}
 ;
 
 Inst : ITE 			{ $$ = $1;}
@@ -158,7 +158,7 @@ Selection : Object'.'ID		{ $$ = makeExprSelect($3, $1);}
 ;
 
 Object : Selection		{ $$ = $1;}
-| CallMethod			/*{ $$ = makeExprVar($1);}*/
+| CallMethod			{ $$ = $1;}
 | Instanciation			{ $$ = makeExprInst($1);}
 | CSTE					{ $$ = makeExprCste(8, $1);}
 | ID					{ $$ = makeExprVar($1);}		
@@ -166,7 +166,7 @@ Object : Selection		{ $$ = $1;}
 ;	
 
 
-ExprRelop : Expr RELOP Expr	/*{ $$ = makeExpr($2, $1, $3);}*/
+ExprRelop : Expr RELOP Expr	{ $$ = makeExpr($2, $1, $3);}
 | Expr				{ $$ = $1;}
 ;
 

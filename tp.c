@@ -216,6 +216,16 @@ t_expr* makeExprVar(t_variable* var){
 	return(expr);
 }
 
+/* Constructeur expression feuille avec callmethod*/
+t_expr* makeExprCallMethod(t_expr* expr1, t_variable* var, t_listArg* list){
+	t_expr* expr = NEW(1, t_expr);
+	expr->label_op = 8;
+	expr->elem.callMethod.expression = expr1;
+	expr->elem.callMethod.name = var;
+	expr->elem.callMethod.list = list;	
+	return(expr);
+}
+
 /* Constructeur expression feuille avec constante*/
 t_expr* makeExprCste(short op, t_value* cste){			/*"op" car opérateur unaire*/		
 	t_expr* expr = NEW(1, t_expr);
@@ -340,6 +350,15 @@ t_cast* makeCast(t_variable* class_id, t_expr* expr_to_cast)
 	cast->newType = class_id->ident->_type;
 	cast->expression = expr_to_cast;
 	return cast;
+}
+
+/* Constructeur liste arguments */
+t_listParam* makeListParam(t_varIdent* var, t_listParam* list)
+{
+	t_listParam* listParam = NEW(1, t_listParam);
+	listParam->varIdent = var;
+	listParam->listParam = list;
+	return listParam;
 }
 
 /* Instanciation via NEW */

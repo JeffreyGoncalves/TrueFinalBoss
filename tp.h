@@ -121,6 +121,11 @@ typedef struct t_expr {
 		}selection;
 		struct t_instanciation* instanciation;
 		struct t_cast* cast;
+		struct{
+			struct t_expr* expression;	
+			struct t_variable* name;
+			struct t_listParam* list;
+		}callMethod;
 	}elem;
 	
 }t_expr;
@@ -162,10 +167,10 @@ typedef struct t_varIdent{
 	t_class* _type;
 }t_varIdent;
 
-typedef struct t_listArg{
+typedef struct t_listParam{
     t_varIdent* varIdent;
-    struct t_listArg* listArg;
-}t_listArg;
+    struct t_listParam* listParam;
+}t_listParam;
 
 typedef struct t_cast{
     t_expr* expression;
@@ -201,6 +206,7 @@ typedef union
 	t_cast* pcast;
 	t_init* pinit;
 	t_champ* pchamp;
+	t_listParam* plistParam;
 } YYSTYPE;
 
 #define YYSTYPE YYSTYPE
@@ -219,3 +225,5 @@ t_champ* makeChamp(t_variable* id1, t_variable* id2);
 t_method* makeMethod(char* name, t_class* returnType, short nbParametres, t_varIdent** parametres, int* isRedef);
 t_cast* makeCast(t_variable* class_id, t_expr* expr_to_cast);
 t_instanciation* makeInstanciation(t_variable* class_id, t_expr** args);
+t_expr* makeExprCallMethod(t_expr* expr1, t_variable* var, t_listArg* list);
+t_listParam* makeListParam(t_varIdent* var, t_listParam* list);
