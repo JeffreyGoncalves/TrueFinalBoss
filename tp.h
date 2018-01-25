@@ -66,6 +66,7 @@ typedef unsigned char bool;
 #define DECLA_OBJECT 36
 #define LIST_VAR_DEF 37
 #define VAR_DEF 38
+#define DECL_METH 39
 
 #define PROG 100
 

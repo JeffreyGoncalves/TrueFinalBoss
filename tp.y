@@ -13,10 +13,10 @@
 %left MUL DIV
 %left UNAIRE
 
-%type<pT> Inst ITE RETURN cible ExprRelop Expr Object Selection CallMethod Instanciation declClass declObject VarDef
+%type<pT> Inst ITE RETURN cible ExprRelop Champ Expr Object Selection CallMethod Instanciation declClass declObject
 %type<pT> Cast ListParam ListParamClause ListArgClause Init ListInstClause ListInst ListArg Arg ClassObj classObjBlock
 %type<pT> listClassObj constructorClause extendsClause ListVarDef Var block Prog ListChamp Override ClassClause declMethod
-%type<pV> Param Champ
+%type<pV> Param
 
 
 %{
@@ -46,8 +46,7 @@ declClass : CLASS ID '(' ListParamClause ')' extendsClause constructorClause IS 
   $$ = makeTree(_CLASS,5,id,$2,$4,$6,$7,$9);}
 ;
 
-declObject : OBJECT ID IS classObjBlock { 	TreeP id = makeLeafStr(_ID, $2);
-											$$ = makeTree(DECLA_OBJECT, 2, id, $4); }
+declObject : OBJECT ID IS classObjBlock
 ;
 
 constructorClause : block		
@@ -99,18 +98,21 @@ Arg : ExprRelop					{ $$ = $1;}
 classObjBlock : '{' ListVarDef '}'   {$$ = $2;}
 ;
 
-ListVarDef : VarDef ListVarDef		{ $$ = makeTree(LIST_VAR_DEF, 2,  $1, $2);}
+ListVarDef : VarDef ListVarDef      
 | 									{ $$ = NIL(Tree);}
 ;
 
-VarDef : declMethod					{ $$ = makeTree(VAR_DEF, 1,  $1);}
-| Champ								{ $$ = makeTree(VAR_DEF, 1,  $1);}
+VarDef : declMethod				
+| Champ
 ;
 ///////////////////////////////
 
 // Declaration d'une methode //
-declMethod : Override DEF ID'(' ListParamClause ')' ':' ID AFF ExprRelop
-| Override DEF ID'(' ListParamClause ')' ClassClause IS block
+declMethod : Override DEF ID'(' ListParamClause ')' ':' ID AFF ExprRelop { TreeP id1 = makeLeafStr(_ID,$3);
+																		   TreeP id2 = makeLeafStr(_ID,$8);
+																		   $$ = makeTree(DECL_METH,3,id1,id2,$1,$5,$10);}
+| Override DEF ID'(' ListParamClause ')' ClassClause IS block            { TreeP id = makeLeafStr(_ID,$3);
+																		   $$ = makeTree(DECL_METH,4,id,$1,$5,$7,$9);}
 ;
 
 Override : OVERRIDE		{ $$ = makeLeafStr(_OVERRIDE, "override");}
@@ -123,7 +125,9 @@ ClassClause : ':' ID	{ $$ = makeLeafStr(CLASS_NAME, $2);}
 //////////////////////////////
 
 //Champ dans un objet
-Champ : VAR ID ':' ID Init ';' 	  { $$ = makeVarDeclP($2, $4);}
+Champ : VAR ID ':' ID Init ';' 	  { TreeP id1 = makeLeafStr(_ID, $2);
+									TreeP id2 = makeLeafStr(_ID, $4);
+									$$ = makeTree(I_CHAMP, 3, id1, id2, $5);}
 ;
 ////////////////////////////////
 
@@ -135,13 +139,12 @@ CallMethod : Object'.'ID'('ListArgClause')'	{ $$ = makeTree(E_CALL_METHOD, 3,  $
 
 block: '{' ListInstClause '}'	{ TreeP decls = makeLeafLVar(DECL, NIL(VarDecl));
 								  $$ = makeTree(I_BLOC, 2, decls, $2); }
-| '{' ListChamp IS ListInst '}'	{ $$ = makeTree(I_BLOC, 2, $2, $4); }
+| '{' ListChamp IS ListInst '}'	/*{ TreeP decls = makeLeafLVar(DECL, $);*/
+								/*  $$ = makeTree(I_BLOC, 2, decls, $2); }*/
 ;
 
-ListChamp : ListChamp Champ		{ TreeP list = $1;
-								ajouteParam(list, $2);
-							    $$ = list;}
-| Champ						{ $$ = makeLeafParam(LIST_PARAM, $1);}
+ListChamp : ListChamp Champ	{ $$ = makeTree(INST, 2, $1, $2);}
+| Champ						{ $$ = $1;}
 ;
 
 ListInstClause : ListInst	{ $$ = $1;}
