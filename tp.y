@@ -14,8 +14,8 @@
 %left UNAIRE
 
 %type<pT> Inst ITE RETURN cible ExprRelop Champ Expr Object Selection CallMethod Instanciation declClass declObject
-%type<pT> Cast Param ListParam ListParamClause ListArgClause Init ListInstClause ListInst ListArg Arg ClassObj
-%type<pT> listClassObj constructorClause extendsClause ListVarDef Var block Prog ListChamp Override ClassClause classObjBlock
+%type<pT> Cast Param ListParam ListParamClause ListArgClause Init ListInstClause ListInst ListArg Arg ClassObj classObjBlock
+%type<pT> listClassObj constructorClause extendsClause ListVarDef Var block Prog ListChamp Override ClassClause
 
 
 %{
@@ -40,7 +40,9 @@ ClassObj : declClass					{ $$ = makeTree(CLAS, 1, $1); }
 | declObject							{ $$ = makeTree(OBJ, 1, $1); }
 ;
 
-declClass : CLASS ID '(' ListParamClause ')' extendsClause constructorClause IS classObjBlock
+declClass : CLASS ID '(' ListParamClause ')' extendsClause constructorClause IS classObjBlock 
+{ TreeP id = makeLeafStr(_ID, $2);
+  $$ = makeTree(_CLASS,5,id,$2,$4,$6,$7,$9);}
 ;
 
 declObject : OBJECT ID IS classObjBlock
@@ -51,7 +53,7 @@ constructorClause : block
 ;
 
 ////// Parametres //////
-ListParamClause : ListParam
+ListParamClause : ListParam			{ $$ = $1;}
 | 									{ $$ = NIL(Tree);}
 ;
 
@@ -66,7 +68,7 @@ Var : VAR				{ $$ = makeLeafStr(_VAR, "var");}
 | 						{ $$ = NIL(Tree);}
 ;
 
-Init : AFF ExprRelop
+Init : AFF ExprRelop	{ $$ = $2; }
 | 						{ $$ = NIL(Tree);}
 ;
 /////////////////////////
@@ -111,8 +113,8 @@ Override : OVERRIDE		{ $$ = makeLeafStr(VAR, "ovverride");}
 | 				{ $$ = NIL(Tree);}
 ;
 
-ClassClause : ':' ID			
-| 				{ $$ = NIL(Tree);}					
+ClassClause : ':' ID	{ $$ = makeLeafStr(CLASS_NAME, $2);}
+| 						{ $$ = NIL(Tree);}					
 ;
 //////////////////////////////
 

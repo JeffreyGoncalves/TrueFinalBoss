@@ -61,6 +61,7 @@ typedef unsigned char bool;
 #define CLAS 31
 #define OBJ 32
 #define _CLASS 33
+#define CLASS_NAME 34
 
 #define PROG 100
 
