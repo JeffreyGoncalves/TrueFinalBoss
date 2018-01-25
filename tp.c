@@ -178,7 +178,7 @@ TreeP makeLeafStr(short op, char *str) {
 /* Constructeur de feuille dont la valeur est une chaine de caracteres */
 TreeP makeLeafId(short op, char* id) {
   TreeP tree = makeNode(0, op);
-  tree->u.lid.var.name = id;
+  tree->u.str = id;
   return tree;
 }
 
@@ -197,7 +197,7 @@ TreeP makeLeafLVar(short op, VarDeclP lvar) {
 }
 
 /* Constructeur de feuille dont la valeur est une declaration */
-TreeP makeLeafLparam(short op, t_varIdent* id, t_varIdent*) {
+TreeP makeLeafLparam(short op, t_varIdent* id, t_varIdent* lvar) {
   TreeP tree = makeNode(0, op);
   tree->u.lvar = lvar;
   return(tree);

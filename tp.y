@@ -13,7 +13,9 @@
 %left MUL DIV
 %left UNAIRE
 
-%type<pT> Inst ITE RETURN cible ExprRelop Champ Expr Object Selection CallMethod Instanciation Cast Param ListParam ListParamClause ListArgClause Init ListInstClause ListInst ListArg Arg listClassObj constructorClause extendsClause ListVarDef Var VAR block
+%type<pT> Inst ITE RETURN cible ExprRelop Champ Expr Object Selection CallMethod Instanciation 
+%type<pT> Cast Param ListParam ListParamClause ListArgClause Init ListInstClause ListInst ListArg Arg 
+%type<pT> listClassObj constructorClause extendsClause ListVarDef Var VAR block Prog
 
 
 %{
@@ -26,7 +28,8 @@ extern void yyerror(char *);
 
 %%
 //Structure du programme
-Prog : listClassObj block;
+Prog : listClassObj block 	{ $$ = makeTree(PROG, 2, $1, $2);}
+;	
 
 //Gestion des Objets et Classes
 listClassObj : listClassObj ClassObj
@@ -40,7 +43,8 @@ ClassObj : declClass
 declClass : CLASS ID '(' ListParamClause ')' extendsClause constructorClause IS classObjBlock
 ;
 
-declObject : OBJECT ID IS classObjBlock;
+declObject : OBJECT ID IS classObjBlock
+;
 
 constructorClause : block		
 | 
@@ -61,6 +65,7 @@ Param : Var ID':' ID Init
 Var : VAR
 | 
 ;
+
 Init : AFF ExprRelop
 | 
 ;
@@ -111,8 +116,8 @@ ClassClause : ':' ID
 //////////////////////////////
 
 //Champ dans un objet
-Champ : VAR ID ':' ID Init ';' 	{   id1 = makeLeafId(_ID, $2);
-									id2 = makeLeafId(_ID, $4);
+Champ : VAR ID ':' ID Init ';' 	{   TreeP id1 = makeLeafId(_ID, $2);
+									TreeP id2 = makeLeafId(_ID, $4);
 									$$ = makeTree(I_CHAMP, 3, id1, id2, $5);}
 ;
 ////////////////////////////////
@@ -124,13 +129,14 @@ CallMethod : Object'.'ID'('ListArgClause')'	{ $$ = makeTree(E_CALL_METHOD, 3,  $
 ;
 
 block: '{' ListInstClause '}'	{ TreeP decls = makeLeafLVar(DECL, NULL);
-								  $$ = makeTree(BLOC, 2, decls, $2); }
+								  $$ = makeTree(I_BLOC, 2, decls, $2); }
 | '{' ListChamp IS ListInst '}'	/*{ TreeP decls = makeLeafLVar(DECL, $);*/
-								/*  $$ = makeTree(BLOC, 2, decls, $2); }*/
+								/*  $$ = makeTree(I_BLOC, 2, decls, $2); }*/
 ;
 
 ListChamp : ListChamp Champ
-| Champ;
+| Champ
+;
 
 ListInstClause : ListInst	
 | 
@@ -167,7 +173,7 @@ Object : Selection		{ $$ = $1;}
 ;	
 
 
-ExprRelop : Expr RELOP Expr	{ $$ = makeExpr($2, $1, $3);}
+ExprRelop : Expr RELOP Expr	{ $$ = makeTree($2, 2, $1, $3);}
 | Expr						{ $$ = $1;}
 ;
 
@@ -177,15 +183,16 @@ Expr : Expr ADD Expr		{ $$ = makeTree(SUM, 2, $1, $3);}
 | Expr DIV Expr				{ $$ = makeTree(DIVI, 2, $1, $3);}
 | Expr '&' Expr				{ $$ = makeTree(AND, 2, $1, $3);}
 | Object					{ $$ = $1;}
-| ADD CSTE %prec UNAIRE		{ cste = makeLeafInt(CST, $2);
+| ADD CSTE %prec UNAIRE		{ TreeP cste = makeLeafInt(CST, $2);
 							  $$ = makeTree(SUM, 1, cste);	}
-| SUB CSTE %prec UNAIRE		{ cste = makeLeafInt(CST, $2);
+| SUB CSTE %prec UNAIRE		{ TreeP cste = makeLeafInt(CST, $2);
 							  $$ = makeTree(SUM, 1, cste);	}
 | '(' ExprRelop ')'	 		{ $$ = $2;}
 ;
 
 Instanciation : NEWV ID '('ListArgClause')'		{ $$ = makeTree(INST, 2, $2, $4);}
+;
 
-Cast : '('ID Object')' 	{   id = makeLeafId(_ID, $2);
-							 $$ = makeTree(CAST, 2, id, $3);}
+Cast : '('ID Object')' 	{   TreeP id = makeLeafId(_ID, $2);
+							$$ = makeTree(CAST, 2, id, $3);}
 ;

@@ -49,6 +49,7 @@ typedef unsigned char bool;
 #define I_AFF 23
 #define I_EXPRRELOP	24
 #define I_CHAMP 25
+#define PROG 100
 
 /* Codes d'erreurs. Cette liste n'est pas obligatoire ni limitative */
 #define NO_ERROR	0
@@ -77,7 +78,6 @@ typedef struct _Tree {
   union {
     char *str;      /* valeur de la feuille si op = Id ou STR */
     int val;        /* valeur de la feuille si op = Cste */
-    t_variable* lid;
     VarDeclP lvar;  /* ne pas utiliser tant qu'on n'en a pas besoin :-) */
     struct _Tree **children; /* tableau des sous-arbres */
   } u;
@@ -236,9 +236,8 @@ typedef union
 TreeP makeNode(int nbChildren, short op);
 TreeP makeTree(short op, int nbChildren, ...);
 void setChild(TreeP tree, int rank, TreeP arg);
-TreeP makeLeafStr(short op, char *str)
 t_method* makeMethod(char* name, t_class* returnType, short nbParametres, t_varIdent** parametres, int* isRedef);
-TreeP makeLeafId(short op, t_variable* id);
+TreeP makeLeafId(short op, char* id);
 TreeP makeLeafInt(short op, int val);
 TreeP makeLeafLVar(short op, VarDeclP lvar);
 TreeP makeLeafStr(short op, char *str);

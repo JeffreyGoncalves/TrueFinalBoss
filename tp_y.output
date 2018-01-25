@@ -1,4 +1,7 @@
-Grammar
+État 22 conflits: 1 réduction/réduction
+
+
+Grammaire
 
     0 $accept: Prog $end
 
@@ -65,63 +68,66 @@ Grammar
    39           | '(' ExprRelop ')' '.' ID '(' ListArgClause ')'
 
    40 block: '{' ListInstClause '}'
-   41      | '{' ListInst IS ListInst '}'
+   41      | '{' ListChamp IS ListInst '}'
 
-   42 ListInstClause: ListInst
-   43               | %empty
+   42 ListChamp: ListChamp Champ
+   43          | Champ
 
-   44 ListInst: Inst ListInst
-   45         | Inst
+   44 ListInstClause: ListInst
+   45               | %empty
 
-   46 Inst: ITE
-   47     | block
-   48     | RETURN ';'
-   49     | cible ';'
-   50     | ExprRelop ';'
-   51     | Champ
+   46 ListInst: Inst ListInst
+   47         | Inst
 
-   52 ITE: IF ExprRelop THEN Inst ELSE Inst
+   48 Inst: ITE
+   49     | block
+   50     | RETURN ';'
+   51     | cible ';'
+   52     | ExprRelop ';'
+   53     | Champ
 
-   53 cible: Object AFF ExprRelop
+   54 ITE: IF ExprRelop THEN Inst ELSE Inst
 
-   54 Selection: Object '.' ID
-   55          | '(' ExprRelop ')' '.' ID
+   55 cible: Object AFF ExprRelop
 
-   56 Object: Selection
-   57       | CallMethod
-   58       | Instanciation
-   59       | CSTE
-   60       | ID
-   61       | Cast
+   56 Selection: Object '.' ID
+   57          | '(' ExprRelop ')' '.' ID
 
-   62 ExprRelop: Expr RELOP Expr
-   63          | Expr
+   58 Object: Selection
+   59       | CallMethod
+   60       | Instanciation
+   61       | CSTE
+   62       | ID
+   63       | Cast
 
-   64 Expr: Expr ADD Expr
-   65     | Expr SUB Expr
-   66     | Expr MUL Expr
-   67     | Expr DIV Expr
-   68     | Expr '&' Expr
-   69     | Object
-   70     | ADD CSTE
-   71     | SUB CSTE
-   72     | '(' ExprRelop ')'
+   64 ExprRelop: Expr RELOP Expr
+   65          | Expr
 
-   73 Instanciation: NEWV ID '(' ListArgClause ')'
+   66 Expr: Expr ADD Expr
+   67     | Expr SUB Expr
+   68     | Expr MUL Expr
+   69     | Expr DIV Expr
+   70     | Expr '&' Expr
+   71     | Object
+   72     | ADD CSTE
+   73     | SUB CSTE
+   74     | '(' ExprRelop ')'
 
-   74 Cast: '(' ID Object ')'
+   75 Instanciation: NEWV ID '(' ListArgClause ')'
+
+   76 Cast: '(' ID Object ')'
 
 
-Terminals, with rules where they appear
+Terminaux, suivis des règles où ils apparaissent
 
 $end (0) 0
-'&' (38) 68
-'(' (40) 6 19 31 32 38 39 55 72 73 74
-')' (41) 6 19 31 32 38 39 55 72 73 74
+'&' (38) 70
+'(' (40) 6 19 31 32 38 39 57 74 75 76
+')' (41) 6 19 31 32 38 39 57 74 75 76
 ',' (44) 12 23
-'.' (46) 38 39 54 55
+'.' (46) 38 39 56 57
 ':' (58) 14 31 35 37
-';' (59) 37 48 49 50
+';' (59) 37 50 51 52
 '{' (123) 26 40 41
 '}' (125) 26 40 41
 error (256)
@@ -132,1678 +138,1707 @@ VAR (261) 15 37
 EXTENDS (262) 19
 DEF (263) 31 32
 OVERRIDE (264) 33
-IF (265) 52
-THEN (266) 52
-ELSE (267) 52
-AFF (268) 17 31 53
-RETURN (269) 48
-NEWV (270) 73
-ADD (271) 64 70
-SUB (272) 65 71
-MUL (273) 66
-DIV (274) 67
-ID (275) 6 7 14 19 31 32 35 37 38 39 54 55 60 73 74
-CSTE (276) 59 70 71
-RELOP (277) 62
+IF (265) 54
+THEN (266) 54
+ELSE (267) 54
+AFF (268) 17 31 55
+RETURN (269) 50
+NEWV (270) 75
+ADD (271) 66 72
+SUB (272) 67 73
+MUL (273) 68
+DIV (274) 69
+ID (275) 6 7 14 19 31 32 35 37 38 39 56 57 62 75 76
+CSTE (276) 61 72 73
+RELOP (277) 64
 UNAIRE (278)
 
 
-Nonterminals, with rules where they appear
+Non-terminaux, suivis des règles où ils apparaissent
 
 $accept (33)
-    on left: 0
+    à gauche: 0
 Prog (34)
-    on left: 1, on right: 0
+    à gauche: 1, à droite: 0
 listClassObj (35)
-    on left: 2 3, on right: 1 2
+    à gauche: 2 3, à droite: 1 2
 ClassObj (36)
-    on left: 4 5, on right: 2
+    à gauche: 4 5, à droite: 2
 declClass (37)
-    on left: 6, on right: 4
+    à gauche: 6, à droite: 4
 declObject (38)
-    on left: 7, on right: 5
+    à gauche: 7, à droite: 5
 constructorClause (39)
-    on left: 8 9, on right: 6
+    à gauche: 8 9, à droite: 6
 ListParamClause (40)
-    on left: 10 11, on right: 6 31 32
+    à gauche: 10 11, à droite: 6 31 32
 ListParam (41)
-    on left: 12 13, on right: 10 12
+    à gauche: 12 13, à droite: 10 12
 Param (42)
-    on left: 14, on right: 12 13
+    à gauche: 14, à droite: 12 13
 Var (43)
-    on left: 15 16, on right: 14
+    à gauche: 15 16, à droite: 14
 Init (44)
-    on left: 17 18, on right: 14 37
+    à gauche: 17 18, à droite: 14 37
 extendsClause (45)
-    on left: 19 20, on right: 6
+    à gauche: 19 20, à droite: 6
 ListArgClause (46)
-    on left: 21 22, on right: 19 38 39 73
+    à gauche: 21 22, à droite: 19 38 39 75
 ListArg (47)
-    on left: 23 24, on right: 21 23
+    à gauche: 23 24, à droite: 21 23
 Arg (48)
-    on left: 25, on right: 23 24
+    à gauche: 25, à droite: 23 24
 classObjBlock (49)
-    on left: 26, on right: 6 7
+    à gauche: 26, à droite: 6 7
 ListVarDef (50)
-    on left: 27 28, on right: 26 27
+    à gauche: 27 28, à droite: 26 27
 VarDef (51)
-    on left: 29 30, on right: 27
+    à gauche: 29 30, à droite: 27
 declMethod (52)
-    on left: 31 32, on right: 29
+    à gauche: 31 32, à droite: 29
 Override (53)
-    on left: 33 34, on right: 31 32
+    à gauche: 33 34, à droite: 31 32
 ClassClause (54)
-    on left: 35 36, on right: 32
+    à gauche: 35 36, à droite: 32
 Champ (55)
-    on left: 37, on right: 30 51
+    à gauche: 37, à droite: 30 42 43 53
 CallMethod (56)
-    on left: 38 39, on right: 57
+    à gauche: 38 39, à droite: 59
 block (57)
-    on left: 40 41, on right: 1 8 32 47
-ListInstClause (58)
-    on left: 42 43, on right: 40
-ListInst (59)
-    on left: 44 45, on right: 41 42 44
-Inst (60)
-    on left: 46 47 48 49 50 51, on right: 44 45 52
-ITE (61)
-    on left: 52, on right: 46
-cible (62)
-    on left: 53, on right: 49
-Selection (63)
-    on left: 54 55, on right: 56
-Object (64)
-    on left: 56 57 58 59 60 61, on right: 38 53 54 69 74
-ExprRelop (65)
-    on left: 62 63, on right: 17 25 31 39 50 52 53 55 72
-Expr (66)
-    on left: 64 65 66 67 68 69 70 71 72, on right: 62 63 64 65 66 67
-    68
-Instanciation (67)
-    on left: 73, on right: 58
-Cast (68)
-    on left: 74, on right: 61
+    à gauche: 40 41, à droite: 1 8 32 49
+ListChamp (58)
+    à gauche: 42 43, à droite: 41 42
+ListInstClause (59)
+    à gauche: 44 45, à droite: 40
+ListInst (60)
+    à gauche: 46 47, à droite: 41 44 46
+Inst (61)
+    à gauche: 48 49 50 51 52 53, à droite: 46 47 54
+ITE (62)
+    à gauche: 54, à droite: 48
+cible (63)
+    à gauche: 55, à droite: 51
+Selection (64)
+    à gauche: 56 57, à droite: 58
+Object (65)
+    à gauche: 58 59 60 61 62 63, à droite: 38 55 56 71 76
+ExprRelop (66)
+    à gauche: 64 65, à droite: 17 25 31 39 52 54 55 57 74
+Expr (67)
+    à gauche: 66 67 68 69 70 71 72 73 74, à droite: 64 65 66 67 68
+    69 70
+Instanciation (68)
+    à gauche: 75, à droite: 60
+Cast (69)
+    à gauche: 76, à droite: 63
 
 
-State 0
+État 0
 
     0 $accept: . Prog $end
 
-    $default  reduce using rule 3 (listClassObj)
+    $défaut  réduction par utilisation de la règle 3 (listClassObj)
 
-    Prog          go to state 1
-    listClassObj  go to state 2
+    Prog          aller à l'état 1
+    listClassObj  aller à l'état 2
 
 
-State 1
+État 1
 
     0 $accept: Prog . $end
 
-    $end  shift, and go to state 3
+    $end  décalage et aller à l'état 3
 
 
-State 2
+État 2
 
     1 Prog: listClassObj . block
     2 listClassObj: listClassObj . ClassObj
 
-    OBJECT  shift, and go to state 4
-    CLASS   shift, and go to state 5
-    '{'     shift, and go to state 6
+    OBJECT  décalage et aller à l'état 4
+    CLASS   décalage et aller à l'état 5
+    '{'     décalage et aller à l'état 6
 
-    ClassObj    go to state 7
-    declClass   go to state 8
-    declObject  go to state 9
-    block       go to state 10
+    ClassObj    aller à l'état 7
+    declClass   aller à l'état 8
+    declObject  aller à l'état 9
+    block       aller à l'état 10
 
 
-State 3
+État 3
 
     0 $accept: Prog $end .
 
-    $default  accept
+    $défaut  accepter
 
 
-State 4
+État 4
 
     7 declObject: OBJECT . ID IS classObjBlock
 
-    ID  shift, and go to state 11
+    ID  décalage et aller à l'état 11
 
 
-State 5
+État 5
 
     6 declClass: CLASS . ID '(' ListParamClause ')' extendsClause constructorClause IS classObjBlock
 
-    ID  shift, and go to state 12
+    ID  décalage et aller à l'état 12
 
 
-State 6
+État 6
 
    40 block: '{' . ListInstClause '}'
-   41      | '{' . ListInst IS ListInst '}'
+   41      | '{' . ListChamp IS ListInst '}'
 
-    VAR     shift, and go to state 13
-    IF      shift, and go to state 14
-    RETURN  shift, and go to state 15
-    NEWV    shift, and go to state 16
-    '('     shift, and go to state 17
-    '{'     shift, and go to state 6
-    ADD     shift, and go to state 18
-    SUB     shift, and go to state 19
-    ID      shift, and go to state 20
-    CSTE    shift, and go to state 21
+    VAR     décalage et aller à l'état 13
+    IF      décalage et aller à l'état 14
+    RETURN  décalage et aller à l'état 15
+    NEWV    décalage et aller à l'état 16
+    '('     décalage et aller à l'état 17
+    '{'     décalage et aller à l'état 6
+    ADD     décalage et aller à l'état 18
+    SUB     décalage et aller à l'état 19
+    ID      décalage et aller à l'état 20
+    CSTE    décalage et aller à l'état 21
 
-    $default  reduce using rule 43 (ListInstClause)
+    $défaut  réduction par utilisation de la règle 45 (ListInstClause)
 
-    Champ           go to state 22
-    CallMethod      go to state 23
-    block           go to state 24
-    ListInstClause  go to state 25
-    ListInst        go to state 26
-    Inst            go to state 27
-    ITE             go to state 28
-    cible           go to state 29
-    Selection       go to state 30
-    Object          go to state 31
-    ExprRelop       go to state 32
-    Expr            go to state 33
-    Instanciation   go to state 34
-    Cast            go to state 35
+    Champ           aller à l'état 22
+    CallMethod      aller à l'état 23
+    block           aller à l'état 24
+    ListChamp       aller à l'état 25
+    ListInstClause  aller à l'état 26
+    ListInst        aller à l'état 27
+    Inst            aller à l'état 28
+    ITE             aller à l'état 29
+    cible           aller à l'état 30
+    Selection       aller à l'état 31
+    Object          aller à l'état 32
+    ExprRelop       aller à l'état 33
+    Expr            aller à l'état 34
+    Instanciation   aller à l'état 35
+    Cast            aller à l'état 36
 
 
-State 7
+État 7
 
     2 listClassObj: listClassObj ClassObj .
 
-    $default  reduce using rule 2 (listClassObj)
+    $défaut  réduction par utilisation de la règle 2 (listClassObj)
 
 
-State 8
+État 8
 
     4 ClassObj: declClass .
 
-    $default  reduce using rule 4 (ClassObj)
+    $défaut  réduction par utilisation de la règle 4 (ClassObj)
 
 
-State 9
+État 9
 
     5 ClassObj: declObject .
 
-    $default  reduce using rule 5 (ClassObj)
+    $défaut  réduction par utilisation de la règle 5 (ClassObj)
 
 
-State 10
+État 10
 
     1 Prog: listClassObj block .
 
-    $default  reduce using rule 1 (Prog)
+    $défaut  réduction par utilisation de la règle 1 (Prog)
 
 
-State 11
+État 11
 
     7 declObject: OBJECT ID . IS classObjBlock
 
-    IS  shift, and go to state 36
+    IS  décalage et aller à l'état 37
 
 
-State 12
+État 12
 
     6 declClass: CLASS ID . '(' ListParamClause ')' extendsClause constructorClause IS classObjBlock
 
-    '('  shift, and go to state 37
+    '('  décalage et aller à l'état 38
 
 
-State 13
+État 13
 
    37 Champ: VAR . ID ':' ID Init ';'
 
-    ID  shift, and go to state 38
+    ID  décalage et aller à l'état 39
 
 
-State 14
+État 14
 
-   52 ITE: IF . ExprRelop THEN Inst ELSE Inst
+   54 ITE: IF . ExprRelop THEN Inst ELSE Inst
 
-    NEWV  shift, and go to state 16
-    '('   shift, and go to state 17
-    ADD   shift, and go to state 18
-    SUB   shift, and go to state 19
-    ID    shift, and go to state 20
-    CSTE  shift, and go to state 21
+    NEWV  décalage et aller à l'état 16
+    '('   décalage et aller à l'état 17
+    ADD   décalage et aller à l'état 18
+    SUB   décalage et aller à l'état 19
+    ID    décalage et aller à l'état 20
+    CSTE  décalage et aller à l'état 21
 
-    CallMethod     go to state 23
-    Selection      go to state 30
-    Object         go to state 39
-    ExprRelop      go to state 40
-    Expr           go to state 33
-    Instanciation  go to state 34
-    Cast           go to state 35
-
-
-State 15
-
-   48 Inst: RETURN . ';'
-
-    ';'  shift, and go to state 41
+    CallMethod     aller à l'état 23
+    Selection      aller à l'état 31
+    Object         aller à l'état 40
+    ExprRelop      aller à l'état 41
+    Expr           aller à l'état 34
+    Instanciation  aller à l'état 35
+    Cast           aller à l'état 36
 
 
-State 16
+État 15
 
-   73 Instanciation: NEWV . ID '(' ListArgClause ')'
+   50 Inst: RETURN . ';'
 
-    ID  shift, and go to state 42
+    ';'  décalage et aller à l'état 42
 
 
-State 17
+État 16
+
+   75 Instanciation: NEWV . ID '(' ListArgClause ')'
+
+    ID  décalage et aller à l'état 43
+
+
+État 17
 
    39 CallMethod: '(' . ExprRelop ')' '.' ID '(' ListArgClause ')'
-   55 Selection: '(' . ExprRelop ')' '.' ID
-   72 Expr: '(' . ExprRelop ')'
-   74 Cast: '(' . ID Object ')'
+   57 Selection: '(' . ExprRelop ')' '.' ID
+   74 Expr: '(' . ExprRelop ')'
+   76 Cast: '(' . ID Object ')'
 
-    NEWV  shift, and go to state 16
-    '('   shift, and go to state 17
-    ADD   shift, and go to state 18
-    SUB   shift, and go to state 19
-    ID    shift, and go to state 43
-    CSTE  shift, and go to state 21
+    NEWV  décalage et aller à l'état 16
+    '('   décalage et aller à l'état 17
+    ADD   décalage et aller à l'état 18
+    SUB   décalage et aller à l'état 19
+    ID    décalage et aller à l'état 44
+    CSTE  décalage et aller à l'état 21
 
-    CallMethod     go to state 23
-    Selection      go to state 30
-    Object         go to state 39
-    ExprRelop      go to state 44
-    Expr           go to state 33
-    Instanciation  go to state 34
-    Cast           go to state 35
-
-
-State 18
-
-   70 Expr: ADD . CSTE
-
-    CSTE  shift, and go to state 45
+    CallMethod     aller à l'état 23
+    Selection      aller à l'état 31
+    Object         aller à l'état 40
+    ExprRelop      aller à l'état 45
+    Expr           aller à l'état 34
+    Instanciation  aller à l'état 35
+    Cast           aller à l'état 36
 
 
-State 19
+État 18
 
-   71 Expr: SUB . CSTE
+   72 Expr: ADD . CSTE
 
-    CSTE  shift, and go to state 46
-
-
-State 20
-
-   60 Object: ID .
-
-    $default  reduce using rule 60 (Object)
+    CSTE  décalage et aller à l'état 46
 
 
-State 21
+État 19
 
-   59 Object: CSTE .
+   73 Expr: SUB . CSTE
 
-    $default  reduce using rule 59 (Object)
-
-
-State 22
-
-   51 Inst: Champ .
-
-    $default  reduce using rule 51 (Inst)
+    CSTE  décalage et aller à l'état 47
 
 
-State 23
+État 20
 
-   57 Object: CallMethod .
+   62 Object: ID .
 
-    $default  reduce using rule 57 (Object)
-
-
-State 24
-
-   47 Inst: block .
-
-    $default  reduce using rule 47 (Inst)
+    $défaut  réduction par utilisation de la règle 62 (Object)
 
 
-State 25
+État 21
+
+   61 Object: CSTE .
+
+    $défaut  réduction par utilisation de la règle 61 (Object)
+
+
+État 22
+
+   43 ListChamp: Champ .
+   53 Inst: Champ .
+
+    IS        réduction par utilisation de la règle 43 (ListChamp)
+    VAR       réduction par utilisation de la règle 43 (ListChamp)
+    VAR       [réduction par utilisation de la règle 53 (Inst)]
+    $défaut  réduction par utilisation de la règle 53 (Inst)
+
+
+État 23
+
+   59 Object: CallMethod .
+
+    $défaut  réduction par utilisation de la règle 59 (Object)
+
+
+État 24
+
+   49 Inst: block .
+
+    $défaut  réduction par utilisation de la règle 49 (Inst)
+
+
+État 25
+
+   41 block: '{' ListChamp . IS ListInst '}'
+   42 ListChamp: ListChamp . Champ
+
+    IS   décalage et aller à l'état 48
+    VAR  décalage et aller à l'état 13
+
+    Champ  aller à l'état 49
+
+
+État 26
 
    40 block: '{' ListInstClause . '}'
 
-    '}'  shift, and go to state 47
+    '}'  décalage et aller à l'état 50
 
 
-State 26
+État 27
 
-   41 block: '{' ListInst . IS ListInst '}'
-   42 ListInstClause: ListInst .
+   44 ListInstClause: ListInst .
 
-    IS  shift, and go to state 48
-
-    $default  reduce using rule 42 (ListInstClause)
+    $défaut  réduction par utilisation de la règle 44 (ListInstClause)
 
 
-State 27
+État 28
 
-   44 ListInst: Inst . ListInst
-   45         | Inst .
+   46 ListInst: Inst . ListInst
+   47         | Inst .
 
-    VAR     shift, and go to state 13
-    IF      shift, and go to state 14
-    RETURN  shift, and go to state 15
-    NEWV    shift, and go to state 16
-    '('     shift, and go to state 17
-    '{'     shift, and go to state 6
-    ADD     shift, and go to state 18
-    SUB     shift, and go to state 19
-    ID      shift, and go to state 20
-    CSTE    shift, and go to state 21
+    VAR     décalage et aller à l'état 13
+    IF      décalage et aller à l'état 14
+    RETURN  décalage et aller à l'état 15
+    NEWV    décalage et aller à l'état 16
+    '('     décalage et aller à l'état 17
+    '{'     décalage et aller à l'état 6
+    ADD     décalage et aller à l'état 18
+    SUB     décalage et aller à l'état 19
+    ID      décalage et aller à l'état 20
+    CSTE    décalage et aller à l'état 21
 
-    $default  reduce using rule 45 (ListInst)
+    $défaut  réduction par utilisation de la règle 47 (ListInst)
 
-    Champ          go to state 22
-    CallMethod     go to state 23
-    block          go to state 24
-    ListInst       go to state 49
-    Inst           go to state 27
-    ITE            go to state 28
-    cible          go to state 29
-    Selection      go to state 30
-    Object         go to state 31
-    ExprRelop      go to state 32
-    Expr           go to state 33
-    Instanciation  go to state 34
-    Cast           go to state 35
-
-
-State 28
-
-   46 Inst: ITE .
-
-    $default  reduce using rule 46 (Inst)
+    Champ          aller à l'état 51
+    CallMethod     aller à l'état 23
+    block          aller à l'état 24
+    ListInst       aller à l'état 52
+    Inst           aller à l'état 28
+    ITE            aller à l'état 29
+    cible          aller à l'état 30
+    Selection      aller à l'état 31
+    Object         aller à l'état 32
+    ExprRelop      aller à l'état 33
+    Expr           aller à l'état 34
+    Instanciation  aller à l'état 35
+    Cast           aller à l'état 36
 
 
-State 29
+État 29
 
-   49 Inst: cible . ';'
+   48 Inst: ITE .
 
-    ';'  shift, and go to state 50
-
-
-State 30
-
-   56 Object: Selection .
-
-    $default  reduce using rule 56 (Object)
+    $défaut  réduction par utilisation de la règle 48 (Inst)
 
 
-State 31
+État 30
+
+   51 Inst: cible . ';'
+
+    ';'  décalage et aller à l'état 53
+
+
+État 31
+
+   58 Object: Selection .
+
+    $défaut  réduction par utilisation de la règle 58 (Object)
+
+
+État 32
 
    38 CallMethod: Object . '.' ID '(' ListArgClause ')'
-   53 cible: Object . AFF ExprRelop
-   54 Selection: Object . '.' ID
-   69 Expr: Object .
+   55 cible: Object . AFF ExprRelop
+   56 Selection: Object . '.' ID
+   71 Expr: Object .
 
-    AFF  shift, and go to state 51
-    '.'  shift, and go to state 52
+    AFF  décalage et aller à l'état 54
+    '.'  décalage et aller à l'état 55
 
-    $default  reduce using rule 69 (Expr)
-
-
-State 32
-
-   50 Inst: ExprRelop . ';'
-
-    ';'  shift, and go to state 53
+    $défaut  réduction par utilisation de la règle 71 (Expr)
 
 
-State 33
+État 33
 
-   62 ExprRelop: Expr . RELOP Expr
-   63          | Expr .
-   64 Expr: Expr . ADD Expr
-   65     | Expr . SUB Expr
-   66     | Expr . MUL Expr
-   67     | Expr . DIV Expr
-   68     | Expr . '&' Expr
+   52 Inst: ExprRelop . ';'
 
-    '&'    shift, and go to state 54
-    ADD    shift, and go to state 55
-    SUB    shift, and go to state 56
-    MUL    shift, and go to state 57
-    DIV    shift, and go to state 58
-    RELOP  shift, and go to state 59
-
-    $default  reduce using rule 63 (ExprRelop)
+    ';'  décalage et aller à l'état 56
 
 
-State 34
+État 34
 
-   58 Object: Instanciation .
+   64 ExprRelop: Expr . RELOP Expr
+   65          | Expr .
+   66 Expr: Expr . ADD Expr
+   67     | Expr . SUB Expr
+   68     | Expr . MUL Expr
+   69     | Expr . DIV Expr
+   70     | Expr . '&' Expr
 
-    $default  reduce using rule 58 (Object)
+    '&'    décalage et aller à l'état 57
+    ADD    décalage et aller à l'état 58
+    SUB    décalage et aller à l'état 59
+    MUL    décalage et aller à l'état 60
+    DIV    décalage et aller à l'état 61
+    RELOP  décalage et aller à l'état 62
+
+    $défaut  réduction par utilisation de la règle 65 (ExprRelop)
 
 
-State 35
+État 35
 
-   61 Object: Cast .
+   60 Object: Instanciation .
 
-    $default  reduce using rule 61 (Object)
+    $défaut  réduction par utilisation de la règle 60 (Object)
 
 
-State 36
+État 36
+
+   63 Object: Cast .
+
+    $défaut  réduction par utilisation de la règle 63 (Object)
+
+
+État 37
 
     7 declObject: OBJECT ID IS . classObjBlock
 
-    '{'  shift, and go to state 60
+    '{'  décalage et aller à l'état 63
 
-    classObjBlock  go to state 61
+    classObjBlock  aller à l'état 64
 
 
-State 37
+État 38
 
     6 declClass: CLASS ID '(' . ListParamClause ')' extendsClause constructorClause IS classObjBlock
 
-    VAR  shift, and go to state 62
+    VAR  décalage et aller à l'état 65
 
-    ID        reduce using rule 16 (Var)
-    $default  reduce using rule 11 (ListParamClause)
+    ID        réduction par utilisation de la règle 16 (Var)
+    $défaut  réduction par utilisation de la règle 11 (ListParamClause)
 
-    ListParamClause  go to state 63
-    ListParam        go to state 64
-    Param            go to state 65
-    Var              go to state 66
+    ListParamClause  aller à l'état 66
+    ListParam        aller à l'état 67
+    Param            aller à l'état 68
+    Var              aller à l'état 69
 
 
-State 38
+État 39
 
    37 Champ: VAR ID . ':' ID Init ';'
 
-    ':'  shift, and go to state 67
+    ':'  décalage et aller à l'état 70
 
 
-State 39
+État 40
 
    38 CallMethod: Object . '.' ID '(' ListArgClause ')'
-   54 Selection: Object . '.' ID
-   69 Expr: Object .
+   56 Selection: Object . '.' ID
+   71 Expr: Object .
 
-    '.'  shift, and go to state 52
+    '.'  décalage et aller à l'état 55
 
-    $default  reduce using rule 69 (Expr)
-
-
-State 40
-
-   52 ITE: IF ExprRelop . THEN Inst ELSE Inst
-
-    THEN  shift, and go to state 68
+    $défaut  réduction par utilisation de la règle 71 (Expr)
 
 
-State 41
+État 41
 
-   48 Inst: RETURN ';' .
+   54 ITE: IF ExprRelop . THEN Inst ELSE Inst
 
-    $default  reduce using rule 48 (Inst)
-
-
-State 42
-
-   73 Instanciation: NEWV ID . '(' ListArgClause ')'
-
-    '('  shift, and go to state 69
+    THEN  décalage et aller à l'état 71
 
 
-State 43
+État 42
 
-   60 Object: ID .
-   74 Cast: '(' ID . Object ')'
+   50 Inst: RETURN ';' .
 
-    NEWV  shift, and go to state 16
-    '('   shift, and go to state 70
-    ID    shift, and go to state 20
-    CSTE  shift, and go to state 21
-
-    $default  reduce using rule 60 (Object)
-
-    CallMethod     go to state 23
-    Selection      go to state 30
-    Object         go to state 71
-    Instanciation  go to state 34
-    Cast           go to state 35
+    $défaut  réduction par utilisation de la règle 50 (Inst)
 
 
-State 44
+État 43
+
+   75 Instanciation: NEWV ID . '(' ListArgClause ')'
+
+    '('  décalage et aller à l'état 72
+
+
+État 44
+
+   62 Object: ID .
+   76 Cast: '(' ID . Object ')'
+
+    NEWV  décalage et aller à l'état 16
+    '('   décalage et aller à l'état 73
+    ID    décalage et aller à l'état 20
+    CSTE  décalage et aller à l'état 21
+
+    $défaut  réduction par utilisation de la règle 62 (Object)
+
+    CallMethod     aller à l'état 23
+    Selection      aller à l'état 31
+    Object         aller à l'état 74
+    Instanciation  aller à l'état 35
+    Cast           aller à l'état 36
+
+
+État 45
 
    39 CallMethod: '(' ExprRelop . ')' '.' ID '(' ListArgClause ')'
-   55 Selection: '(' ExprRelop . ')' '.' ID
-   72 Expr: '(' ExprRelop . ')'
+   57 Selection: '(' ExprRelop . ')' '.' ID
+   74 Expr: '(' ExprRelop . ')'
 
-    ')'  shift, and go to state 72
-
-
-State 45
-
-   70 Expr: ADD CSTE .
-
-    $default  reduce using rule 70 (Expr)
+    ')'  décalage et aller à l'état 75
 
 
-State 46
+État 46
 
-   71 Expr: SUB CSTE .
+   72 Expr: ADD CSTE .
 
-    $default  reduce using rule 71 (Expr)
+    $défaut  réduction par utilisation de la règle 72 (Expr)
 
 
-State 47
+État 47
+
+   73 Expr: SUB CSTE .
+
+    $défaut  réduction par utilisation de la règle 73 (Expr)
+
+
+État 48
+
+   41 block: '{' ListChamp IS . ListInst '}'
+
+    VAR     décalage et aller à l'état 13
+    IF      décalage et aller à l'état 14
+    RETURN  décalage et aller à l'état 15
+    NEWV    décalage et aller à l'état 16
+    '('     décalage et aller à l'état 17
+    '{'     décalage et aller à l'état 6
+    ADD     décalage et aller à l'état 18
+    SUB     décalage et aller à l'état 19
+    ID      décalage et aller à l'état 20
+    CSTE    décalage et aller à l'état 21
+
+    Champ          aller à l'état 51
+    CallMethod     aller à l'état 23
+    block          aller à l'état 24
+    ListInst       aller à l'état 76
+    Inst           aller à l'état 28
+    ITE            aller à l'état 29
+    cible          aller à l'état 30
+    Selection      aller à l'état 31
+    Object         aller à l'état 32
+    ExprRelop      aller à l'état 33
+    Expr           aller à l'état 34
+    Instanciation  aller à l'état 35
+    Cast           aller à l'état 36
+
+
+État 49
+
+   42 ListChamp: ListChamp Champ .
+
+    $défaut  réduction par utilisation de la règle 42 (ListChamp)
+
+
+État 50
 
    40 block: '{' ListInstClause '}' .
 
-    $default  reduce using rule 40 (block)
+    $défaut  réduction par utilisation de la règle 40 (block)
 
 
-State 48
+État 51
 
-   41 block: '{' ListInst IS . ListInst '}'
+   53 Inst: Champ .
 
-    VAR     shift, and go to state 13
-    IF      shift, and go to state 14
-    RETURN  shift, and go to state 15
-    NEWV    shift, and go to state 16
-    '('     shift, and go to state 17
-    '{'     shift, and go to state 6
-    ADD     shift, and go to state 18
-    SUB     shift, and go to state 19
-    ID      shift, and go to state 20
-    CSTE    shift, and go to state 21
-
-    Champ          go to state 22
-    CallMethod     go to state 23
-    block          go to state 24
-    ListInst       go to state 73
-    Inst           go to state 27
-    ITE            go to state 28
-    cible          go to state 29
-    Selection      go to state 30
-    Object         go to state 31
-    ExprRelop      go to state 32
-    Expr           go to state 33
-    Instanciation  go to state 34
-    Cast           go to state 35
+    $défaut  réduction par utilisation de la règle 53 (Inst)
 
 
-State 49
+État 52
 
-   44 ListInst: Inst ListInst .
+   46 ListInst: Inst ListInst .
 
-    $default  reduce using rule 44 (ListInst)
-
-
-State 50
-
-   49 Inst: cible ';' .
-
-    $default  reduce using rule 49 (Inst)
+    $défaut  réduction par utilisation de la règle 46 (ListInst)
 
 
-State 51
+État 53
 
-   53 cible: Object AFF . ExprRelop
+   51 Inst: cible ';' .
 
-    NEWV  shift, and go to state 16
-    '('   shift, and go to state 17
-    ADD   shift, and go to state 18
-    SUB   shift, and go to state 19
-    ID    shift, and go to state 20
-    CSTE  shift, and go to state 21
-
-    CallMethod     go to state 23
-    Selection      go to state 30
-    Object         go to state 39
-    ExprRelop      go to state 74
-    Expr           go to state 33
-    Instanciation  go to state 34
-    Cast           go to state 35
+    $défaut  réduction par utilisation de la règle 51 (Inst)
 
 
-State 52
+État 54
+
+   55 cible: Object AFF . ExprRelop
+
+    NEWV  décalage et aller à l'état 16
+    '('   décalage et aller à l'état 17
+    ADD   décalage et aller à l'état 18
+    SUB   décalage et aller à l'état 19
+    ID    décalage et aller à l'état 20
+    CSTE  décalage et aller à l'état 21
+
+    CallMethod     aller à l'état 23
+    Selection      aller à l'état 31
+    Object         aller à l'état 40
+    ExprRelop      aller à l'état 77
+    Expr           aller à l'état 34
+    Instanciation  aller à l'état 35
+    Cast           aller à l'état 36
+
+
+État 55
 
    38 CallMethod: Object '.' . ID '(' ListArgClause ')'
-   54 Selection: Object '.' . ID
+   56 Selection: Object '.' . ID
 
-    ID  shift, and go to state 75
-
-
-State 53
-
-   50 Inst: ExprRelop ';' .
-
-    $default  reduce using rule 50 (Inst)
+    ID  décalage et aller à l'état 78
 
 
-State 54
+État 56
 
-   68 Expr: Expr '&' . Expr
+   52 Inst: ExprRelop ';' .
 
-    NEWV  shift, and go to state 16
-    '('   shift, and go to state 17
-    ADD   shift, and go to state 18
-    SUB   shift, and go to state 19
-    ID    shift, and go to state 20
-    CSTE  shift, and go to state 21
-
-    CallMethod     go to state 23
-    Selection      go to state 30
-    Object         go to state 39
-    Expr           go to state 76
-    Instanciation  go to state 34
-    Cast           go to state 35
+    $défaut  réduction par utilisation de la règle 52 (Inst)
 
 
-State 55
+État 57
 
-   64 Expr: Expr ADD . Expr
+   70 Expr: Expr '&' . Expr
 
-    NEWV  shift, and go to state 16
-    '('   shift, and go to state 17
-    ADD   shift, and go to state 18
-    SUB   shift, and go to state 19
-    ID    shift, and go to state 20
-    CSTE  shift, and go to state 21
+    NEWV  décalage et aller à l'état 16
+    '('   décalage et aller à l'état 17
+    ADD   décalage et aller à l'état 18
+    SUB   décalage et aller à l'état 19
+    ID    décalage et aller à l'état 20
+    CSTE  décalage et aller à l'état 21
 
-    CallMethod     go to state 23
-    Selection      go to state 30
-    Object         go to state 39
-    Expr           go to state 77
-    Instanciation  go to state 34
-    Cast           go to state 35
-
-
-State 56
-
-   65 Expr: Expr SUB . Expr
-
-    NEWV  shift, and go to state 16
-    '('   shift, and go to state 17
-    ADD   shift, and go to state 18
-    SUB   shift, and go to state 19
-    ID    shift, and go to state 20
-    CSTE  shift, and go to state 21
-
-    CallMethod     go to state 23
-    Selection      go to state 30
-    Object         go to state 39
-    Expr           go to state 78
-    Instanciation  go to state 34
-    Cast           go to state 35
+    CallMethod     aller à l'état 23
+    Selection      aller à l'état 31
+    Object         aller à l'état 40
+    Expr           aller à l'état 79
+    Instanciation  aller à l'état 35
+    Cast           aller à l'état 36
 
 
-State 57
+État 58
 
-   66 Expr: Expr MUL . Expr
+   66 Expr: Expr ADD . Expr
 
-    NEWV  shift, and go to state 16
-    '('   shift, and go to state 17
-    ADD   shift, and go to state 18
-    SUB   shift, and go to state 19
-    ID    shift, and go to state 20
-    CSTE  shift, and go to state 21
+    NEWV  décalage et aller à l'état 16
+    '('   décalage et aller à l'état 17
+    ADD   décalage et aller à l'état 18
+    SUB   décalage et aller à l'état 19
+    ID    décalage et aller à l'état 20
+    CSTE  décalage et aller à l'état 21
 
-    CallMethod     go to state 23
-    Selection      go to state 30
-    Object         go to state 39
-    Expr           go to state 79
-    Instanciation  go to state 34
-    Cast           go to state 35
-
-
-State 58
-
-   67 Expr: Expr DIV . Expr
-
-    NEWV  shift, and go to state 16
-    '('   shift, and go to state 17
-    ADD   shift, and go to state 18
-    SUB   shift, and go to state 19
-    ID    shift, and go to state 20
-    CSTE  shift, and go to state 21
-
-    CallMethod     go to state 23
-    Selection      go to state 30
-    Object         go to state 39
-    Expr           go to state 80
-    Instanciation  go to state 34
-    Cast           go to state 35
+    CallMethod     aller à l'état 23
+    Selection      aller à l'état 31
+    Object         aller à l'état 40
+    Expr           aller à l'état 80
+    Instanciation  aller à l'état 35
+    Cast           aller à l'état 36
 
 
-State 59
+État 59
 
-   62 ExprRelop: Expr RELOP . Expr
+   67 Expr: Expr SUB . Expr
 
-    NEWV  shift, and go to state 16
-    '('   shift, and go to state 17
-    ADD   shift, and go to state 18
-    SUB   shift, and go to state 19
-    ID    shift, and go to state 20
-    CSTE  shift, and go to state 21
+    NEWV  décalage et aller à l'état 16
+    '('   décalage et aller à l'état 17
+    ADD   décalage et aller à l'état 18
+    SUB   décalage et aller à l'état 19
+    ID    décalage et aller à l'état 20
+    CSTE  décalage et aller à l'état 21
 
-    CallMethod     go to state 23
-    Selection      go to state 30
-    Object         go to state 39
-    Expr           go to state 81
-    Instanciation  go to state 34
-    Cast           go to state 35
+    CallMethod     aller à l'état 23
+    Selection      aller à l'état 31
+    Object         aller à l'état 40
+    Expr           aller à l'état 81
+    Instanciation  aller à l'état 35
+    Cast           aller à l'état 36
 
 
-State 60
+État 60
+
+   68 Expr: Expr MUL . Expr
+
+    NEWV  décalage et aller à l'état 16
+    '('   décalage et aller à l'état 17
+    ADD   décalage et aller à l'état 18
+    SUB   décalage et aller à l'état 19
+    ID    décalage et aller à l'état 20
+    CSTE  décalage et aller à l'état 21
+
+    CallMethod     aller à l'état 23
+    Selection      aller à l'état 31
+    Object         aller à l'état 40
+    Expr           aller à l'état 82
+    Instanciation  aller à l'état 35
+    Cast           aller à l'état 36
+
+
+État 61
+
+   69 Expr: Expr DIV . Expr
+
+    NEWV  décalage et aller à l'état 16
+    '('   décalage et aller à l'état 17
+    ADD   décalage et aller à l'état 18
+    SUB   décalage et aller à l'état 19
+    ID    décalage et aller à l'état 20
+    CSTE  décalage et aller à l'état 21
+
+    CallMethod     aller à l'état 23
+    Selection      aller à l'état 31
+    Object         aller à l'état 40
+    Expr           aller à l'état 83
+    Instanciation  aller à l'état 35
+    Cast           aller à l'état 36
+
+
+État 62
+
+   64 ExprRelop: Expr RELOP . Expr
+
+    NEWV  décalage et aller à l'état 16
+    '('   décalage et aller à l'état 17
+    ADD   décalage et aller à l'état 18
+    SUB   décalage et aller à l'état 19
+    ID    décalage et aller à l'état 20
+    CSTE  décalage et aller à l'état 21
+
+    CallMethod     aller à l'état 23
+    Selection      aller à l'état 31
+    Object         aller à l'état 40
+    Expr           aller à l'état 84
+    Instanciation  aller à l'état 35
+    Cast           aller à l'état 36
+
+
+État 63
 
    26 classObjBlock: '{' . ListVarDef '}'
 
-    VAR       shift, and go to state 13
-    OVERRIDE  shift, and go to state 82
+    VAR       décalage et aller à l'état 13
+    OVERRIDE  décalage et aller à l'état 85
 
-    DEF       reduce using rule 34 (Override)
-    $default  reduce using rule 28 (ListVarDef)
+    DEF       réduction par utilisation de la règle 34 (Override)
+    $défaut  réduction par utilisation de la règle 28 (ListVarDef)
 
-    ListVarDef  go to state 83
-    VarDef      go to state 84
-    declMethod  go to state 85
-    Override    go to state 86
-    Champ       go to state 87
+    ListVarDef  aller à l'état 86
+    VarDef      aller à l'état 87
+    declMethod  aller à l'état 88
+    Override    aller à l'état 89
+    Champ       aller à l'état 90
 
 
-State 61
+État 64
 
     7 declObject: OBJECT ID IS classObjBlock .
 
-    $default  reduce using rule 7 (declObject)
+    $défaut  réduction par utilisation de la règle 7 (declObject)
 
 
-State 62
+État 65
 
    15 Var: VAR .
 
-    $default  reduce using rule 15 (Var)
+    $défaut  réduction par utilisation de la règle 15 (Var)
 
 
-State 63
+État 66
 
     6 declClass: CLASS ID '(' ListParamClause . ')' extendsClause constructorClause IS classObjBlock
 
-    ')'  shift, and go to state 88
+    ')'  décalage et aller à l'état 91
 
 
-State 64
+État 67
 
    10 ListParamClause: ListParam .
 
-    $default  reduce using rule 10 (ListParamClause)
+    $défaut  réduction par utilisation de la règle 10 (ListParamClause)
 
 
-State 65
+État 68
 
    12 ListParam: Param . ',' ListParam
    13          | Param .
 
-    ','  shift, and go to state 89
+    ','  décalage et aller à l'état 92
 
-    $default  reduce using rule 13 (ListParam)
+    $défaut  réduction par utilisation de la règle 13 (ListParam)
 
 
-State 66
+État 69
 
    14 Param: Var . ID ':' ID Init
 
-    ID  shift, and go to state 90
+    ID  décalage et aller à l'état 93
 
 
-State 67
+État 70
 
    37 Champ: VAR ID ':' . ID Init ';'
 
-    ID  shift, and go to state 91
+    ID  décalage et aller à l'état 94
 
 
-State 68
+État 71
 
-   52 ITE: IF ExprRelop THEN . Inst ELSE Inst
+   54 ITE: IF ExprRelop THEN . Inst ELSE Inst
 
-    VAR     shift, and go to state 13
-    IF      shift, and go to state 14
-    RETURN  shift, and go to state 15
-    NEWV    shift, and go to state 16
-    '('     shift, and go to state 17
-    '{'     shift, and go to state 6
-    ADD     shift, and go to state 18
-    SUB     shift, and go to state 19
-    ID      shift, and go to state 20
-    CSTE    shift, and go to state 21
+    VAR     décalage et aller à l'état 13
+    IF      décalage et aller à l'état 14
+    RETURN  décalage et aller à l'état 15
+    NEWV    décalage et aller à l'état 16
+    '('     décalage et aller à l'état 17
+    '{'     décalage et aller à l'état 6
+    ADD     décalage et aller à l'état 18
+    SUB     décalage et aller à l'état 19
+    ID      décalage et aller à l'état 20
+    CSTE    décalage et aller à l'état 21
 
-    Champ          go to state 22
-    CallMethod     go to state 23
-    block          go to state 24
-    Inst           go to state 92
-    ITE            go to state 28
-    cible          go to state 29
-    Selection      go to state 30
-    Object         go to state 31
-    ExprRelop      go to state 32
-    Expr           go to state 33
-    Instanciation  go to state 34
-    Cast           go to state 35
-
-
-State 69
-
-   73 Instanciation: NEWV ID '(' . ListArgClause ')'
-
-    NEWV  shift, and go to state 16
-    '('   shift, and go to state 17
-    ADD   shift, and go to state 18
-    SUB   shift, and go to state 19
-    ID    shift, and go to state 20
-    CSTE  shift, and go to state 21
-
-    $default  reduce using rule 22 (ListArgClause)
-
-    ListArgClause  go to state 93
-    ListArg        go to state 94
-    Arg            go to state 95
-    CallMethod     go to state 23
-    Selection      go to state 30
-    Object         go to state 39
-    ExprRelop      go to state 96
-    Expr           go to state 33
-    Instanciation  go to state 34
-    Cast           go to state 35
+    Champ          aller à l'état 51
+    CallMethod     aller à l'état 23
+    block          aller à l'état 24
+    Inst           aller à l'état 95
+    ITE            aller à l'état 29
+    cible          aller à l'état 30
+    Selection      aller à l'état 31
+    Object         aller à l'état 32
+    ExprRelop      aller à l'état 33
+    Expr           aller à l'état 34
+    Instanciation  aller à l'état 35
+    Cast           aller à l'état 36
 
 
-State 70
+État 72
+
+   75 Instanciation: NEWV ID '(' . ListArgClause ')'
+
+    NEWV  décalage et aller à l'état 16
+    '('   décalage et aller à l'état 17
+    ADD   décalage et aller à l'état 18
+    SUB   décalage et aller à l'état 19
+    ID    décalage et aller à l'état 20
+    CSTE  décalage et aller à l'état 21
+
+    $défaut  réduction par utilisation de la règle 22 (ListArgClause)
+
+    ListArgClause  aller à l'état 96
+    ListArg        aller à l'état 97
+    Arg            aller à l'état 98
+    CallMethod     aller à l'état 23
+    Selection      aller à l'état 31
+    Object         aller à l'état 40
+    ExprRelop      aller à l'état 99
+    Expr           aller à l'état 34
+    Instanciation  aller à l'état 35
+    Cast           aller à l'état 36
+
+
+État 73
 
    39 CallMethod: '(' . ExprRelop ')' '.' ID '(' ListArgClause ')'
-   55 Selection: '(' . ExprRelop ')' '.' ID
-   74 Cast: '(' . ID Object ')'
+   57 Selection: '(' . ExprRelop ')' '.' ID
+   76 Cast: '(' . ID Object ')'
 
-    NEWV  shift, and go to state 16
-    '('   shift, and go to state 17
-    ADD   shift, and go to state 18
-    SUB   shift, and go to state 19
-    ID    shift, and go to state 43
-    CSTE  shift, and go to state 21
+    NEWV  décalage et aller à l'état 16
+    '('   décalage et aller à l'état 17
+    ADD   décalage et aller à l'état 18
+    SUB   décalage et aller à l'état 19
+    ID    décalage et aller à l'état 44
+    CSTE  décalage et aller à l'état 21
 
-    CallMethod     go to state 23
-    Selection      go to state 30
-    Object         go to state 39
-    ExprRelop      go to state 97
-    Expr           go to state 33
-    Instanciation  go to state 34
-    Cast           go to state 35
+    CallMethod     aller à l'état 23
+    Selection      aller à l'état 31
+    Object         aller à l'état 40
+    ExprRelop      aller à l'état 100
+    Expr           aller à l'état 34
+    Instanciation  aller à l'état 35
+    Cast           aller à l'état 36
 
 
-State 71
+État 74
 
    38 CallMethod: Object . '.' ID '(' ListArgClause ')'
-   54 Selection: Object . '.' ID
-   74 Cast: '(' ID Object . ')'
+   56 Selection: Object . '.' ID
+   76 Cast: '(' ID Object . ')'
 
-    ')'  shift, and go to state 98
-    '.'  shift, and go to state 52
+    ')'  décalage et aller à l'état 101
+    '.'  décalage et aller à l'état 55
 
 
-State 72
+État 75
 
    39 CallMethod: '(' ExprRelop ')' . '.' ID '(' ListArgClause ')'
-   55 Selection: '(' ExprRelop ')' . '.' ID
-   72 Expr: '(' ExprRelop ')' .
+   57 Selection: '(' ExprRelop ')' . '.' ID
+   74 Expr: '(' ExprRelop ')' .
 
-    '.'  shift, and go to state 99
+    '.'  décalage et aller à l'état 102
 
-    $default  reduce using rule 72 (Expr)
-
-
-State 73
-
-   41 block: '{' ListInst IS ListInst . '}'
-
-    '}'  shift, and go to state 100
+    $défaut  réduction par utilisation de la règle 74 (Expr)
 
 
-State 74
+État 76
 
-   53 cible: Object AFF ExprRelop .
+   41 block: '{' ListChamp IS ListInst . '}'
 
-    $default  reduce using rule 53 (cible)
+    '}'  décalage et aller à l'état 103
 
 
-State 75
+État 77
+
+   55 cible: Object AFF ExprRelop .
+
+    $défaut  réduction par utilisation de la règle 55 (cible)
+
+
+État 78
 
    38 CallMethod: Object '.' ID . '(' ListArgClause ')'
-   54 Selection: Object '.' ID .
+   56 Selection: Object '.' ID .
 
-    '('  shift, and go to state 101
+    '('  décalage et aller à l'état 104
 
-    $default  reduce using rule 54 (Selection)
-
-
-State 76
-
-   64 Expr: Expr . ADD Expr
-   65     | Expr . SUB Expr
-   66     | Expr . MUL Expr
-   67     | Expr . DIV Expr
-   68     | Expr . '&' Expr
-   68     | Expr '&' Expr .
-
-    ADD  shift, and go to state 55
-    SUB  shift, and go to state 56
-    MUL  shift, and go to state 57
-    DIV  shift, and go to state 58
-
-    $default  reduce using rule 68 (Expr)
+    $défaut  réduction par utilisation de la règle 56 (Selection)
 
 
-State 77
+État 79
 
-   64 Expr: Expr . ADD Expr
-   64     | Expr ADD Expr .
-   65     | Expr . SUB Expr
-   66     | Expr . MUL Expr
-   67     | Expr . DIV Expr
-   68     | Expr . '&' Expr
+   66 Expr: Expr . ADD Expr
+   67     | Expr . SUB Expr
+   68     | Expr . MUL Expr
+   69     | Expr . DIV Expr
+   70     | Expr . '&' Expr
+   70     | Expr '&' Expr .
 
-    MUL  shift, and go to state 57
-    DIV  shift, and go to state 58
+    ADD  décalage et aller à l'état 58
+    SUB  décalage et aller à l'état 59
+    MUL  décalage et aller à l'état 60
+    DIV  décalage et aller à l'état 61
 
-    $default  reduce using rule 64 (Expr)
-
-
-State 78
-
-   64 Expr: Expr . ADD Expr
-   65     | Expr . SUB Expr
-   65     | Expr SUB Expr .
-   66     | Expr . MUL Expr
-   67     | Expr . DIV Expr
-   68     | Expr . '&' Expr
-
-    MUL  shift, and go to state 57
-    DIV  shift, and go to state 58
-
-    $default  reduce using rule 65 (Expr)
+    $défaut  réduction par utilisation de la règle 70 (Expr)
 
 
-State 79
+État 80
 
-   64 Expr: Expr . ADD Expr
-   65     | Expr . SUB Expr
-   66     | Expr . MUL Expr
-   66     | Expr MUL Expr .
-   67     | Expr . DIV Expr
-   68     | Expr . '&' Expr
+   66 Expr: Expr . ADD Expr
+   66     | Expr ADD Expr .
+   67     | Expr . SUB Expr
+   68     | Expr . MUL Expr
+   69     | Expr . DIV Expr
+   70     | Expr . '&' Expr
 
-    $default  reduce using rule 66 (Expr)
+    MUL  décalage et aller à l'état 60
+    DIV  décalage et aller à l'état 61
 
-
-State 80
-
-   64 Expr: Expr . ADD Expr
-   65     | Expr . SUB Expr
-   66     | Expr . MUL Expr
-   67     | Expr . DIV Expr
-   67     | Expr DIV Expr .
-   68     | Expr . '&' Expr
-
-    $default  reduce using rule 67 (Expr)
+    $défaut  réduction par utilisation de la règle 66 (Expr)
 
 
-State 81
+État 81
 
-   62 ExprRelop: Expr RELOP Expr .
-   64 Expr: Expr . ADD Expr
-   65     | Expr . SUB Expr
-   66     | Expr . MUL Expr
-   67     | Expr . DIV Expr
-   68     | Expr . '&' Expr
+   66 Expr: Expr . ADD Expr
+   67     | Expr . SUB Expr
+   67     | Expr SUB Expr .
+   68     | Expr . MUL Expr
+   69     | Expr . DIV Expr
+   70     | Expr . '&' Expr
 
-    '&'  shift, and go to state 54
-    ADD  shift, and go to state 55
-    SUB  shift, and go to state 56
-    MUL  shift, and go to state 57
-    DIV  shift, and go to state 58
+    MUL  décalage et aller à l'état 60
+    DIV  décalage et aller à l'état 61
 
-    $default  reduce using rule 62 (ExprRelop)
+    $défaut  réduction par utilisation de la règle 67 (Expr)
 
 
-State 82
+État 82
+
+   66 Expr: Expr . ADD Expr
+   67     | Expr . SUB Expr
+   68     | Expr . MUL Expr
+   68     | Expr MUL Expr .
+   69     | Expr . DIV Expr
+   70     | Expr . '&' Expr
+
+    $défaut  réduction par utilisation de la règle 68 (Expr)
+
+
+État 83
+
+   66 Expr: Expr . ADD Expr
+   67     | Expr . SUB Expr
+   68     | Expr . MUL Expr
+   69     | Expr . DIV Expr
+   69     | Expr DIV Expr .
+   70     | Expr . '&' Expr
+
+    $défaut  réduction par utilisation de la règle 69 (Expr)
+
+
+État 84
+
+   64 ExprRelop: Expr RELOP Expr .
+   66 Expr: Expr . ADD Expr
+   67     | Expr . SUB Expr
+   68     | Expr . MUL Expr
+   69     | Expr . DIV Expr
+   70     | Expr . '&' Expr
+
+    '&'  décalage et aller à l'état 57
+    ADD  décalage et aller à l'état 58
+    SUB  décalage et aller à l'état 59
+    MUL  décalage et aller à l'état 60
+    DIV  décalage et aller à l'état 61
+
+    $défaut  réduction par utilisation de la règle 64 (ExprRelop)
+
+
+État 85
 
    33 Override: OVERRIDE .
 
-    $default  reduce using rule 33 (Override)
+    $défaut  réduction par utilisation de la règle 33 (Override)
 
 
-State 83
+État 86
 
    26 classObjBlock: '{' ListVarDef . '}'
 
-    '}'  shift, and go to state 102
+    '}'  décalage et aller à l'état 105
 
 
-State 84
+État 87
 
    27 ListVarDef: VarDef . ListVarDef
 
-    VAR       shift, and go to state 13
-    OVERRIDE  shift, and go to state 82
+    VAR       décalage et aller à l'état 13
+    OVERRIDE  décalage et aller à l'état 85
 
-    DEF       reduce using rule 34 (Override)
-    $default  reduce using rule 28 (ListVarDef)
+    DEF       réduction par utilisation de la règle 34 (Override)
+    $défaut  réduction par utilisation de la règle 28 (ListVarDef)
 
-    ListVarDef  go to state 103
-    VarDef      go to state 84
-    declMethod  go to state 85
-    Override    go to state 86
-    Champ       go to state 87
+    ListVarDef  aller à l'état 106
+    VarDef      aller à l'état 87
+    declMethod  aller à l'état 88
+    Override    aller à l'état 89
+    Champ       aller à l'état 90
 
 
-State 85
+État 88
 
    29 VarDef: declMethod .
 
-    $default  reduce using rule 29 (VarDef)
+    $défaut  réduction par utilisation de la règle 29 (VarDef)
 
 
-State 86
+État 89
 
    31 declMethod: Override . DEF ID '(' ListParamClause ')' ':' ID AFF ExprRelop
    32           | Override . DEF ID '(' ListParamClause ')' ClassClause IS block
 
-    DEF  shift, and go to state 104
+    DEF  décalage et aller à l'état 107
 
 
-State 87
+État 90
 
    30 VarDef: Champ .
 
-    $default  reduce using rule 30 (VarDef)
+    $défaut  réduction par utilisation de la règle 30 (VarDef)
 
 
-State 88
+État 91
 
     6 declClass: CLASS ID '(' ListParamClause ')' . extendsClause constructorClause IS classObjBlock
 
-    EXTENDS  shift, and go to state 105
+    EXTENDS  décalage et aller à l'état 108
 
-    $default  reduce using rule 20 (extendsClause)
+    $défaut  réduction par utilisation de la règle 20 (extendsClause)
 
-    extendsClause  go to state 106
+    extendsClause  aller à l'état 109
 
 
-State 89
+État 92
 
    12 ListParam: Param ',' . ListParam
 
-    VAR  shift, and go to state 62
+    VAR  décalage et aller à l'état 65
 
-    $default  reduce using rule 16 (Var)
+    $défaut  réduction par utilisation de la règle 16 (Var)
 
-    ListParam  go to state 107
-    Param      go to state 65
-    Var        go to state 66
+    ListParam  aller à l'état 110
+    Param      aller à l'état 68
+    Var        aller à l'état 69
 
 
-State 90
+État 93
 
    14 Param: Var ID . ':' ID Init
 
-    ':'  shift, and go to state 108
+    ':'  décalage et aller à l'état 111
 
 
-State 91
+État 94
 
    37 Champ: VAR ID ':' ID . Init ';'
 
-    AFF  shift, and go to state 109
+    AFF  décalage et aller à l'état 112
 
-    $default  reduce using rule 18 (Init)
+    $défaut  réduction par utilisation de la règle 18 (Init)
 
-    Init  go to state 110
-
-
-State 92
-
-   52 ITE: IF ExprRelop THEN Inst . ELSE Inst
-
-    ELSE  shift, and go to state 111
+    Init  aller à l'état 113
 
 
-State 93
+État 95
 
-   73 Instanciation: NEWV ID '(' ListArgClause . ')'
+   54 ITE: IF ExprRelop THEN Inst . ELSE Inst
 
-    ')'  shift, and go to state 112
+    ELSE  décalage et aller à l'état 114
 
 
-State 94
+État 96
+
+   75 Instanciation: NEWV ID '(' ListArgClause . ')'
+
+    ')'  décalage et aller à l'état 115
+
+
+État 97
 
    21 ListArgClause: ListArg .
 
-    $default  reduce using rule 21 (ListArgClause)
+    $défaut  réduction par utilisation de la règle 21 (ListArgClause)
 
 
-State 95
+État 98
 
    23 ListArg: Arg . ',' ListArg
    24        | Arg .
 
-    ','  shift, and go to state 113
+    ','  décalage et aller à l'état 116
 
-    $default  reduce using rule 24 (ListArg)
+    $défaut  réduction par utilisation de la règle 24 (ListArg)
 
 
-State 96
+État 99
 
    25 Arg: ExprRelop .
 
-    $default  reduce using rule 25 (Arg)
+    $défaut  réduction par utilisation de la règle 25 (Arg)
 
 
-State 97
+État 100
 
    39 CallMethod: '(' ExprRelop . ')' '.' ID '(' ListArgClause ')'
-   55 Selection: '(' ExprRelop . ')' '.' ID
+   57 Selection: '(' ExprRelop . ')' '.' ID
 
-    ')'  shift, and go to state 114
-
-
-State 98
-
-   74 Cast: '(' ID Object ')' .
-
-    $default  reduce using rule 74 (Cast)
+    ')'  décalage et aller à l'état 117
 
 
-State 99
+État 101
+
+   76 Cast: '(' ID Object ')' .
+
+    $défaut  réduction par utilisation de la règle 76 (Cast)
+
+
+État 102
 
    39 CallMethod: '(' ExprRelop ')' '.' . ID '(' ListArgClause ')'
-   55 Selection: '(' ExprRelop ')' '.' . ID
+   57 Selection: '(' ExprRelop ')' '.' . ID
 
-    ID  shift, and go to state 115
-
-
-State 100
-
-   41 block: '{' ListInst IS ListInst '}' .
-
-    $default  reduce using rule 41 (block)
+    ID  décalage et aller à l'état 118
 
 
-State 101
+État 103
+
+   41 block: '{' ListChamp IS ListInst '}' .
+
+    $défaut  réduction par utilisation de la règle 41 (block)
+
+
+État 104
 
    38 CallMethod: Object '.' ID '(' . ListArgClause ')'
 
-    NEWV  shift, and go to state 16
-    '('   shift, and go to state 17
-    ADD   shift, and go to state 18
-    SUB   shift, and go to state 19
-    ID    shift, and go to state 20
-    CSTE  shift, and go to state 21
+    NEWV  décalage et aller à l'état 16
+    '('   décalage et aller à l'état 17
+    ADD   décalage et aller à l'état 18
+    SUB   décalage et aller à l'état 19
+    ID    décalage et aller à l'état 20
+    CSTE  décalage et aller à l'état 21
 
-    $default  reduce using rule 22 (ListArgClause)
+    $défaut  réduction par utilisation de la règle 22 (ListArgClause)
 
-    ListArgClause  go to state 116
-    ListArg        go to state 94
-    Arg            go to state 95
-    CallMethod     go to state 23
-    Selection      go to state 30
-    Object         go to state 39
-    ExprRelop      go to state 96
-    Expr           go to state 33
-    Instanciation  go to state 34
-    Cast           go to state 35
+    ListArgClause  aller à l'état 119
+    ListArg        aller à l'état 97
+    Arg            aller à l'état 98
+    CallMethod     aller à l'état 23
+    Selection      aller à l'état 31
+    Object         aller à l'état 40
+    ExprRelop      aller à l'état 99
+    Expr           aller à l'état 34
+    Instanciation  aller à l'état 35
+    Cast           aller à l'état 36
 
 
-State 102
+État 105
 
    26 classObjBlock: '{' ListVarDef '}' .
 
-    $default  reduce using rule 26 (classObjBlock)
+    $défaut  réduction par utilisation de la règle 26 (classObjBlock)
 
 
-State 103
+État 106
 
    27 ListVarDef: VarDef ListVarDef .
 
-    $default  reduce using rule 27 (ListVarDef)
+    $défaut  réduction par utilisation de la règle 27 (ListVarDef)
 
 
-State 104
+État 107
 
    31 declMethod: Override DEF . ID '(' ListParamClause ')' ':' ID AFF ExprRelop
    32           | Override DEF . ID '(' ListParamClause ')' ClassClause IS block
 
-    ID  shift, and go to state 117
+    ID  décalage et aller à l'état 120
 
 
-State 105
+État 108
 
    19 extendsClause: EXTENDS . ID '(' ListArgClause ')'
 
-    ID  shift, and go to state 118
+    ID  décalage et aller à l'état 121
 
 
-State 106
+État 109
 
     6 declClass: CLASS ID '(' ListParamClause ')' extendsClause . constructorClause IS classObjBlock
 
-    '{'  shift, and go to state 6
+    '{'  décalage et aller à l'état 6
 
-    $default  reduce using rule 9 (constructorClause)
+    $défaut  réduction par utilisation de la règle 9 (constructorClause)
 
-    constructorClause  go to state 119
-    block              go to state 120
+    constructorClause  aller à l'état 122
+    block              aller à l'état 123
 
 
-State 107
+État 110
 
    12 ListParam: Param ',' ListParam .
 
-    $default  reduce using rule 12 (ListParam)
+    $défaut  réduction par utilisation de la règle 12 (ListParam)
 
 
-State 108
+État 111
 
    14 Param: Var ID ':' . ID Init
 
-    ID  shift, and go to state 121
+    ID  décalage et aller à l'état 124
 
 
-State 109
+État 112
 
    17 Init: AFF . ExprRelop
 
-    NEWV  shift, and go to state 16
-    '('   shift, and go to state 17
-    ADD   shift, and go to state 18
-    SUB   shift, and go to state 19
-    ID    shift, and go to state 20
-    CSTE  shift, and go to state 21
+    NEWV  décalage et aller à l'état 16
+    '('   décalage et aller à l'état 17
+    ADD   décalage et aller à l'état 18
+    SUB   décalage et aller à l'état 19
+    ID    décalage et aller à l'état 20
+    CSTE  décalage et aller à l'état 21
 
-    CallMethod     go to state 23
-    Selection      go to state 30
-    Object         go to state 39
-    ExprRelop      go to state 122
-    Expr           go to state 33
-    Instanciation  go to state 34
-    Cast           go to state 35
+    CallMethod     aller à l'état 23
+    Selection      aller à l'état 31
+    Object         aller à l'état 40
+    ExprRelop      aller à l'état 125
+    Expr           aller à l'état 34
+    Instanciation  aller à l'état 35
+    Cast           aller à l'état 36
 
 
-State 110
+État 113
 
    37 Champ: VAR ID ':' ID Init . ';'
 
-    ';'  shift, and go to state 123
+    ';'  décalage et aller à l'état 126
 
 
-State 111
+État 114
 
-   52 ITE: IF ExprRelop THEN Inst ELSE . Inst
+   54 ITE: IF ExprRelop THEN Inst ELSE . Inst
 
-    VAR     shift, and go to state 13
-    IF      shift, and go to state 14
-    RETURN  shift, and go to state 15
-    NEWV    shift, and go to state 16
-    '('     shift, and go to state 17
-    '{'     shift, and go to state 6
-    ADD     shift, and go to state 18
-    SUB     shift, and go to state 19
-    ID      shift, and go to state 20
-    CSTE    shift, and go to state 21
+    VAR     décalage et aller à l'état 13
+    IF      décalage et aller à l'état 14
+    RETURN  décalage et aller à l'état 15
+    NEWV    décalage et aller à l'état 16
+    '('     décalage et aller à l'état 17
+    '{'     décalage et aller à l'état 6
+    ADD     décalage et aller à l'état 18
+    SUB     décalage et aller à l'état 19
+    ID      décalage et aller à l'état 20
+    CSTE    décalage et aller à l'état 21
 
-    Champ          go to state 22
-    CallMethod     go to state 23
-    block          go to state 24
-    Inst           go to state 124
-    ITE            go to state 28
-    cible          go to state 29
-    Selection      go to state 30
-    Object         go to state 31
-    ExprRelop      go to state 32
-    Expr           go to state 33
-    Instanciation  go to state 34
-    Cast           go to state 35
-
-
-State 112
-
-   73 Instanciation: NEWV ID '(' ListArgClause ')' .
-
-    $default  reduce using rule 73 (Instanciation)
+    Champ          aller à l'état 51
+    CallMethod     aller à l'état 23
+    block          aller à l'état 24
+    Inst           aller à l'état 127
+    ITE            aller à l'état 29
+    cible          aller à l'état 30
+    Selection      aller à l'état 31
+    Object         aller à l'état 32
+    ExprRelop      aller à l'état 33
+    Expr           aller à l'état 34
+    Instanciation  aller à l'état 35
+    Cast           aller à l'état 36
 
 
-State 113
+État 115
+
+   75 Instanciation: NEWV ID '(' ListArgClause ')' .
+
+    $défaut  réduction par utilisation de la règle 75 (Instanciation)
+
+
+État 116
 
    23 ListArg: Arg ',' . ListArg
 
-    NEWV  shift, and go to state 16
-    '('   shift, and go to state 17
-    ADD   shift, and go to state 18
-    SUB   shift, and go to state 19
-    ID    shift, and go to state 20
-    CSTE  shift, and go to state 21
+    NEWV  décalage et aller à l'état 16
+    '('   décalage et aller à l'état 17
+    ADD   décalage et aller à l'état 18
+    SUB   décalage et aller à l'état 19
+    ID    décalage et aller à l'état 20
+    CSTE  décalage et aller à l'état 21
 
-    ListArg        go to state 125
-    Arg            go to state 95
-    CallMethod     go to state 23
-    Selection      go to state 30
-    Object         go to state 39
-    ExprRelop      go to state 96
-    Expr           go to state 33
-    Instanciation  go to state 34
-    Cast           go to state 35
+    ListArg        aller à l'état 128
+    Arg            aller à l'état 98
+    CallMethod     aller à l'état 23
+    Selection      aller à l'état 31
+    Object         aller à l'état 40
+    ExprRelop      aller à l'état 99
+    Expr           aller à l'état 34
+    Instanciation  aller à l'état 35
+    Cast           aller à l'état 36
 
 
-State 114
+État 117
 
    39 CallMethod: '(' ExprRelop ')' . '.' ID '(' ListArgClause ')'
-   55 Selection: '(' ExprRelop ')' . '.' ID
+   57 Selection: '(' ExprRelop ')' . '.' ID
 
-    '.'  shift, and go to state 99
+    '.'  décalage et aller à l'état 102
 
 
-State 115
+État 118
 
    39 CallMethod: '(' ExprRelop ')' '.' ID . '(' ListArgClause ')'
-   55 Selection: '(' ExprRelop ')' '.' ID .
+   57 Selection: '(' ExprRelop ')' '.' ID .
 
-    '('  shift, and go to state 126
+    '('  décalage et aller à l'état 129
 
-    $default  reduce using rule 55 (Selection)
+    $défaut  réduction par utilisation de la règle 57 (Selection)
 
 
-State 116
+État 119
 
    38 CallMethod: Object '.' ID '(' ListArgClause . ')'
 
-    ')'  shift, and go to state 127
+    ')'  décalage et aller à l'état 130
 
 
-State 117
+État 120
 
    31 declMethod: Override DEF ID . '(' ListParamClause ')' ':' ID AFF ExprRelop
    32           | Override DEF ID . '(' ListParamClause ')' ClassClause IS block
 
-    '('  shift, and go to state 128
+    '('  décalage et aller à l'état 131
 
 
-State 118
+État 121
 
    19 extendsClause: EXTENDS ID . '(' ListArgClause ')'
 
-    '('  shift, and go to state 129
+    '('  décalage et aller à l'état 132
 
 
-State 119
+État 122
 
     6 declClass: CLASS ID '(' ListParamClause ')' extendsClause constructorClause . IS classObjBlock
 
-    IS  shift, and go to state 130
+    IS  décalage et aller à l'état 133
 
 
-State 120
+État 123
 
     8 constructorClause: block .
 
-    $default  reduce using rule 8 (constructorClause)
+    $défaut  réduction par utilisation de la règle 8 (constructorClause)
 
 
-State 121
+État 124
 
    14 Param: Var ID ':' ID . Init
 
-    AFF  shift, and go to state 109
+    AFF  décalage et aller à l'état 112
 
-    $default  reduce using rule 18 (Init)
+    $défaut  réduction par utilisation de la règle 18 (Init)
 
-    Init  go to state 131
+    Init  aller à l'état 134
 
 
-State 122
+État 125
 
    17 Init: AFF ExprRelop .
 
-    $default  reduce using rule 17 (Init)
+    $défaut  réduction par utilisation de la règle 17 (Init)
 
 
-State 123
+État 126
 
    37 Champ: VAR ID ':' ID Init ';' .
 
-    $default  reduce using rule 37 (Champ)
+    $défaut  réduction par utilisation de la règle 37 (Champ)
 
 
-State 124
+État 127
 
-   52 ITE: IF ExprRelop THEN Inst ELSE Inst .
+   54 ITE: IF ExprRelop THEN Inst ELSE Inst .
 
-    $default  reduce using rule 52 (ITE)
+    $défaut  réduction par utilisation de la règle 54 (ITE)
 
 
-State 125
+État 128
 
    23 ListArg: Arg ',' ListArg .
 
-    $default  reduce using rule 23 (ListArg)
+    $défaut  réduction par utilisation de la règle 23 (ListArg)
 
 
-State 126
+État 129
 
    39 CallMethod: '(' ExprRelop ')' '.' ID '(' . ListArgClause ')'
 
-    NEWV  shift, and go to state 16
-    '('   shift, and go to state 17
-    ADD   shift, and go to state 18
-    SUB   shift, and go to state 19
-    ID    shift, and go to state 20
-    CSTE  shift, and go to state 21
+    NEWV  décalage et aller à l'état 16
+    '('   décalage et aller à l'état 17
+    ADD   décalage et aller à l'état 18
+    SUB   décalage et aller à l'état 19
+    ID    décalage et aller à l'état 20
+    CSTE  décalage et aller à l'état 21
 
-    $default  reduce using rule 22 (ListArgClause)
+    $défaut  réduction par utilisation de la règle 22 (ListArgClause)
 
-    ListArgClause  go to state 132
-    ListArg        go to state 94
-    Arg            go to state 95
-    CallMethod     go to state 23
-    Selection      go to state 30
-    Object         go to state 39
-    ExprRelop      go to state 96
-    Expr           go to state 33
-    Instanciation  go to state 34
-    Cast           go to state 35
+    ListArgClause  aller à l'état 135
+    ListArg        aller à l'état 97
+    Arg            aller à l'état 98
+    CallMethod     aller à l'état 23
+    Selection      aller à l'état 31
+    Object         aller à l'état 40
+    ExprRelop      aller à l'état 99
+    Expr           aller à l'état 34
+    Instanciation  aller à l'état 35
+    Cast           aller à l'état 36
 
 
-State 127
+État 130
 
    38 CallMethod: Object '.' ID '(' ListArgClause ')' .
 
-    $default  reduce using rule 38 (CallMethod)
+    $défaut  réduction par utilisation de la règle 38 (CallMethod)
 
 
-State 128
+État 131
 
    31 declMethod: Override DEF ID '(' . ListParamClause ')' ':' ID AFF ExprRelop
    32           | Override DEF ID '(' . ListParamClause ')' ClassClause IS block
 
-    VAR  shift, and go to state 62
+    VAR  décalage et aller à l'état 65
 
-    ID        reduce using rule 16 (Var)
-    $default  reduce using rule 11 (ListParamClause)
+    ID        réduction par utilisation de la règle 16 (Var)
+    $défaut  réduction par utilisation de la règle 11 (ListParamClause)
 
-    ListParamClause  go to state 133
-    ListParam        go to state 64
-    Param            go to state 65
-    Var              go to state 66
+    ListParamClause  aller à l'état 136
+    ListParam        aller à l'état 67
+    Param            aller à l'état 68
+    Var              aller à l'état 69
 
 
-State 129
+État 132
 
    19 extendsClause: EXTENDS ID '(' . ListArgClause ')'
 
-    NEWV  shift, and go to state 16
-    '('   shift, and go to state 17
-    ADD   shift, and go to state 18
-    SUB   shift, and go to state 19
-    ID    shift, and go to state 20
-    CSTE  shift, and go to state 21
+    NEWV  décalage et aller à l'état 16
+    '('   décalage et aller à l'état 17
+    ADD   décalage et aller à l'état 18
+    SUB   décalage et aller à l'état 19
+    ID    décalage et aller à l'état 20
+    CSTE  décalage et aller à l'état 21
 
-    $default  reduce using rule 22 (ListArgClause)
+    $défaut  réduction par utilisation de la règle 22 (ListArgClause)
 
-    ListArgClause  go to state 134
-    ListArg        go to state 94
-    Arg            go to state 95
-    CallMethod     go to state 23
-    Selection      go to state 30
-    Object         go to state 39
-    ExprRelop      go to state 96
-    Expr           go to state 33
-    Instanciation  go to state 34
-    Cast           go to state 35
+    ListArgClause  aller à l'état 137
+    ListArg        aller à l'état 97
+    Arg            aller à l'état 98
+    CallMethod     aller à l'état 23
+    Selection      aller à l'état 31
+    Object         aller à l'état 40
+    ExprRelop      aller à l'état 99
+    Expr           aller à l'état 34
+    Instanciation  aller à l'état 35
+    Cast           aller à l'état 36
 
 
-State 130
+État 133
 
     6 declClass: CLASS ID '(' ListParamClause ')' extendsClause constructorClause IS . classObjBlock
 
-    '{'  shift, and go to state 60
+    '{'  décalage et aller à l'état 63
 
-    classObjBlock  go to state 135
+    classObjBlock  aller à l'état 138
 
 
-State 131
+État 134
 
    14 Param: Var ID ':' ID Init .
 
-    $default  reduce using rule 14 (Param)
+    $défaut  réduction par utilisation de la règle 14 (Param)
 
 
-State 132
+État 135
 
    39 CallMethod: '(' ExprRelop ')' '.' ID '(' ListArgClause . ')'
 
-    ')'  shift, and go to state 136
+    ')'  décalage et aller à l'état 139
 
 
-State 133
+État 136
 
    31 declMethod: Override DEF ID '(' ListParamClause . ')' ':' ID AFF ExprRelop
    32           | Override DEF ID '(' ListParamClause . ')' ClassClause IS block
 
-    ')'  shift, and go to state 137
+    ')'  décalage et aller à l'état 140
 
 
-State 134
+État 137
 
    19 extendsClause: EXTENDS ID '(' ListArgClause . ')'
 
-    ')'  shift, and go to state 138
+    ')'  décalage et aller à l'état 141
 
 
-State 135
+État 138
 
     6 declClass: CLASS ID '(' ListParamClause ')' extendsClause constructorClause IS classObjBlock .
 
-    $default  reduce using rule 6 (declClass)
+    $défaut  réduction par utilisation de la règle 6 (declClass)
 
 
-State 136
+État 139
 
    39 CallMethod: '(' ExprRelop ')' '.' ID '(' ListArgClause ')' .
 
-    $default  reduce using rule 39 (CallMethod)
+    $défaut  réduction par utilisation de la règle 39 (CallMethod)
 
 
-State 137
+État 140
 
    31 declMethod: Override DEF ID '(' ListParamClause ')' . ':' ID AFF ExprRelop
    32           | Override DEF ID '(' ListParamClause ')' . ClassClause IS block
 
-    ':'  shift, and go to state 139
+    ':'  décalage et aller à l'état 142
 
-    $default  reduce using rule 36 (ClassClause)
+    $défaut  réduction par utilisation de la règle 36 (ClassClause)
 
-    ClassClause  go to state 140
+    ClassClause  aller à l'état 143
 
 
-State 138
+État 141
 
    19 extendsClause: EXTENDS ID '(' ListArgClause ')' .
 
-    $default  reduce using rule 19 (extendsClause)
+    $défaut  réduction par utilisation de la règle 19 (extendsClause)
 
 
-State 139
+État 142
 
    31 declMethod: Override DEF ID '(' ListParamClause ')' ':' . ID AFF ExprRelop
    35 ClassClause: ':' . ID
 
-    ID  shift, and go to state 141
+    ID  décalage et aller à l'état 144
 
 
-State 140
+État 143
 
    32 declMethod: Override DEF ID '(' ListParamClause ')' ClassClause . IS block
 
-    IS  shift, and go to state 142
+    IS  décalage et aller à l'état 145
 
 
-State 141
+État 144
 
    31 declMethod: Override DEF ID '(' ListParamClause ')' ':' ID . AFF ExprRelop
    35 ClassClause: ':' ID .
 
-    AFF  shift, and go to state 143
+    AFF  décalage et aller à l'état 146
 
-    $default  reduce using rule 35 (ClassClause)
+    $défaut  réduction par utilisation de la règle 35 (ClassClause)
 
 
-State 142
+État 145
 
    32 declMethod: Override DEF ID '(' ListParamClause ')' ClassClause IS . block
 
-    '{'  shift, and go to state 6
+    '{'  décalage et aller à l'état 6
 
-    block  go to state 144
+    block  aller à l'état 147
 
 
-State 143
+État 146
 
    31 declMethod: Override DEF ID '(' ListParamClause ')' ':' ID AFF . ExprRelop
 
-    NEWV  shift, and go to state 16
-    '('   shift, and go to state 17
-    ADD   shift, and go to state 18
-    SUB   shift, and go to state 19
-    ID    shift, and go to state 20
-    CSTE  shift, and go to state 21
+    NEWV  décalage et aller à l'état 16
+    '('   décalage et aller à l'état 17
+    ADD   décalage et aller à l'état 18
+    SUB   décalage et aller à l'état 19
+    ID    décalage et aller à l'état 20
+    CSTE  décalage et aller à l'état 21
 
-    CallMethod     go to state 23
-    Selection      go to state 30
-    Object         go to state 39
-    ExprRelop      go to state 145
-    Expr           go to state 33
-    Instanciation  go to state 34
-    Cast           go to state 35
+    CallMethod     aller à l'état 23
+    Selection      aller à l'état 31
+    Object         aller à l'état 40
+    ExprRelop      aller à l'état 148
+    Expr           aller à l'état 34
+    Instanciation  aller à l'état 35
+    Cast           aller à l'état 36
 
 
-State 144
+État 147
 
    32 declMethod: Override DEF ID '(' ListParamClause ')' ClassClause IS block .
 
-    $default  reduce using rule 32 (declMethod)
+    $défaut  réduction par utilisation de la règle 32 (declMethod)
 
 
-State 145
+État 148
 
    31 declMethod: Override DEF ID '(' ListParamClause ')' ':' ID AFF ExprRelop .
 
-    $default  reduce using rule 31 (declMethod)
+    $défaut  réduction par utilisation de la règle 31 (declMethod)
