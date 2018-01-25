@@ -15,7 +15,7 @@
 
 %type<pT> Inst ITE RETURN cible ExprRelop Champ Expr Object Selection CallMethod Instanciation declClass declObject
 %type<pT> Cast Param ListParam ListParamClause ListArgClause Init ListInstClause ListInst ListArg Arg ClassObj
-%type<pT> listClassObj constructorClause extendsClause ListVarDef Var block Prog ListChamp Override ClassClause
+%type<pT> listClassObj constructorClause extendsClause ListVarDef Var block Prog ListChamp Override ClassClause classObjBlock
 
 
 %{

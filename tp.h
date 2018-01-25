@@ -111,7 +111,7 @@ typedef struct t_class{
 	char* name;
 	struct t_method** constructor;
 	struct t_method** methods;
-	struct t_varIdent** attributes;
+	struct VarDecl** attributes;
 	struct t_class* superClass;
 }t_class;
 
@@ -119,11 +119,11 @@ typedef struct t_object{
 	char* name;
 	struct t_method* constructor;
 	struct t_method** methods;
-	struct t_varIdent** attributes;
+	struct VarDecl** attributes;
 }t_object;
 
 typedef struct t_variable{
-	struct t_varIdent* ident;
+	struct t_class* _type;
 	t_value* value;
 }t_variable;
 
@@ -191,16 +191,12 @@ typedef struct t_instr{
 	}instr;
 }t_instr;
 
-typedef struct t_varIdent{
-	char* name;
-	t_class* _type;
-}t_varIdent;
 /* valeur à l'initialisation (faire en dernier)
  * booleen pour savoir si c'est un paramètre*/
  
 
 typedef struct t_listParam{
-    t_varIdent* varIdent;
+    VarDecl* varIdent;
     struct t_listParam* listParam;
 }t_listParam;
 
@@ -248,7 +244,7 @@ typedef union
 TreeP makeNode(int nbChildren, short op);
 TreeP makeTree(short op, int nbChildren, ...);
 void setChild(TreeP tree, int rank, TreeP arg);
-t_method* makeMethod(char* name, t_class* returnType, short nbParametres, t_varIdent** parametres, int* isRedef);
+t_method* makeMethod(char* name, t_class* returnType, short nbParametres, VarDecl** parametres, int* isRedef);
 TreeP makeLeafInt(short op, int val);
 TreeP makeLeafLVar(short op, VarDeclP lvar);
 TreeP makeLeafStr(short op, char *str);

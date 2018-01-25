@@ -128,7 +128,6 @@ TreeP makeNode(int nbChildren, short op) {
   tree->u.children = nbChildren > 0 ? NEW(nbChildren, TreeP) : NIL(TreeP);
   return(tree);
 }
-
 /* Construction d'un arbre a nbChildren branches, passees en parametres.
  * Pour comprendre en detail (si necessaire), regardez un tutorial sur
  * comment on passe un nombre variable d'arguments à une fonction et
@@ -181,12 +180,25 @@ TreeP makeLeafInt(short op, int val) {
   return(tree);
 }
 
-/* Constructeur de feuille : liste de paramètre 
-TreeP makeLeafLVar(short op, VarDeclP lvar) {			PAS ENCORE FAIT
-  TreeP tree = makeNode(0, op);
-  tree->u.lvar = lvar;
+/* Constructeur de feuille : liste de paramètre ****************************************************/
+TreeP makeLeafParam(short op, char *nom, char *type) {			
+  	TreeP tree = makeNode(0, op);
+	VarDeclP param = NEW(1, VarDecl);
+	param->name = nom;
+	param->coeur->_type = NEW(1, t_class);
+	param->coeur->_type->name = type;
+  	tree->u.lvar = param;
   return(tree);
-}*/
+}
+
+VarDeclP lastList(VarDeclP o){
+	while(o->next != NULL){
+		o = o->next;	
+	}
+	return o;
+}
+
+/**************************************************************************************************/
 
 /* Constructeur de feuille dont la valeur est une declaration */
 TreeP makeLeafLVar(short op, VarDeclP lvar) {
