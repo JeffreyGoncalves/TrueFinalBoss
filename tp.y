@@ -13,9 +13,9 @@
 %left MUL DIV
 %left UNAIRE
 
-%type<pT> Inst ITE RETURN cible ExprRelop Expr Object Selection CallMethod Instanciation declClass declObject
+%type<pT> Inst ITE RETURN cible ExprRelop Expr Object Selection CallMethod Instanciation declClass declObject VarDef
 %type<pT> Cast ListParam ListParamClause ListArgClause Init ListInstClause ListInst ListArg Arg ClassObj classObjBlock
-%type<pT> listClassObj constructorClause extendsClause ListVarDef Var block Prog ListChamp Override ClassClause
+%type<pT> listClassObj constructorClause extendsClause ListVarDef Var block Prog ListChamp Override ClassClause declMethod
 %type<pV> Param Champ
 
 
@@ -46,7 +46,8 @@ declClass : CLASS ID '(' ListParamClause ')' extendsClause constructorClause IS 
   $$ = makeTree(_CLASS,5,id,$2,$4,$6,$7,$9);}
 ;
 
-declObject : OBJECT ID IS classObjBlock
+declObject : OBJECT ID IS classObjBlock { 	TreeP id = makeLeafStr(_ID, $2);
+											$$ = makeTree(DECLA_OBJECT, 2, id, $4); }
 ;
 
 constructorClause : block		
@@ -98,12 +99,12 @@ Arg : ExprRelop					{ $$ = $1;}
 classObjBlock : '{' ListVarDef '}'   {$$ = $2;}
 ;
 
-ListVarDef : VarDef ListVarDef
+ListVarDef : VarDef ListVarDef		{ $$ = makeTree(LIST_VAR_DEF, 2,  $1, $2);}
 | 									{ $$ = NIL(Tree);}
 ;
 
-VarDef : declMethod
-| Champ
+VarDef : declMethod					{ $$ = makeTree(VAR_DEF, 1,  $1);}
+| Champ								{ $$ = makeTree(VAR_DEF, 1,  $1);}
 ;
 ///////////////////////////////
 

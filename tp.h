@@ -63,6 +63,9 @@ typedef unsigned char bool;
 #define _CLASS 33
 #define CLASS_NAME 34
 #define _OVERRIDE 35
+#define DECLA_OBJECT 36
+#define LIST_VAR_DEF 37
+#define VAR_DEF 38
 
 #define PROG 100
 
