@@ -102,8 +102,8 @@ ListVarDef : VarDef ListVarDef
 | 				{ $$ = NIL(Tree);}
 ;
 
-VarDef : declMethod 
-| Champ 
+VarDef : declMethod
+| Champ
 ;
 ///////////////////////////////
 
@@ -112,7 +112,7 @@ declMethod : Override DEF ID'(' ListParamClause ')' ':' ID AFF ExprRelop
 | Override DEF ID'(' ListParamClause ')' ClassClause IS block
 ;
 
-Override : OVERRIDE		{ $$ = makeLeafStr(VAR, "ovverride");}
+Override : OVERRIDE		{ $$ = makeLeafStr(_OVERRIDES, "override");}
 | 				{ $$ = NIL(Tree);}
 ;
 
