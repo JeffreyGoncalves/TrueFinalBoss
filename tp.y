@@ -49,7 +49,7 @@ declClass : CLASS ID '(' ListParamClause ')' extendsClause constructorClause IS 
 declObject : OBJECT ID IS classObjBlock
 ;
 
-constructorClause : block		
+constructorClause : block			{ $$ = $1;}
 | 									{$$ = NIL(Tree);}
 ;
 
