@@ -33,7 +33,7 @@ Prog : listClassObj block 	{ $$ = makeTree(PROG, 2, $1, $2);}
 
 //Gestion des Objets et Classes
 listClassObj : listClassObj ClassObj	{ $$ = makeTree(PROG, 2, $1, $2);}
-| 										{ $$ = NULL;}
+| 										{ $$ = NIL(Tree);}
 ;
 
 ClassObj : declClass					{ $$ = makeTree(CLAS, 1, $1); }
@@ -47,12 +47,12 @@ declObject : OBJECT ID IS classObjBlock
 ;
 
 constructorClause : block		
-| 									{$$ = NULL;}
+| 									{$$ = NIL(Tree);}
 ;
 
 ////// Parametres //////
 ListParamClause : ListParam
-| 					{ $$ = NULL;}
+| 									{ $$ = NIL(Tree);}
 ;
 
 ListParam : Param ',' ListParam 
@@ -63,26 +63,26 @@ Param : Var ID':' ID Init
 ;
 
 Var : VAR				{ $$ = makeLeafStr(_VAR, "var");}
-| 					{ $$ = NULL;}
+| 						{ $$ = NIL(Tree);}
 ;
 
 Init : AFF ExprRelop
-| 					{ $$ = NULL;}
+| 						{ $$ = NIL(Tree);}
 ;
 /////////////////////////
 
 // Mot cle EXTENDS //
 extendsClause : EXTENDS ID '(' ListArgClause ')'	{	TreeP id = makeLeafStr(_ID, $2);
-								$$ = makeTree(_EXTENDS, 2, id, $4);}
-| 					{ $$ = NULL;}
+														$$ = makeTree(_EXTENDS, 2, id, $4);}
+| 													{ $$ = NIL(Tree);}
 ;
 
 ListArgClause : ListArg			{ $$ = $1;}
-| 					{ $$ = NULL;}
+| 								{ $$ = NIL(Tree);}
 ;
 
 ListArg : Arg ',' ListArg		{ $$ = makeTree(LIST_ARG, 2,  $1, $3);}
-| Arg					{ $$ = makeTree(LIST_ARG, 2,  $1, NULL);}
+| Arg							{ $$ = makeTree(LIST_ARG, 2,  $1, NIL(Tree));}
 ;
 
 Arg : ExprRelop				{ $$ = $1;}
@@ -90,11 +90,11 @@ Arg : ExprRelop				{ $$ = $1;}
 ////////////////////
 
 // Bloc d'un objet ou classe //
-classObjBlock : '{' ListVarDef '}'
+classObjBlock : '{' ListVarDef '}'   {$$ = $2;}
 ;
 
 ListVarDef : VarDef ListVarDef
-| 				{ $$ = NULL;}
+| 				{ $$ = NIL(Tree);}
 ;
 
 VarDef : declMethod 
@@ -108,11 +108,11 @@ declMethod : Override DEF ID'(' ListParamClause ')' ':' ID AFF ExprRelop
 ;
 
 Override : OVERRIDE		{ $$ = makeLeafStr(VAR, "ovverride");}
-| 				{ $$ = NULL;}
+| 				{ $$ = NIL(Tree);}
 ;
 
 ClassClause : ':' ID			
-| 				{ $$ = NULL;}					
+| 				{ $$ = NIL(Tree);}					
 ;
 //////////////////////////////
 
@@ -129,7 +129,7 @@ CallMethod : Object'.'ID'('ListArgClause')'	{ $$ = makeTree(E_CALL_METHOD, 3,  $
 | '('ExprRelop')''.'ID'('ListArgClause')'	{ $$ = makeTree(E_CALL_METHOD, 3,  $2, $5, $7);}
 ;
 
-block: '{' ListInstClause '}'	{ TreeP decls = makeLeafLVar(DECL, NULL);
+block: '{' ListInstClause '}'	{ TreeP decls = makeLeafLVar(DECL, NIL(VarDecl));
 								  $$ = makeTree(I_BLOC, 2, decls, $2); }
 | '{' ListChamp IS ListInst '}'	/*{ TreeP decls = makeLeafLVar(DECL, $);*/
 								/*  $$ = makeTree(I_BLOC, 2, decls, $2); }*/
@@ -140,7 +140,7 @@ ListChamp : ListChamp Champ	{ $$ = makeTree(INST, 2, $1, $2);}
 ;
 
 ListInstClause : ListInst	{ $$ = $1;}
-| 				{ $$ = NULL;}
+| 				{ $$ = NIL(Tree);}
 ;
 
 ListInst : Inst ListInst 	{ $$ = makeTree(INST, 2, $1, $2);}
@@ -149,7 +149,7 @@ ListInst : Inst ListInst 	{ $$ = makeTree(INST, 2, $1, $2);}
 
 Inst : ITE 			{ $$ = $1;}
 | block 			{ $$ = $1;}
-| RETURN ';'		/*{ $$ = makeLeafStr(_ID, NULL(t_variable));}*/
+| RETURN ';'		/*{ $$ = makeLeafStr(_ID, NIL(Tree)(t_variable));}*/
 | cible ';'			{ $$ = $1;}
 | ExprRelop ';' 	{ $$ = makeTree(I_EXPRRELOP, 1, $1);}	
 ;
