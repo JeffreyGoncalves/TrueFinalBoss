@@ -35,31 +35,20 @@ typedef unsigned char bool;
 #define GT	9
 #define GE	10
 #define AND 11
-
-#define E_SELECT 12
-#define E_INST 13
-#define E_CAST 14
-#define E_CALL_METHOD 15
-
-#define LISTE_PARAM 16
-#define PARAM 17
-
-#define LISTE_ARG 16
-#define ARG 17
-
+#define CST 12
+#define STR 13
+#define _ID 14
+#define CAST 15
+#define DECL 16
+#define INST 17
+#define E_CALL_METHOD 18
+#define E_SELECT 19
 #define I_ITE 20
 #define I_BLOC 21
-#define I_RETURN	22
+#define I_RETURN 22
 #define I_AFF 23
 #define I_EXPRRELOP	24
 #define I_CHAMP 25
-
-#define _ID 26
-#define _CSTE 27
-
-
-
-
 
 /* Codes d'erreurs. Cette liste n'est pas obligatoire ni limitative */
 #define NO_ERROR	0
@@ -76,9 +65,10 @@ typedef unsigned char bool;
 
 /* Adapt as needed. Currently it is simply a list of names ! */
 typedef struct _varDecl {
-  t_varIdent* var;
+  char *name;
   struct _varDecl *next;
 } VarDecl, *VarDeclP;
+
 
 /* la structure d'un arbre (noeud ou feuille) */
 typedef struct _Tree {
@@ -163,8 +153,8 @@ typedef struct t_method{
 	int* isRedef;
 }t_method;
 /* liste variables locales
-    La classe d'appartenance*/
-
+	La classe d'appartenance*/
+	
 
 typedef struct t_instanciation{
 	t_class* class;
@@ -195,12 +185,33 @@ typedef struct t_varIdent{
 }t_varIdent;
 /* valeur à l'initialisation (faire en dernier)
  * booleen pour savoir si c'est un paramètre*/
+ 
+
+typedef struct t_listParam{
+    t_varIdent* varIdent;
+    struct t_listParam* listParam;
+}t_listParam;
+
+typedef struct t_cast{
+    t_expr* expression;
+    t_class* newType;
+}t_cast;
+
+typedef struct t_init{
+	t_expr* expression_to_affect;
+}t_init;
+
+typedef struct t_champ{
+	t_variable* ident1;
+	t_variable* ident2;
+}t_champ;
 
 /* FIN PERSO */
 
 typedef union
-      { char *S;
-        char C;
+{ 	
+	char *S;
+    char C;
 	int I;
 	TreeP pT;
 	VarDeclP pV;
@@ -211,7 +222,12 @@ typedef union
 	t_affect* paffect;
 	t_expr* pexpr;
 	t_method* pmethod;
+	t_instanciation* pinstanciation;
 	t_instr* pinstr;
+	t_cast* pcast;
+	t_init* pinit;
+	t_champ* pchamp;
+	t_listParam* plistParam;
 } YYSTYPE;
 
 #define YYSTYPE YYSTYPE

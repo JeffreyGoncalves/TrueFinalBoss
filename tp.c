@@ -140,7 +140,7 @@ TreeP makeTree(short op, int nbChildren, ...) {
   va_list args;
   TreeP tree = makeNode(nbChildren, op);
   va_start(args, nbChildren);
-    int i;
+int i;
   for(i = 0; i < nbChildren; i++) {
     tree->u.children[i] = va_arg(args, TreeP);
   }
@@ -205,18 +205,18 @@ TreeP makeLeafLparam(short op, t_varIdent* id, t_varIdent*) {
 
 /* FONCTIONS PERSO */
 
-/* Constructeur Methode */
-t_method* makeMethod(char* name, t_class* returnType, short nbParametres, t_varIdent** parametres, int* isRedef) {
-    t_method* method = NEW(1, t_method);
-    method->name = name;
-    method->returnType = returnType;
-    method->nbParametre = nbParametres;
-    method->parametres = NEW(nbParametres, t_varIdent*);
-    int i;
-    for (i = 0; i < nbParametres; i++) {
-        method->parametres[i] = parametres[i];
-    }
-    method->isRedef = isRedef;
-    return(method);
-} 
+/* Constructeur expression non feuille */
+t_expr* makeExpr(short op, ...){
+	va_list args;
+	t_expr* expr = NEW(1, t_expr);
+	expr->label_op = op;
+
+	va_start(args, op);
+	int i;
+	for(i = 0; i < 2; i++) {
+    		expr->elem.fils[i] = va_arg(args, t_expr*);
+  	}
+	va_end(args);
+	return(expr);
+}
 
