@@ -181,13 +181,9 @@ TreeP makeLeafInt(short op, int val) {
 }
 
 /* Constructeur de feuille : liste de paramètre ****************************************************/
-TreeP makeLeafParam(short op, char *nom, char *type) {			
+TreeP makeLeafParam(short op, VarDeclP p) {			
   	TreeP tree = makeNode(0, op);
-	VarDeclP param = NEW(1, VarDecl);
-	param->name = nom;
-	param->coeur->_type = NEW(1, t_class);
-	param->coeur->_type->name = type;
-  	tree->u.lvar = param;
+  	tree->u.lvar = p;
   return(tree);
 }
 
@@ -206,6 +202,10 @@ VarDeclP makeVarDeclP(char *nom, char *type){
 	return param;
 }
 
+void ajouteParam(TreeP list, VarDeclP p){
+	VarDeclP dernier = lastList(list->u.lvar);
+	dernier->next = p;
+}
 /**************************************************************************************************/
 
 /* Constructeur de feuille dont la valeur est une declaration */

@@ -14,8 +14,9 @@
 %left UNAIRE
 
 %type<pT> Inst ITE RETURN cible ExprRelop Champ Expr Object Selection CallMethod Instanciation declClass declObject
-%type<pT> Cast Param ListParam ListParamClause ListArgClause Init ListInstClause ListInst ListArg Arg ClassObj classObjBlock
+%type<pT> Cast ListParam ListParamClause ListArgClause Init ListInstClause ListInst ListArg Arg ClassObj classObjBlock
 %type<pT> listClassObj constructorClause extendsClause ListVarDef Var block Prog ListChamp Override ClassClause
+%type<pV> Param
 
 
 %{
@@ -57,11 +58,13 @@ ListParamClause : ListParam			{ $$ = $1;}
 | 									{ $$ = NIL(Tree);}
 ;
 
-ListParam : Param ',' ListParam 
-| Param 
+ListParam : Param ',' ListParam 		{ TreeP list = $3;
+							ajouteParam(list, $1);
+							$$ = list;}
+| Param 					{ $$ = makeLeafParam(LIST_PARAM, $1);}
 ;
 
-Param : Var ID':' ID Init
+Param : Var ID':' ID Init			{ $$ = makeVarDeclP($2, $4);}
 ;
 
 Var : VAR				{ $$ = makeLeafStr(_VAR, "var");}

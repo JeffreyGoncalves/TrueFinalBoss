@@ -252,6 +252,6 @@ TreeP makeLeafInt(short op, int val);
 TreeP makeLeafLVar(short op, VarDeclP lvar);
 TreeP makeLeafStr(short op, char *str);
 VarDeclP lastList(VarDeclP o);
-TreeP makeLeafParam(short op, char *nom, char *type);
+TreeP makeLeafParam(short op, VarDeclP p);
 VarDeclP makeVarDeclP(char *nom, char *type);
-
+void ajouteParam(TreeP list, VarDeclP p);
