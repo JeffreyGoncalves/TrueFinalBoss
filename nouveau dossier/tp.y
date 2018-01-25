@@ -33,10 +33,11 @@ Prog : listClassObj block 	{ $$ = makeTree(PROG, 2, $1, $2);}
 
 //Gestion des Objets et Classes
 listClassObj : listClassObj ClassObj	{ $$ = makeTree(PROG, 2, $1, $2);}
-| 										{ $$ = NULL;}
+| 										{ TreeP t = NULL;
+										  $$ = t;		}
 ;
 
-ClassObj : declClass					{ $$ = makeTree(CLAS, 1, $1); }
+ClassObj : declClass					{ $$ = makeTree(CLASS, 1, $1); }
 | declObject							{ $$ = makeTree(OBJ, 1, $1); }
 ;
 
@@ -47,7 +48,7 @@ declObject : OBJECT ID IS classObjBlock
 ;
 
 constructorClause : block		
-| 									{$$ = NULL;}
+| 
 ;
 
 ////// Parametres //////

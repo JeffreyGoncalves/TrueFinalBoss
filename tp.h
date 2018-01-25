@@ -59,6 +59,9 @@ typedef unsigned char bool;
 #define LIST_CHAMP 30
 #define PROG 100
 
+#define CLAS 31
+#define OBJ 32
+
 /* Codes d'erreurs. Cette liste n'est pas obligatoire ni limitative */
 #define NO_ERROR	0
 #define USAGE_ERROR	1
