@@ -148,7 +148,6 @@ int i;
   return(tree);
 }
 
-
 /* Retourne le rank-ieme fils d'un arbre (de 0 a n-1) */
 TreeP getChild(TreeP tree, int rank) {
   if (tree->nbChildren < rank -1) {
@@ -175,19 +174,19 @@ TreeP makeLeafStr(short op, char *str) {
   return tree;
 }
 
-/* Constructeur de feuille dont la valeur est une chaine de caracteres */
-TreeP makeLeafId(short op, char* id) {
-  TreeP tree = makeNode(0, op);
-  tree->u.str = id;
-  return tree;
-}
-
 /* Constructeur de feuille dont la valeur est un entier */
 TreeP makeLeafInt(short op, int val) {
   TreeP tree = makeNode(0, op);
   tree->u.val = val;
   return(tree);
 }
+
+/* Constructeur de feuille : liste de paramètre 
+TreeP makeLeafLVar(short op, VarDeclP lvar) {			PAS ENCORE FAIT
+  TreeP tree = makeNode(0, op);
+  tree->u.lvar = lvar;
+  return(tree);
+}*/
 
 /* Constructeur de feuille dont la valeur est une declaration */
 TreeP makeLeafLVar(short op, VarDeclP lvar) {
@@ -197,7 +196,7 @@ TreeP makeLeafLVar(short op, VarDeclP lvar) {
 }
 
 /* Constructeur de feuille dont la valeur est une declaration */
-TreeP makeLeafLparam(short op, t_varIdent* id, t_varIdent* lvar) {
+TreeP makeLeafLparam(short op, VarDeclP id, VarDeclP lvar) {
   TreeP tree = makeNode(0, op);
   tree->u.lvar = lvar;
   return(tree);

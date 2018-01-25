@@ -41,14 +41,22 @@ typedef unsigned char bool;
 #define CAST 15
 #define DECL 16
 #define INST 17
+
 #define E_CALL_METHOD 18
 #define E_SELECT 19
+
 #define I_ITE 20
 #define I_BLOC 21
 #define I_RETURN 22
 #define I_AFF 23
-#define I_EXPRRELOP	24
+#define I_EXPRRELOP 24
 #define I_CHAMP 25
+
+#define LIST_ARG 26
+#define LIST_PARAM 27
+#define _EXTENDS 28
+#define _VAR 29
+#define LIST_CHAMP 30
 #define PROG 100
 
 /* Codes d'erreurs. Cette liste n'est pas obligatoire ni limitative */
@@ -66,8 +74,9 @@ typedef unsigned char bool;
 
 /* Adapt as needed. Currently it is simply a list of names ! */
 typedef struct _varDecl {
-  char *name;
-  struct _varDecl *next;
+	char *name;
+	struct t_variable* coeur;
+	struct _varDecl *next;
 } VarDecl, *VarDeclP;
 
 
@@ -237,7 +246,6 @@ TreeP makeNode(int nbChildren, short op);
 TreeP makeTree(short op, int nbChildren, ...);
 void setChild(TreeP tree, int rank, TreeP arg);
 t_method* makeMethod(char* name, t_class* returnType, short nbParametres, t_varIdent** parametres, int* isRedef);
-TreeP makeLeafId(short op, char* id);
 TreeP makeLeafInt(short op, int val);
 TreeP makeLeafLVar(short op, VarDeclP lvar);
 TreeP makeLeafStr(short op, char *str);

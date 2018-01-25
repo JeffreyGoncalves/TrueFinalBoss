@@ -15,7 +15,7 @@
 
 %type<pT> Inst ITE RETURN cible ExprRelop Champ Expr Object Selection CallMethod Instanciation 
 %type<pT> Cast Param ListParam ListParamClause ListArgClause Init ListInstClause ListInst ListArg Arg 
-%type<pT> listClassObj constructorClause extendsClause ListVarDef Var VAR block Prog
+%type<pT> listClassObj constructorClause extendsClause ListVarDef Var block Prog ListChamp Override ClassClause
 
 
 %{
@@ -52,7 +52,7 @@ constructorClause : block
 
 ////// Parametres //////
 ListParamClause : ListParam
-| 
+| 					{ $$ = NULL;}
 ;
 
 ListParam : Param ',' ListParam 
@@ -62,29 +62,30 @@ ListParam : Param ',' ListParam
 Param : Var ID':' ID Init
 ;
 
-Var : VAR
-| 
+Var : VAR				{ $$ = makeLeafStr(_VAR, "var");}
+| 					{ $$ = NULL;}
 ;
 
 Init : AFF ExprRelop
-| 
+| 					{ $$ = NULL;}
 ;
 /////////////////////////
 
 // Mot cle EXTENDS //
-extendsClause : EXTENDS ID '(' ListArgClause ')'
-| 
+extendsClause : EXTENDS ID '(' ListArgClause ')'	{	TreeP id = makeLeafStr(_ID, $2);
+								$$ = makeTree(_EXTENDS, 2, id, $4);}
+| 					{ $$ = NULL;}
 ;
 
-ListArgClause : ListArg
-| 
+ListArgClause : ListArg			{ $$ = $1;}
+| 					{ $$ = NULL;}
 ;
 
-ListArg : Arg ',' ListArg 
-| Arg
+ListArg : Arg ',' ListArg		{ $$ = makeTree(LIST_ARG, 2,  $1, $3);}
+| Arg					{ $$ = makeTree(LIST_ARG, 2,  $1, NULL);}
 ;
 
-Arg : ExprRelop
+Arg : ExprRelop				{ $$ = $1;}
 ;
 ////////////////////
 
@@ -93,7 +94,7 @@ classObjBlock : '{' ListVarDef '}'
 ;
 
 ListVarDef : VarDef ListVarDef
-| 
+| 				{ $$ = NULL;}
 ;
 
 VarDef : declMethod 
@@ -106,18 +107,18 @@ declMethod : Override DEF ID'(' ListParamClause ')' ':' ID AFF ExprRelop
 | Override DEF ID'(' ListParamClause ')' ClassClause IS block
 ;
 
-Override : OVERRIDE
-| 
+Override : OVERRIDE		{ $$ = makeLeafStr(VAR, "ovverride");}
+| 				{ $$ = NULL;}
 ;
 
 ClassClause : ':' ID			
-| 								
+| 				{ $$ = NULL;}					
 ;
 //////////////////////////////
 
 //Champ dans un objet
-Champ : VAR ID ':' ID Init ';' 	{   TreeP id1 = makeLeafId(_ID, $2);
-									TreeP id2 = makeLeafId(_ID, $4);
+Champ : VAR ID ':' ID Init ';' 	{   TreeP id1 = makeLeafStr(_ID, $2);
+									TreeP id2 = makeLeafStr(_ID, $4);
 									$$ = makeTree(I_CHAMP, 3, id1, id2, $5);}
 ;
 ////////////////////////////////
@@ -134,24 +135,23 @@ block: '{' ListInstClause '}'	{ TreeP decls = makeLeafLVar(DECL, NULL);
 								/*  $$ = makeTree(I_BLOC, 2, decls, $2); }*/
 ;
 
-ListChamp : ListChamp Champ
-| Champ
+ListChamp : ListChamp Champ	{ $$ = makeTree(INST, 2, $1, $2);}
+| Champ				{ $$ = $1;}
 ;
 
-ListInstClause : ListInst	
-| 
+ListInstClause : ListInst	{ $$ = $1;}
+| 				{ $$ = NULL;}
 ;
 
 ListInst : Inst ListInst 	{ $$ = makeTree(INST, 2, $1, $2);}
-| Inst						{ $$ = makeTree(INST, 1, $1); }
+| Inst				{ $$ = makeTree(INST, 1, $1); }
 ;
 
 Inst : ITE 			{ $$ = $1;}
 | block 			{ $$ = $1;}
-| RETURN ';'		/*{ $$ = makeLeafId(_ID, NULL(t_variable));}*/
+| RETURN ';'		/*{ $$ = makeLeafStr(_ID, NULL(t_variable));}*/
 | cible ';'			{ $$ = $1;}
-| ExprRelop ';' 	{ $$ = makeTree(I_EXPRRELOP, 1, $1);}
-| Champ				{ $$ = $1;}
+| ExprRelop ';' 	{ $$ = makeTree(I_EXPRRELOP, 1, $1);}	
 ;
 
 ITE : IF ExprRelop THEN Inst ELSE Inst { $$ = makeTree(I_ITE, 3, $2, $4, $6);}
@@ -160,15 +160,17 @@ ITE : IF ExprRelop THEN Inst ELSE Inst { $$ = makeTree(I_ITE, 3, $2, $4, $6);}
 cible : Object AFF ExprRelop	{ $$ = makeTree(I_AFF, 2, $1, $3);}
 ;	
 
-Selection : Object'.'ID	
-| '('ExprRelop')''.'ID
+Selection : Object'.'ID		{ TreeP id = makeLeafStr(_ID, $3);
+					$$ = makeTree(E_SELECT, 2, $1, id);	}
+| '('ExprRelop')''.'ID		{ TreeP id = makeLeafStr(_ID, $5);
+					$$ = makeTree(E_SELECT, 2, $2, id);	}
 ;
 
 Object : Selection		{ $$ = $1;}
-| CallMethod			/*{ $$ = $1;}*/
+| CallMethod			{ $$ = $1;}
 | Instanciation			{ $$ = $1;}
 | CSTE					{ $$ = makeLeafInt(CST, $1);}
-| ID					{ $$ = makeLeafId(_ID, $1);	}
+| ID					{ $$ = makeLeafStr(_ID, $1);	}
 | Cast					{ $$ = $1;}
 ;	
 
@@ -193,6 +195,6 @@ Expr : Expr ADD Expr		{ $$ = makeTree(SUM, 2, $1, $3);}
 Instanciation : NEWV ID '('ListArgClause')'		{ $$ = makeTree(INST, 2, $2, $4);}
 ;
 
-Cast : '('ID Object')' 	{   TreeP id = makeLeafId(_ID, $2);
+Cast : '('ID Object')' 	{   TreeP id = makeLeafStr(_ID, $2);
 							$$ = makeTree(CAST, 2, id, $3);}
 ;
