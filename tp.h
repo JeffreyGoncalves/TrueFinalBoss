@@ -57,10 +57,12 @@ typedef unsigned char bool;
 #define _EXTENDS 28
 #define _VAR 29
 #define LIST_CHAMP 30
-#define PROG 100
 
 #define CLAS 31
 #define OBJ 32
+#define _CLASS 33
+
+#define PROG 100
 
 /* Codes d'erreurs. Cette liste n'est pas obligatoire ni limitative */
 #define NO_ERROR	0
@@ -248,3 +250,7 @@ t_method* makeMethod(char* name, t_class* returnType, short nbParametres, VarDec
 TreeP makeLeafInt(short op, int val);
 TreeP makeLeafLVar(short op, VarDeclP lvar);
 TreeP makeLeafStr(short op, char *str);
+VarDeclP lastList(VarDeclP o);
+TreeP makeLeafParam(short op, char *nom, char *type);
+VarDeclP makeVarDeclP(char *nom, char *type);
+

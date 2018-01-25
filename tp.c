@@ -198,6 +198,14 @@ VarDeclP lastList(VarDeclP o){
 	return o;
 }
 
+VarDeclP makeVarDeclP(char *nom, char *type){
+	VarDeclP param = NEW(1, VarDecl);
+	param->name = nom;
+	param->coeur->_type = NEW(1, t_class);
+	param->coeur->_type->name = type;
+	return param;
+}
+
 /**************************************************************************************************/
 
 /* Constructeur de feuille dont la valeur est une declaration */
