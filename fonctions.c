@@ -27,7 +27,7 @@ t_class* makeListClass(TreeP TreeClass, t_class* firstClass){
 			myClass->parametres = getChild(TreeClass, 2)->u.lvar;
 			myClass->constructor = makeConstructor(myClass, myClass->parametres, getChild(TreeClass, 4));
 		}else{
-			myClass->parametres = NIL(VarDeclP);
+			myClass->parametres = NIL(VarDecl);
 			myClass->constructor = NIL(t_method);
 		}
 		
@@ -41,7 +41,7 @@ t_class* makeListClass(TreeP TreeClass, t_class* firstClass){
 		/* LES METHODES  & LES ATTRIBUTS*/
 		if(getChild(TreeClass, 5) != NIL(Tree)){
 			myClass->methods = NIL(t_method);
-			myClass->attributes = NIL(VarDeclP);
+			myClass->attributes = NIL(VarDecl);
 		}else{
 			myClass->methods = giveAllMethod(getChild(TreeClass, 5), firstClass);
 			myClass->attributes = giveAllAttributes(getChild(TreeClass, 5), firstClass);
@@ -63,9 +63,9 @@ VarDeclP giveAllAttributes(TreeP tree, t_class* firstClass){
 t_method* giveAllMethod(TreeP tree, t_class* firstClass){
 	t_method* list = NIL(t_method);
 	
-	while(tree != NIL(TreeP)){
+	while(tree != NIL(Tree)){
 		if(getChild(tree, 1)->op == VAR_DEF_METH){
-			t_method* newMeth = DMtoS(firstClass, getChild(getChild(tree, 1), 1));
+			t_method* newMeth = DMtoS(getChild(getChild(tree, 1), 1), firstClass);
 			
 			if(list == NIL(t_method)){newMeth = list;}
 			else{
