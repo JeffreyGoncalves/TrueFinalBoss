@@ -14,29 +14,30 @@ extern int yylineno;
 }t_class;*/
 
 /* REMPLISSAGE STRUCT DE CLASSE */
-t_class* makeListClass(TreeP TreeClass){
+/*t_class* makeListClass(TreeP TreeClass){
 	
 	if(TreeClass != NIL(Tree)){
 		t_class* myClass = NEW(1, t_class);
 		
-		/*LE NOM*/
+		LE NOM
 		myClass->name = getChild(TreeClass, 0)->u.str;
 		
-		/*LA LISTE de PARAMETRES*/
+		LA LISTE de PARAMETRES
 		myClass->parametres = getChild(TreeClass, 2)->u.lvar;
 		
-		/*EXTENDS ?*/
+		EXTENDS ?
 		if(getChild(TreeClass, 3) == NIL(Tree)){
-			myClass->superClass = myClass; /* On repasse par la liste de classes pour changer ce pointeur avec le bon.*/
+			myClass->superClass = myClass;  On repasse par la liste de classes pour changer ce pointeur avec le bon.
 		}else{
 			myClass->superClass = NIL(t_class);
-		}
-		
-	}else{
+		}	
+	}
+	else{
 		return NIL(t_class);
 	}
-}
+}  */
 
+/*DETERMINE LA CLASSE CORRESPONDANT A STR*/
 t_class* FindClass(t_class* listClass, char* str){
 	
 	if(0 == strcmp (listClass->name, str)){
@@ -52,7 +53,8 @@ t_class* FindClass(t_class* listClass, char* str){
 	return NIL(t_class);
 }
 
-t_method* DMtoS(TreeP Tree){
+
+t_method* DMtoS(TreeP Tree,t_class* listClass){
 
 	t_method* method = NEW(1,t_method);
 	if(Tree->op == DECL_METH){
@@ -63,9 +65,9 @@ t_method* DMtoS(TreeP Tree){
 
 			/*OVERRIDE*/
 			if(getChild(Tree,3) == NULL){
-				method->isReDef == FALSE;	
+				method->isRedef = FALSE;	
 			}
-			else{method->isReDef == TRUE;}
+			else method->isRedef = TRUE;
 
 			/*PARAMETRES*/
 			method->parametres = getChild(Tree,4)->u.lvar;
@@ -73,10 +75,10 @@ t_method* DMtoS(TreeP Tree){
 
 			/*TYPE DE RETOUR*/
 			method->returnType = NEW(1,t_class);
-			method->returnType->name = getChild(Tree,2)->u.str;
+			method->returnType = FindClass(listClass,getChild(Tree,2)->u.str);
 
-			/*EXPRESSIONS*/
-			method->instructions = getChild(Tree,5);
+			/*BLOC D'EXPRESSIONS*/
+			method->bloc = getChild(Tree,5);
 
 			return method;
 
@@ -85,25 +87,28 @@ t_method* DMtoS(TreeP Tree){
 
 			/*OVERRIDE*/
 			if(getChild(Tree,2) == NULL){
-				method->isReDef == FALSE;	
+				method->isRedef = FALSE;	
 			}
-			else{method->isReDef == TRUE;}
+			else method->isRedef = TRUE;
 
 			/*PARAMETRES*/
 			method->parametres = getChild(Tree,3)->u.lvar;
 			method->nbParametres = sizeof(method->parametres)/sizeof(VarDecl);
 
-			/*TYPE DE RETOUR*/
+			/*TYPE DE RETOUR*/ /*ici le l'option facultative de type de retour est a prendre en compte*/
 			method->returnType = NEW(1,t_class);
+			if(getChild(Tree,4)->u.str == NULL){
+				method->returnType = FindClass(listClass,"void");
+			}
+			else{
+				method->returnType = FindClass(listClass,getChild(Tree,4)->u.str);
+			}
 
-			/*EXPRESSIONS*/
-			method->instructions = getChild(Tree,4);
+			/*BLOC*/
+			method->bloc = getChild(Tree,4);
 
 			return method;
 		}
 	}
-	else{
-		return NULL;
-	}
-
+	return NULL;
 }

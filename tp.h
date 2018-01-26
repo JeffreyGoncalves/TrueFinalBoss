@@ -119,9 +119,9 @@ typedef struct t_value{
 typedef struct t_class{
 	char* name;
 	struct t_method* constructor;
-	struct VarDecl* parametres;
+	VarDeclP parametres;
 	struct t_method* methods;
-	struct VarDecl* attributes;
+	VarDeclP attributes;
 	struct t_class* superClass;
 	struct t_class* next;
 }t_class;
@@ -173,8 +173,8 @@ typedef struct t_method{
 	char* name;
 	t_class* returnType;
 	short nbParametres;
-	struct varDeclP parametres;
-	struct TreeP* instructions;
+	VarDeclP parametres;
+    TreeP bloc;
 	int isRedef;
 }t_method;
 /* liste variables locales
