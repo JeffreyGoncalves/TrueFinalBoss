@@ -9,7 +9,7 @@ void makeCode();
 extern char* strdup(const char *);
 
 
-int main(int argc, char **argv) {
+/* int main(int argc, char **argv) {
 	
 	printf("Ecriture du code\n");
 	
@@ -17,7 +17,7 @@ int main(int argc, char **argv) {
 	
 	
 	return 0;
-}
+} */
 
 
 

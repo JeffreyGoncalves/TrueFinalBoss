@@ -65,7 +65,7 @@ ListParam : Param ',' ListParam 		{ TreeP list = $3;
 | Param 					{ $$ = makeLeafParam(LIST_PARAM, $1);}
 ;
 
-Param : Var ID':' ID Init			{ $$ = makeVarDeclP($2, $4);}
+Param : Var ID':' ID Init			{ $$ = makeVarDeclP($2, $4, $5);}
 ;
 
 Var : VAR				{ $$ = makeLeafStr(_VAR, "var");}
@@ -126,7 +126,7 @@ ClassClause : ':' ID	{ $$ = makeLeafStr(CLASS_NAME, $2);}
 //////////////////////////////
 
 //Champ dans un objet
-Champ : VAR ID ':' ID Init ';' 	  { $$ = makeVarDeclP($2, $4);}
+Champ : VAR ID ':' ID Init ';' 	  { $$ = makeVarDeclP($2,$4,$5);}
 ;
 ////////////////////////////////
 

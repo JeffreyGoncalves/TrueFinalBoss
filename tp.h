@@ -132,7 +132,7 @@ typedef struct t_object{
 
 typedef struct t_variable{
 	struct t_class* _type;
-	t_value* value;
+	TreeP value;
 }t_variable;
 
 typedef struct t_affect{
@@ -258,5 +258,5 @@ TreeP makeLeafLVar(short op, VarDeclP lvar);
 TreeP makeLeafStr(short op, char *str);
 VarDeclP lastList(VarDeclP o);
 TreeP makeLeafParam(short op, VarDeclP p);
-VarDeclP makeVarDeclP(char *nom, char *type);
+VarDeclP makeVarDeclP(char *nom, char *type,TreeP sArbre);
 void ajouteParam(TreeP list, VarDeclP p);
