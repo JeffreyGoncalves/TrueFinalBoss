@@ -226,7 +226,7 @@ TreeP makeLeafLparam(short op, VarDeclP id, VarDeclP lvar) {
 
 /* FONCTIONS PERSO */
 
-/* Constructeur expression non feuille */
+/* Constructeur expression non feuille *//*
 t_expr* makeExpr(short op, ...){
 	va_list args;
 	t_expr* expr = NEW(1, t_expr);
@@ -239,5 +239,5 @@ t_expr* makeExpr(short op, ...){
   	}
 	va_end(args);
 	return(expr);
-}
+}*/
 

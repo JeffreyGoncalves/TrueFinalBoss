@@ -33,7 +33,7 @@ Prog : listClassObj block 				{ $$ = makeTree(PROG, 2, $1, $2);}
 ;	
 
 //Gestion des Objets et Classes
-listClassObj : listClassObj ClassObj	{ $$ = makeTree(PROG, 2, $1, $2);}
+listClassObj : listClassObj ClassObj	{ $$ = makeTree(LIST_CLASS, 2, $1, $2);}
 | 										{ $$ = NIL(Tree);}
 ;
 

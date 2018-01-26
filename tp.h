@@ -67,6 +67,7 @@ typedef unsigned char bool;
 #define LIST_VAR_DEF 37
 #define VAR_DEF 38
 #define DECL_METH 39
+#define LIST_CLASS 44
 
 #define PROG 100
 
@@ -119,7 +120,7 @@ typedef struct t_class{
 	char* name;
 	struct t_method** constructor;
 	struct t_method** methods;
-	struct VarDecl** attributes;
+	struct VarDecl* attributes;
 	struct t_class* superClass;
 }t_class;
 
@@ -135,14 +136,16 @@ typedef struct t_variable{
 	TreeP value;
 }t_variable;
 
+/*
 typedef struct t_affect{
 	struct t_expr* variable;
 	struct t_expr* valeur;
-}t_affect;
+}t_affect;*/
 
+/*
 typedef struct t_expr {
 	enum{
-		Affect, Add, Soustr, Mult, Div, Equal, Ineq, And, Leaf, Cast, New /*No operator*/
+		Affect, Add, Soustr, Mult, Div, Equal, Ineq, And, Leaf, Cast, New
 	}label_op;
 	
 	union{
@@ -162,26 +165,27 @@ typedef struct t_expr {
 		}callMethod;
 	}elem;
 	
-}t_expr;
+}t_expr;*/
 
 typedef struct t_method{
 	char* name;
 	t_class* returnType;
 	short nbParametre;
 	struct t_varIdent** parametres;
-	struct t_instr** instructions;
+	struct TreeP* instructions;
 	int* isRedef;
 }t_method;
 /* liste variables locales
 	La classe d'appartenance*/
 	
-
+/*
 typedef struct t_instanciation{
 	t_class* class;
 	short nbArgs;
 	t_expr** args;
-}t_instanciation;
+}t_instanciation;*/
 
+/*
 typedef struct t_instr{
 	enum {
 		Bloc, Return, Affectation, IfThenElse, Expression
@@ -197,30 +201,32 @@ typedef struct t_instr{
 		}ite;
 		struct t_champ* champ;
 	}instr;
-}t_instr;
+}t_instr;*/
 
 /* valeur à l'initialisation (faire en dernier)
  * booleen pour savoir si c'est un paramètre*/
  
-
+/*
 typedef struct t_listParam{
     VarDecl* varIdent;
     struct t_listParam* listParam;
-}t_listParam;
+}t_listParam;*/
 
+/*
 typedef struct t_cast{
     t_expr* expression;
     t_class* newType;
-}t_cast;
+}t_cast;*/
 
+/*
 typedef struct t_init{
 	t_expr* expression_to_affect;
-}t_init;
-
+}t_init;*/
+/*
 typedef struct t_champ{
 	t_variable* ident1;
 	t_variable* ident2;
-}t_champ;
+}t_champ;*/
 
 /* FIN PERSO */
 
@@ -235,15 +241,7 @@ typedef union
 	t_object* pobject;
 	t_class* pclass;
 	t_variable*  pvariable;
-	t_affect* paffect;
-	t_expr* pexpr;
 	t_method* pmethod;
-	t_instanciation* pinstanciation;
-	t_instr* pinstr;
-	t_cast* pcast;
-	t_init* pinit;
-	t_champ* pchamp;
-	t_listParam* plistParam;
 } YYSTYPE;
 
 #define YYSTYPE YYSTYPE
