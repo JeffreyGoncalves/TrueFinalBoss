@@ -65,9 +65,10 @@ typedef unsigned char bool;
 #define _OVERRIDE 35
 #define DECLA_OBJECT 36
 #define LIST_VAR_DEF 37
-#define VAR_DEF 38
-#define DECL_METH 39
-#define LIST_CLASS 44
+#define VAR_DEF_METH 38
+#define VAR_DEF_CHAMP 39
+#define DECL_METH 44
+#define LIST_CLASS 45
 
 #define PROG 100
 
@@ -176,6 +177,7 @@ typedef struct t_method{
 	VarDeclP parametres;
     TreeP bloc;
 	int isRedef;
+	struct t_method* next;
 }t_method;
 /* liste variables locales
 	La classe d'appartenance*/

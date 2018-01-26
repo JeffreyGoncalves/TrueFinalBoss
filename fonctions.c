@@ -14,30 +14,73 @@ extern int yylineno;
 }t_class;*/
 
 /* REMPLISSAGE STRUCT DE CLASSE */
-/*t_class* makeListClass(TreeP TreeClass){
+t_class* makeListClass(TreeP TreeClass, t_class* firstClass){
 	
 	if(TreeClass != NIL(Tree)){
 		t_class* myClass = NEW(1, t_class);
 		
-		LE NOM
+		/*LE NOM*/
 		myClass->name = getChild(TreeClass, 0)->u.str;
 		
-		LA LISTE de PARAMETRES
-		myClass->parametres = getChild(TreeClass, 2)->u.lvar;
+		/*LA LISTE de PARAMETRES*/
+		if(getChild(TreeClass, 4) != NIL(Tree)){
+			myClass->parametres = getChild(TreeClass, 2)->u.lvar;
+			myClass->constructor = makeConstructor(myClass, myClass->parametres, getChild(TreeClass, 4));
+		}else{
+			myClass->parametres = NIL(VarDeclP);
+			myClass->constructor = NIL(t_method);
+		}
 		
-		EXTENDS ?
-		if(getChild(TreeClass, 3) == NIL(Tree)){
-			myClass->superClass = myClass;  On repasse par la liste de classes pour changer ce pointeur avec le bon.
+		/*EXTENDS ?*/
+		if(getChild(TreeClass, 3) != NIL(Tree)){
+			myClass->superClass = FindClass(firstClass, getChild(getChild(TreeClass, 3), 1)->u.str);
 		}else{
 			myClass->superClass = NIL(t_class);
-		}	
-	}
-	else{
+		}
+		
+		/* LES METHODES  & LES ATTRIBUTS*/
+		if(getChild(TreeClass, 5) != NIL(Tree)){
+			myClass->methods = NIL(t_method);
+			myClass->attributes = NIL(VarDeclP);
+		}else{
+			myClass->methods = giveAllMethod(getChild(TreeClass, 5), firstClass);
+			myClass->attributes = giveAllAttributes(getChild(TreeClass, 5), firstClass);
+		}
+		
+				
+		
+		return myClass;
+		
+	}else{
 		return NIL(t_class);
 	}
-}  */
+}
 
-/*DETERMINE LA CLASSE CORRESPONDANT A STR*/
+VarDeclP giveAllAttributes(TreeP tree, t_class* firstClass){
+	
+}
+
+t_method* giveAllMethod(TreeP tree, t_class* firstClass){
+	t_method* list = NIL(t_method);
+	
+	while(tree != NIL(TreeP)){
+		if(getChild(tree, 1)->op == VAR_DEF_METH){
+			t_method* newMeth = DMtoS(firstClass, getChild(getChild(tree, 1), 1));
+			
+			if(list == NIL(t_method)){newMeth = list;}
+			else{
+				list->next = newMeth;
+			}
+		}
+		tree = getChild(tree, 2);
+	}
+	return list;
+}
+
+t_method* makeConstructor(t_class* class, VarDeclP param, TreeP corps){/* TODO */
+	return NULL;
+}
+
 t_class* FindClass(t_class* listClass, char* str){
 	
 	if(0 == strcmp (listClass->name, str)){
@@ -46,7 +89,7 @@ t_class* FindClass(t_class* listClass, char* str){
 	
 	while(listClass->next != NIL(t_class)){
 		listClass = listClass->next;
-		if(0 == strcmp(listClass->name, str)){
+		if(0 == strcmp (listClass->name, str)){
 			return listClass;
 		}
 	}

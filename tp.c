@@ -358,8 +358,10 @@ void printOP(short op)
 		case LIST_VAR_DEF : 
 			printf("LIST_VAR_DEF");
 			break;
-		case VAR_DEF : 
-			printf("VAR_DEF");
+		case VAR_DEF_METH : 
+			printf("VAR_DEF_METH");
+		case VAR_DEF_CHAMP : 
+			printf("VAR_DEF_CHAMP");
 			break;
 		case DECL_METH : 
 			printf("DECL_METH");

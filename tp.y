@@ -104,8 +104,8 @@ ListVarDef : VarDef ListVarDef		{ $$ = makeTree(LIST_VAR_DEF, 2,  $1, $2);}
 | 									{ $$ = NIL(Tree);}
 ;
 
-VarDef : declMethod					{ $$ = makeTree(VAR_DEF, 1,  $1);}
-| Champ								{ $$ = makeLeafLVar(VAR_DEF,  $1);}
+VarDef : declMethod					{ $$ = makeTree(VAR_DEF_METH, 1,  $1);}
+| Champ								{ $$ = makeLeafLVar(VAR_DEF_CHAMP,  $1);}
 ;
 ///////////////////////////////
 
