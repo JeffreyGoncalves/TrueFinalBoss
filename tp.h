@@ -260,3 +260,4 @@ VarDeclP lastList(VarDeclP o);
 TreeP makeLeafParam(short op, VarDeclP p);
 VarDeclP makeVarDeclP(char *nom, char *type,TreeP sArbre);
 void ajouteParam(TreeP list, VarDeclP p);
+TreeP getChild(TreeP tree, int rank);
