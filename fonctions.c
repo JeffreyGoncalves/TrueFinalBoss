@@ -136,12 +136,12 @@ t_method* DMtoS(TreeP Tree,t_class* listClass){
 			/*PARAMETRES*/
 			method->parametres = getChild(Tree,4)->u.lvar;
 			method->nbParametres = 0;
-			int i = 0;
-			while(method->parametres != NIL(VarDecl)){
-				method->parametres++;
+			VarDeclP tmp = method->parametres;
+			while(tmp->next != NIL(VarDecl)){
+				tmp = tmp->next;
 				method->nbParametres++;
-				i++;
 			}
+			free(tmp);
 
 			/*TYPE DE RETOUR*/
 			method->returnType = NEW(1,t_class);
@@ -162,14 +162,14 @@ t_method* DMtoS(TreeP Tree,t_class* listClass){
 			else method->isRedef = TRUE;
 
 			/*PARAMETRES*/
-			method->parametres = getChild(Tree,3)->u.lvar;
+			method->parametres = getChild(Tree,4)->u.lvar;
 			method->nbParametres = 0;
-			int i = 0;
-			while(method->parametres != NIL(VarDecl)){
-				method->parametres++;
+			VarDeclP tmp = method->parametres;
+			while(tmp->next != NIL(VarDecl)){
+				tmp = tmp->next;
 				method->nbParametres++;
-				i++;
 			}
+			free(tmp);
 
 			/*TYPE DE RETOUR*/ /*ici le l'option facultative de type de retour est a prendre en compte*/
 			method->returnType = NEW(1,t_class);
