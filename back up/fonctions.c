@@ -27,7 +27,7 @@ t_class* makeListClass(TreeP TreeClass, t_class* firstClass){
 			myClass->parametres = getChild(TreeClass, 2)->u.lvar;
 			myClass->constructor = makeConstructor(myClass, myClass->parametres, getChild(TreeClass, 4));
 		}else{
-			myClass->parametres = NIL(VarDecl);
+			myClass->parametres = NIL(VarDeclP);
 			myClass->constructor = NIL(t_method);
 		}
 		
@@ -41,11 +41,13 @@ t_class* makeListClass(TreeP TreeClass, t_class* firstClass){
 		/* LES METHODES  & LES ATTRIBUTS*/
 		if(getChild(TreeClass, 5) != NIL(Tree)){
 			myClass->methods = NIL(t_method);
-			myClass->attributes = NIL(VarDecl);
+			myClass->attributes = NIL(VarDeclP);
 		}else{
 			myClass->methods = giveAllMethod(getChild(TreeClass, 5), firstClass);
 			myClass->attributes = giveAllAttributes(getChild(TreeClass, 5), firstClass);
-		}		
+		}
+		
+				
 		
 		return myClass;
 		
@@ -56,41 +58,18 @@ t_class* makeListClass(TreeP TreeClass, t_class* firstClass){
 
 VarDeclP giveAllAttributes(TreeP tree, t_class* firstClass){
 	
-	/*while(tree != NIL(Tree)){
-		if(getChild(tree, 1)->op == VAR_DEF_METH){
-			t_method* newMeth = DMtoS(getChild(getChild(tree, 1), 1), firstClass);
-			t_method* last;
-			
-			if(list == NIL(t_method)){
-				newMeth = list;
-				last = newMeth;
-			}
-			else{
-				last->next = newMeth;
-				last = newMeth;
-			}
-		}
-		tree = getChild(tree, 2);
-	}
-	return list;*/
-	return NULL;
 }
 
 t_method* giveAllMethod(TreeP tree, t_class* firstClass){
 	t_method* list = NIL(t_method);
 	
-	while(tree != NIL(Tree)){
+	while(tree != NIL(TreeP)){
 		if(getChild(tree, 1)->op == VAR_DEF_METH){
-			t_method* newMeth = DMtoS(getChild(getChild(tree, 1), 1), firstClass);
-			t_method* last;
+			t_method* newMeth = DMtoS(firstClass, getChild(getChild(tree, 1), 1));
 			
-			if(list == NIL(t_method)){
-				newMeth = list;
-				last = newMeth;
-			}
+			if(list == NIL(t_method)){newMeth = list;}
 			else{
-				last->next = newMeth;
-				last = newMeth;
+				list->next = newMeth;
 			}
 		}
 		tree = getChild(tree, 2);
@@ -137,8 +116,7 @@ t_method* DMtoS(TreeP Tree,t_class* listClass){
 			method->parametres = getChild(Tree,4)->u.lvar;
 			method->nbParametres = 0;
 			int i = 0;
-			while(method->parametres != NIL(VarDecl)){
-				method->parametres++;
+			while(method->parametres[i] != NULL){
 				method->nbParametres++;
 				i++;
 			}
@@ -165,8 +143,7 @@ t_method* DMtoS(TreeP Tree,t_class* listClass){
 			method->parametres = getChild(Tree,3)->u.lvar;
 			method->nbParametres = 0;
 			int i = 0;
-			while(method->parametres != NIL(VarDecl)){
-				method->parametres++;
+			while(method->parametres[i] != NULL){
 				method->nbParametres++;
 				i++;
 			}
