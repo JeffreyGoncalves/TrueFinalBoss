@@ -173,7 +173,7 @@ typedef struct t_expr {
 typedef struct t_method{
 	char* name;
 	t_class* returnType;
-	short nbParametres;
+	short nbParametres ;
 	VarDeclP parametres;
     TreeP bloc;
 	int isRedef;
