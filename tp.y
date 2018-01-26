@@ -30,7 +30,7 @@ extern void yyerror(char *);
 %%
 //Structure du programme
 Prog : listClassObj block 				{ $$ = makeTree(PROG, 2, $1, $2);
-										  /*affTree($$, 0);	*/			}
+										  affTree($$, 0);				}
 ;	
 
 //Gestion des Objets et Classes

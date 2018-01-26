@@ -360,6 +360,7 @@ void printOP(short op)
 			break;
 		case VAR_DEF_METH : 
 			printf("VAR_DEF_METH");
+			break;
 		case VAR_DEF_CHAMP : 
 			printf("VAR_DEF_CHAMP");
 			break;
