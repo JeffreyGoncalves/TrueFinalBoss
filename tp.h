@@ -118,10 +118,12 @@ typedef struct t_value{
 
 typedef struct t_class{
 	char* name;
-	struct t_method** constructor;
-	struct t_method** methods;
+	struct t_method* constructor;
+	struct VarDecl* parametres;
+	struct t_method* methods;
 	struct VarDecl* attributes;
 	struct t_class* superClass;
+	struct t_class* next;
 }t_class;
 
 typedef struct t_object{

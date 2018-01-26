@@ -19,6 +19,18 @@ extern int yylineno;
 	struct t_class* superClass;
 }t_class;*/
 
-TreeP makeListClass(TreeP List){
+/* REMPLISSAGE STRUCT DE CLASSE */
+t_class* makeListClass(TreeP TreeClass){
 	
+	if(List != NIL(Tree)){
+		myClass = NEW(1, t_class);
+		
+		/*LE NOM*/
+		myClass->name = getChild(TreeClass, 0)->u.str;
+		
+		/*LA LISTE de PARAMETRES*/
+		
+	}else{
+		return NIL(t_class);
+	}
 }

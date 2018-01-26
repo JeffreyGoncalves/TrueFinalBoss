@@ -43,7 +43,7 @@ ClassObj : declClass					{ $$ = makeTree(CLAS, 1, $1); }
 
 declClass : CLASS ID '(' ListParamClause ')' extendsClause constructorClause IS classObjBlock 
 { TreeP id = makeLeafStr(_ID, $2);
-  $$ = makeTree(_CLASS,5,id,$2,$4,$6,$7,$9);}
+  $$ = makeTree(_CLASS,5,id,$4,$6,$7,$9);}
 ;
 
 declObject : OBJECT ID IS classObjBlock { 	TreeP id = makeLeafStr(_ID, $2);
