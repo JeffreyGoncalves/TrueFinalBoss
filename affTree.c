@@ -35,13 +35,13 @@ void affTree(TreeP tree, int stage)
 {
 	int i;
 	
-	//Affichage du champ op de tree
+	/*Affichage du champ op de tree*/
 	barAff(stage);
 	barAff(stage);
 	arrowAff(stage);
 	printf("%s\n", tree->op);
 	
-	//On regarde s'il y a des enfants
+	/*On regarde s'il y a des enfants*/
 	if(tree->nbChildren > 0)
 	{
 		for(i=0;i<tree->nbChildren;i++)
@@ -101,3 +101,4 @@ int main(int argc, char**argv)
 	
 	return 0;
 }
+/********************************************************************/

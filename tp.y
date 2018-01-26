@@ -29,7 +29,8 @@ extern void yyerror(char *);
 
 %%
 //Structure du programme
-Prog : listClassObj block 				{ $$ = makeTree(PROG, 2, $1, $2);}
+Prog : listClassObj block 				{ $$ = makeTree(PROG, 2, $1, $2);
+										  /*affTree($$, 0);	*/			}
 ;	
 
 //Gestion des Objets et Classes
@@ -104,7 +105,7 @@ ListVarDef : VarDef ListVarDef		{ $$ = makeTree(LIST_VAR_DEF, 2,  $1, $2);}
 ;
 
 VarDef : declMethod					{ $$ = makeTree(VAR_DEF, 1,  $1);}
-| Champ								{ $$ = makeTree(VAR_DEF, 1,  $1);}
+| Champ								{ $$ = makeLeafLVar(VAR_DEF,  $1);}
 ;
 ///////////////////////////////
 
@@ -132,8 +133,10 @@ Champ : VAR ID ':' ID Init ';' 	  { $$ = makeVarDeclP($2,$4,$5);}
 
 //Appel d'une methode
 
-CallMethod : Object'.'ID'('ListArgClause')'	{ $$ = makeTree(E_CALL_METHOD, 3,  $1, $3, $5);}
-| '('ExprRelop')''.'ID'('ListArgClause')'	{ $$ = makeTree(E_CALL_METHOD, 3,  $2, $5, $7);}
+CallMethod : Object'.'ID'('ListArgClause')'	{ 	TreeP id = makeLeafStr(_ID, $3);
+												$$ = makeTree(E_CALL_METHOD, 3,  $1, id, $5);}
+| '('ExprRelop')''.'ID'('ListArgClause')'	{ 	TreeP id = makeLeafStr(_ID, $5);
+												$$ = makeTree(E_CALL_METHOD, 3,  $2, id, $7);}
 ;
 
 block: '{' ListInstClause '}'	{ TreeP decls = makeLeafLVar(DECL, NIL(VarDecl));

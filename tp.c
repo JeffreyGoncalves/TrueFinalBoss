@@ -241,3 +241,179 @@ t_expr* makeExpr(short op, ...){
 	return(expr);
 }*/
 
+/*********	Affichage de l'arbre *********/
+
+void printOP(short op)
+{
+	switch(op)
+	{
+		case SUM : 
+			printf("SUM");
+			break;
+		case MIN : 
+			printf("MIN");
+			break;
+		case MULT : 
+			printf("MULT");
+			break;
+		case DIVI : 
+			printf("DIVI");
+			break;
+		case NE : 
+			printf("NE");
+			break;
+		case EQ : 
+			printf("EQ");
+			break;
+		case LT : 
+			printf("LT");
+			break;
+		case LE : 
+			printf("LE");
+			break;
+		case GT : 
+			printf("GT");
+			break;
+		case GE : 
+			printf("GE");
+			break;
+		case AND : 
+			printf("AND");
+			break;
+		case CST : 
+			printf("CST");
+			break;
+		case STR : 
+			printf("STR");
+			break;
+		case _ID : 
+			printf("_ID");
+			break;
+		case CAST : 
+			printf("CAST");
+			break;
+		case DECL : 
+			printf("DECL");
+			break;
+		case INST : 
+			printf("INST");
+			break;
+		case E_CALL_METHOD : 
+			printf("E_CALL_METHOD");
+			break;
+		case E_SELECT : 
+			printf("E_SELECT");
+			break;
+		case I_ITE : 
+			printf("I_ITE");
+			break;
+		case I_BLOC : 			
+			printf("I_BLOC");
+			break;
+		case I_RETURN : 
+			printf("I_RETURN");
+			break;
+		case I_AFF : 
+			printf("I_AFF");
+			break;
+		case I_EXPRRELOP : 
+			printf("I_EXPRRELOP");
+			break;
+		case I_CHAMP : 
+			printf("I_CHAMP");
+			break;
+		case LIST_ARG : 
+			printf("LIST_ARG");
+			break;
+		case LIST_PARAM : 
+			printf("LIST_PARAM");
+			break;
+		case _EXTENDS : 
+			printf("_EXTENDS");
+			break;
+		case _VAR : 
+			printf("_VAR");
+			break;
+		case LIST_CHAMP : 
+			printf("LIST_CHAMP");
+			break;
+		case CLAS : 
+			printf("CLAS");
+			break;
+		case OBJ : 
+			printf("OBJ");
+			break;
+		case _CLASS : 
+			printf("_CLASS");
+			break;
+		case CLASS_NAME : 
+			printf("CLASS_NAME");
+			break;
+		case _OVERRIDE : 
+			printf("_OVERRIDE");
+			break;
+		case DECLA_OBJECT: 
+			printf("DECLA_OBJECT");
+			break;
+		case LIST_VAR_DEF : 
+			printf("LIST_VAR_DEF");
+			break;
+		case VAR_DEF : 
+			printf("VAR_DEF");
+			break;
+		case DECL_METH : 
+			printf("DECL_METH");
+			break;
+		case LIST_CLASS: 
+			printf("LIST_CLASS");
+			break;
+		case PROG: 
+			printf("PROG");
+			break;
+		default :
+			printf("unknown");
+			break;
+	}
+	printf("\n");
+}
+
+void barAff(int stage)
+{
+	int i;
+	for(i=0;i<stage;i++)
+		printf("|   ");
+	printf("\n");
+}
+
+void arrowAff(int stage)
+{
+	int i;
+	for(i=0;i<stage;i++)
+	{
+		if(i != stage-1) printf("|   ");
+		else printf("---");
+	}
+	printf("-> ");
+}
+
+void affTree(TreeP tree, int stage)
+{
+	int i;
+	
+	/*Affichage du champ op de tree*/
+	barAff(stage);
+	barAff(stage);
+	arrowAff(stage);
+	if(tree != NULL)
+		printOP(tree->op);
+	else printf("null\n");
+	
+	/*On regarde s'il y a des enfants*/
+	if(tree != NULL && tree->nbChildren > 0)
+	{
+		for(i=0;i<tree->nbChildren;i++)
+		{
+			affTree(tree->u.children[i], stage+1);
+		}
+	}
+}
