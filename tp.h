@@ -172,10 +172,10 @@ typedef struct t_expr {
 typedef struct t_method{
 	char* name;
 	t_class* returnType;
-	short nbParametre;
-	struct t_varIdent** parametres;
+	short nbParametres;
+	struct varDeclP parametres;
 	struct TreeP* instructions;
-	int* isRedef;
+	int isRedef;
 }t_method;
 /* liste variables locales
 	La classe d'appartenance*/

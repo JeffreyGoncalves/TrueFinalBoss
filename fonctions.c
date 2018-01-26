@@ -45,24 +45,65 @@ t_class* FindClass(t_class* listClass, char* str){
 	
 	while(listClass->next != NIL(t_class)){
 		listClass = listClass->next;
-		if(0 == strcmp (listClass->name, str)){
+		if(0 == strcmp(listClass->name, str)){
 			return listClass;
 		}
 	}
 	return NIL(t_class);
 }
-/*
+
 t_method* DMtoS(TreeP Tree){
 
-	t_method* forest = NEW(1,t_method);
+	t_method* method = NEW(1,t_method);
 	if(Tree->op == DECL_METH){
-		if(Tree->nbChildren == 3){
+
+		/*NOM DE LA METHODE*/
+		method->name = getChild(Tree,1)->u.str;
+		if(Tree->nbChildren == 3){					/*cas DeclMethod ::= Override DEF ID'(' ListParamClause ')' ':' ID AFF ExprRelop*/
+
+			/*OVERRIDE*/
+			if(getChild(Tree,3) == NULL){
+				method->isReDef == FALSE;	
+			}
+			else{method->isReDef == TRUE;}
+
+			/*PARAMETRES*/
+			method->parametres = getChild(Tree,4)->u.lvar;
+			method->nbParametres = sizeof(method->parametres)/sizeof(VarDecl);
+
+			/*TYPE DE RETOUR*/
+			method->returnType = NEW(1,t_class);
+			method->returnType->name = getChild(Tree,2)->u.str;
+
+			/*EXPRESSIONS*/
+			method->instructions = getChild(Tree,5);
+
+			return method;
 
 		}
 		else{
 
+			/*OVERRIDE*/
+			if(getChild(Tree,2) == NULL){
+				method->isReDef == FALSE;	
+			}
+			else{method->isReDef == TRUE;}
+
+			/*PARAMETRES*/
+			method->parametres = getChild(Tree,3)->u.lvar;
+			method->nbParametres = sizeof(method->parametres)/sizeof(VarDecl);
+
+			/*TYPE DE RETOUR*/
+			method->returnType = NEW(1,t_class);
+
+			/*EXPRESSIONS*/
+			method->instructions = getChild(Tree,4);
+
+			return method;
 		}
 	}
+	else{
+		return NULL;
+	}
 
-
-}*/
+}

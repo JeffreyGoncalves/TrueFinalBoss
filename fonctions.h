@@ -5,6 +5,6 @@
 #include <stdio.h>
 #include <string.h>
 #include "tp.h"
-#include "tp_y.h"
+
 
 t_method* DMtoS(TreeP Tree);
