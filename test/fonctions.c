@@ -1,5 +1,6 @@
 #include "fonctions.h"
 
+
 extern int yyparse();
 extern int yylineno;
 
@@ -11,20 +12,8 @@ extern int yylineno;
 	struct t_class* superClass;
 }t_class;*/
 
-/* REMPLISSAGE STRUCT DE CLASSE */
-t_class* makeListClass(TreeP TreeClass){
+TreeP makeListClass(TreeP List){
 	
-	if(List != NIL(Tree)){
-		myClass = NEW(1, t_class);
-		
-		/*LE NOM*/
-		myClass->name = getChild(TreeClass, 0)->u.str;
-		
-		/*LA LISTE de PARAMETRES*/
-		
-	}else{
-		return NIL(t_class);
-	}
 }
 
 t_method* DMtoS(TreeP Tree){

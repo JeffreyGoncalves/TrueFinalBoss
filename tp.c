@@ -139,7 +139,7 @@ TreeP makeTree(short op, int nbChildren, ...) {
   va_list args;
   TreeP tree = makeNode(nbChildren, op);
   va_start(args, nbChildren);
-int i;
+  int i;
   for(i = 0; i < nbChildren; i++) {
     tree->u.children[i] = va_arg(args, TreeP);
   }
