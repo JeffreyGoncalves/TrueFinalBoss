@@ -45,9 +45,7 @@ t_class* makeListClass(TreeP TreeClass, t_class* firstClass){
 		}else{
 			myClass->methods = giveAllMethod(getChild(TreeClass, 5), firstClass);
 			myClass->attributes = giveAllAttributes(getChild(TreeClass, 5), firstClass);
-		}
-		
-				
+		}		
 		
 		return myClass;
 		
@@ -58,6 +56,24 @@ t_class* makeListClass(TreeP TreeClass, t_class* firstClass){
 
 VarDeclP giveAllAttributes(TreeP tree, t_class* firstClass){
 	
+	/*while(tree != NIL(Tree)){
+		if(getChild(tree, 1)->op == VAR_DEF_METH){
+			t_method* newMeth = DMtoS(getChild(getChild(tree, 1), 1), firstClass);
+			t_method* last;
+			
+			if(list == NIL(t_method)){
+				newMeth = list;
+				last = newMeth;
+			}
+			else{
+				last->next = newMeth;
+				last = newMeth;
+			}
+		}
+		tree = getChild(tree, 2);
+	}
+	return list;*/
+	return NULL;
 }
 
 t_method* giveAllMethod(TreeP tree, t_class* firstClass){
@@ -66,10 +82,15 @@ t_method* giveAllMethod(TreeP tree, t_class* firstClass){
 	while(tree != NIL(Tree)){
 		if(getChild(tree, 1)->op == VAR_DEF_METH){
 			t_method* newMeth = DMtoS(getChild(getChild(tree, 1), 1), firstClass);
+			t_method* last;
 			
-			if(list == NIL(t_method)){newMeth = list;}
+			if(list == NIL(t_method)){
+				newMeth = list;
+				last = newMeth;
+			}
 			else{
-				list->next = newMeth;
+				last->next = newMeth;
+				last = newMeth;
 			}
 		}
 		tree = getChild(tree, 2);
