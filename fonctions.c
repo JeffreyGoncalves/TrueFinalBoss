@@ -18,8 +18,8 @@ list_ClassObjP makeListClassObj(TreeP TreeList){
 	list_ClassObjP list = NIL(list_ClassObj);
 	
 	while(TreeList != NIL(Tree)){
-		if(getChild(TreeList, 2)->op == CLAS){
-			t_class* newClass = makeClass(getChild(getChild(TreeList, 2), 1), list->listClass);
+		if(getChild(TreeList, 1)->op == CLAS){
+			t_class* newClass = makeClass(getChild(getChild(TreeList, 1), 0), list->listClass);
 			t_class* lastClass;
 			
 			if(list->listClass == NIL(t_class)){
@@ -31,20 +31,20 @@ list_ClassObjP makeListClassObj(TreeP TreeList){
 				lastClass = newClass;
 			}
 		}
-		else if(getChild(TreeList, 2)->op == OBJ){ /*TODO*/
-			/*t_class* newClass = makeClass(TreeP TreeClass, t_class* firstClass);
-			t_class* lastClass;
+		else if(getChild(TreeList, 1)->op == OBJ){
+			t_object* newObj = makeObj(getChild(getChild(TreeList, 1), 0), list->listClass);
+			t_object* lastObj;
 			
-			if(list == NIL(VarDecl)){
-				list = newClass;
-				last = newClass;
+			if(list->listObj == NIL(t_object)){
+				list->listObj = newObj;
+				lastObj = newObj;
 			}
 			else{
-				last->next = newClass;
-				last = newClass;
-			}*/
+				lastObj->next = newObj;
+				lastObj = newObj;
+			}
 		}
-		TreeList = getChild(TreeList, 1);
+		TreeList = getChild(TreeList, 0);
 	}
 	return list;
 }
@@ -59,28 +59,33 @@ t_class* makeClass(TreeP TreeClass, t_class* firstClass){
 		myClass->name = getChild(TreeClass, 0)->u.str;
 		
 		/*LA LISTE de PARAMETRES*/
-		if(getChild(TreeClass, 4) != NIL(Tree)){
-			myClass->parametres = getChild(TreeClass, 2)->u.lvar;
-			myClass->constructor = makeConstructor(myClass, myClass->parametres, getChild(TreeClass, 4));
+		if(getChild(TreeClass, 1) != NIL(Tree)){
+			myClass->parametres = getChild(TreeClass, 1)->u.lvar;
 		}else{
 			myClass->parametres = NIL(VarDecl);
+		}
+		
+		/* CONSTRUCTOR */
+		if(getChild(TreeClass, 3) != NIL(Tree)){
+			myClass->constructor = makeConstructor(myClass, myClass->parametres, getChild(TreeClass, 3));
+		}else{
 			myClass->constructor = NIL(t_method);
 		}
 		
 		/*EXTENDS ?*/
-		if(getChild(TreeClass, 3) != NIL(Tree)){
-			myClass->superClass = FindClass(firstClass, getChild(getChild(TreeClass, 3), 1)->u.str);
+		if(getChild(TreeClass, 2) != NIL(Tree)){
+			myClass->superClass = FindClass(firstClass, getChild(getChild(TreeClass, 2), 0)->u.str);
 		}else{
 			myClass->superClass = NIL(t_class);
 		}
 		
 		/* LES METHODES  & LES ATTRIBUTS*/
-		if(getChild(TreeClass, 5) != NIL(Tree)){
+		if(getChild(TreeClass, 4) != NIL(Tree)){
 			myClass->methods = NIL(t_method);
 			myClass->attributes = NIL(VarDecl);
 		}else{
-			myClass->methods = giveAllMethod(getChild(TreeClass, 5), firstClass);
-			myClass->attributes = giveAllAttributes(getChild(TreeClass, 5), firstClass);
+			myClass->methods = giveAllMethod(getChild(TreeClass, 4), firstClass);
+			myClass->attributes = giveAllAttributes(getChild(TreeClass, 4), firstClass);
 		}		
 		
 		return myClass;
@@ -90,12 +95,37 @@ t_class* makeClass(TreeP TreeClass, t_class* firstClass){
 	}
 }
 
+/* REMPLISSAGE STRUCT DE OBJECT */
+t_object* makeObj(TreeP TreeObject, t_class* firstClass){
+	
+	if(TreeObject != NIL(Tree)){
+		t_object* myObject = NEW(1, t_object);
+		
+		/*LE NOM*/
+		myObject->name = getChild(TreeObject, 0)->u.str;
+		
+		/* LES METHODES  & LES ATTRIBUTS*/
+		if(getChild(TreeObject, 1) != NIL(Tree)){
+			myObject->methods = NIL(t_method);
+			myObject->attributes = NIL(VarDecl);
+		}else{
+			myObject->methods = giveAllMethod(getChild(TreeObject, 1), firstClass);
+			myObject->attributes = giveAllAttributes(getChild(TreeObject, 1), firstClass);
+		}		
+		
+		return myObject;
+		
+	}else{
+		return NIL(t_object);
+	}
+}
+
 VarDeclP giveAllAttributes(TreeP tree, t_class* firstClass){
 	VarDeclP list = NIL(VarDecl);
 	
 	while(tree != NIL(Tree)){
-		if(getChild(tree, 1)->op == VAR_DEF_CHAMP){
-			VarDeclP newChamp = getChild(tree, 1)->u.lvar;
+		if(getChild(tree, 0)->op == VAR_DEF_CHAMP){
+			VarDeclP newChamp = getChild(getChild(tree, 0), 0)->u.lvar;
 			VarDeclP last;
 			
 			if(list == NIL(VarDecl)){
@@ -107,7 +137,7 @@ VarDeclP giveAllAttributes(TreeP tree, t_class* firstClass){
 				last = newChamp;
 			}
 		}
-		tree = getChild(tree, 2);
+		tree = getChild(tree, 1);
 	}
 	return list;
 }
@@ -116,8 +146,8 @@ t_method* giveAllMethod(TreeP tree, t_class* firstClass){
 	t_method* list = NIL(t_method);
 	
 	while(tree != NIL(Tree)){
-		if(getChild(tree, 1)->op == VAR_DEF_METH){
-			t_method* newMeth = DMtoS(getChild(getChild(tree, 1), 1), firstClass);
+		if(getChild(tree, 0)->op == VAR_DEF_METH){
+			t_method* newMeth = DMtoS(getChild(getChild(tree, 0), 0), firstClass);
 			t_method* last;
 			
 			if(list == NIL(t_method)){
@@ -129,7 +159,7 @@ t_method* giveAllMethod(TreeP tree, t_class* firstClass){
 				last = newMeth;
 			}
 		}
-		tree = getChild(tree, 2);
+		tree = getChild(tree, 1);
 	}
 	return list;
 }

@@ -14,3 +14,4 @@ t_method* giveAllMethod(TreeP tree, t_class* firstClass);
 t_class* FindClass(t_class* listClass, char* str);
 t_class* makeClass(TreeP TreeClass, t_class* firstClass);
 list_ClassObjP makeListClassObj(TreeP TreeList);
+t_object* makeObj(TreeP TreeObject, t_class* firstClass);

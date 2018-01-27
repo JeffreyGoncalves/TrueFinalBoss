@@ -129,9 +129,9 @@ typedef struct t_class{
 
 typedef struct t_object{
 	char* name;
-	struct t_method* constructor;
-	struct t_method** methods;
-	struct VarDecl** attributes;
+	struct t_method* methods;
+	VarDeclP attributes;
+	struct t_object* next;
 }t_object;
 
 typedef struct t_variable{
