@@ -12,4 +12,5 @@ t_method* makeConstructor(t_class* class, VarDeclP param, TreeP corps);
 VarDeclP giveAllAttributes(TreeP tree, t_class* firstClass);
 t_method* giveAllMethod(TreeP tree, t_class* firstClass);
 t_class* FindClass(t_class* listClass, char* str);
-t_class* makeListClass(TreeP TreeClass, t_class* firstClass);
+t_class* makeClass(TreeP TreeClass, t_class* firstClass);
+list_ClassObjP makeListClassObj(TreeP TreeList);

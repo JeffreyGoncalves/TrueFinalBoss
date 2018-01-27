@@ -13,8 +13,44 @@ extern int yylineno;
 	struct t_class* next;
 }t_class;*/
 
+/* REMPLISSAGE DE LA LISTE DE CLASSES & OBJETS*/
+list_ClassObjP makeListClassObj(TreeP TreeList){
+	list_ClassObjP list = NIL(list_ClassObj);
+	
+	while(TreeList != NIL(Tree)){
+		if(getChild(TreeList, 2)->op == CLAS){
+			t_class* newClass = makeClass(getChild(getChild(TreeList, 2), 1), list->listClass);
+			t_class* lastClass;
+			
+			if(list->listClass == NIL(t_class)){
+				list->listClass = newClass;
+				lastClass = newClass;
+			}
+			else{
+				lastClass->next = newClass;
+				lastClass = newClass;
+			}
+		}
+		else if(getChild(TreeList, 2)->op == OBJ){ /*TODO*/
+			/*t_class* newClass = makeClass(TreeP TreeClass, t_class* firstClass);
+			t_class* lastClass;
+			
+			if(list == NIL(VarDecl)){
+				list = newClass;
+				last = newClass;
+			}
+			else{
+				last->next = newClass;
+				last = newClass;
+			}*/
+		}
+		TreeList = getChild(TreeList, 1);
+	}
+	return list;
+}
+
 /* REMPLISSAGE STRUCT DE CLASSE */
-t_class* makeListClass(TreeP TreeClass, t_class* firstClass){
+t_class* makeClass(TreeP TreeClass, t_class* firstClass){
 	
 	if(TreeClass != NIL(Tree)){
 		t_class* myClass = NEW(1, t_class);
@@ -55,25 +91,25 @@ t_class* makeListClass(TreeP TreeClass, t_class* firstClass){
 }
 
 VarDeclP giveAllAttributes(TreeP tree, t_class* firstClass){
+	VarDeclP list = NIL(VarDecl);
 	
-	/*while(tree != NIL(Tree)){
-		if(getChild(tree, 1)->op == VAR_DEF_METH){
-			t_method* newMeth = DMtoS(getChild(getChild(tree, 1), 1), firstClass);
-			t_method* last;
+	while(tree != NIL(Tree)){
+		if(getChild(tree, 1)->op == VAR_DEF_CHAMP){
+			VarDeclP newChamp = getChild(tree, 1)->u.lvar;
+			VarDeclP last;
 			
-			if(list == NIL(t_method)){
-				newMeth = list;
-				last = newMeth;
+			if(list == NIL(VarDecl)){
+				list = newChamp;
+				last = newChamp;
 			}
 			else{
-				last->next = newMeth;
-				last = newMeth;
+				last->next = newChamp;
+				last = newChamp;
 			}
 		}
 		tree = getChild(tree, 2);
 	}
-	return list;*/
-	return NULL;
+	return list;
 }
 
 t_method* giveAllMethod(TreeP tree, t_class* firstClass){
@@ -85,7 +121,7 @@ t_method* giveAllMethod(TreeP tree, t_class* firstClass){
 			t_method* last;
 			
 			if(list == NIL(t_method)){
-				newMeth = list;
+				list = newMeth;
 				last = newMeth;
 			}
 			else{

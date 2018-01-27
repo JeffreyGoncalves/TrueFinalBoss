@@ -139,6 +139,11 @@ typedef struct t_variable{
 	TreeP value;
 }t_variable;
 
+typedef struct list_ClassObj{
+	t_class* listClass;
+	t_object* listObj;
+}list_ClassObj, *list_ClassObjP;
+
 /*
 typedef struct t_affect{
 	struct t_expr* variable;
