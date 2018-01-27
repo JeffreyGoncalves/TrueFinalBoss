@@ -115,7 +115,6 @@ t_method* makeConstructor(t_class* class, VarDeclP param, TreeP corps){/* TODO *
 			tmp = tmp->next;
 			method->nbParametres++;
 		}
-		free(tmp);
 
 		method->returnType = class; /*TYPE DE RETOUR*/
 		method->bloc = corps;		/*L'ensemble des instructions*/
@@ -164,7 +163,6 @@ t_method* DMtoS(TreeP Tree,t_class* listClass){
 				tmp = tmp->next;
 				method->nbParametres++;
 			}
-			free(tmp);
 
 			/*TYPE DE RETOUR*/
 			method->returnType = NEW(1,t_class);
@@ -192,7 +190,6 @@ t_method* DMtoS(TreeP Tree,t_class* listClass){
 				tmp = tmp->next;
 				method->nbParametres++;
 			}
-			free(tmp);
 
 			/*TYPE DE RETOUR*/ /*ici le l'option facultative de type de retour est a prendre en compte*/
 			method->returnType = NEW(1,t_class);
