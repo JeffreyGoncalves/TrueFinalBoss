@@ -99,11 +99,34 @@ t_method* giveAllMethod(TreeP tree, t_class* firstClass){
 }
 
 t_method* makeConstructor(t_class* class, VarDeclP param, TreeP corps){/* TODO */
+	t_method* method = NEW(1,t_method);
+
+	if(class != NIL(t_class)){
+		/*NOM*/
+		method->name = class->name;
+
+		method->isRedef = FALSE; /*ici pas de redéfinition vu qu'il s'agit d'un constructeur*/
+
+		/*PARAMETRES*/
+		method->parametres = param;
+		method->nbParametres = 0;
+		VarDeclP tmp = method->parametres;
+		while(tmp->next != NIL(VarDecl)){
+			tmp = tmp->next;
+			method->nbParametres++;
+		}
+		free(tmp);
+
+		method->returnType = class; /*TYPE DE RETOUR*/
+		method->bloc = corps;		/*L'ensemble des instructions*/
+
+			return method;
+	}
+	free(method);
 	return NULL;
 }
 
 t_class* FindClass(t_class* listClass, char* str){
-	
 	if(0 == strcmp (listClass->name, str)){
 			return listClass;
 	}
@@ -153,7 +176,7 @@ t_method* DMtoS(TreeP Tree,t_class* listClass){
 			return method;
 
 		}
-		else{
+		else{			/*cas DeclMethod ::= Override DEF ID'(' ListParamClause ')' ClassClause IS block */
 
 			/*OVERRIDE*/
 			if(getChild(Tree,2) == NULL){
@@ -186,5 +209,6 @@ t_method* DMtoS(TreeP Tree,t_class* listClass){
 			return method;
 		}
 	}
+	free(method);
 	return NULL;
 }
