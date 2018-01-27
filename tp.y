@@ -20,7 +20,8 @@
 
 
 %{
-#include "tp.h"
+/*#include "tp.h"*/
+#include "fonctions.h"
 #include "tp_y.h"
 
 extern int yylex();
@@ -30,7 +31,10 @@ extern void yyerror(char *);
 %%
 //Structure du programme
 Prog : listClassObj block 				{ $$ = makeTree(PROG, 2, $1, $2);
-										  affTree($$, 0);				}
+										  /*affTree($$, 0);*/
+										  list_ClassObjP list = makeListClassObj($1);
+										  afficheClass(list->listClass);			
+										  }
 ;	
 
 //Gestion des Objets et Classes
@@ -44,7 +48,8 @@ ClassObj : declClass					{ $$ = makeTree(CLAS, 1, $1); }
 
 declClass : CLASS ID '(' ListParamClause ')' extendsClause constructorClause IS classObjBlock 
 { TreeP id = makeLeafStr(_ID, $2);
-  $$ = makeTree(_CLASS,5,id,$4,$6,$7,$9);}
+  $$ = makeTree(_CLASS,5,id,$4,$6,$7,$9);
+  }
 ;
 
 declObject : OBJECT ID IS classObjBlock { 	TreeP id = makeLeafStr(_ID, $2);
@@ -56,7 +61,9 @@ constructorClause : block			{ $$ = $1;}
 ;
 
 ////// Parametres //////
-ListParamClause : ListParam			{ $$ = $1;}
+ListParamClause : ListParam			{ $$ = $1;
+										/*afficheParam($$->u.lvar);*/
+									}
 | 									{ $$ = NIL(Tree);}
 ;
 
@@ -112,9 +119,9 @@ VarDef : declMethod					{ $$ = makeTree(VAR_DEF_METH, 1,  $1);}
 // Declaration d'une methode //
 declMethod : Override DEF ID'(' ListParamClause ')' ':' ID AFF ExprRelop { TreeP id1 = makeLeafStr(_ID,$3);
 																		   TreeP id2 = makeLeafStr(_ID,$8);
-																		   $$ = makeTree(DECL_METH,3,id1,id2,$1,$5,$10);}
+																		   $$ = makeTree(DECL_METH_1,5,id1,id2,$1,$5,$10);}
 | Override DEF ID'(' ListParamClause ')' ClassClause IS block            { TreeP id = makeLeafStr(_ID,$3);
-																		   $$ = makeTree(DECL_METH,4,id,$1,$5,$7,$9);}
+																		   $$ = makeTree(DECL_METH_2,5,id,$1,$5,$7,$9);}
 ;
 
 Override : OVERRIDE		{ $$ = makeLeafStr(_OVERRIDE, "override");}

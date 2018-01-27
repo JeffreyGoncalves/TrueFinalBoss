@@ -67,7 +67,8 @@ typedef unsigned char bool;
 #define LIST_VAR_DEF 37
 #define VAR_DEF_METH 38
 #define VAR_DEF_CHAMP 39
-#define DECL_METH 44
+#define DECL_METH_1 44
+#define DECL_METH_2 51
 #define LIST_CLASS 45
 
 #define PROG 100

@@ -15,13 +15,13 @@ extern int yylineno;
 
 /* REMPLISSAGE DE LA LISTE DE CLASSES & OBJETS*/
 list_ClassObjP makeListClassObj(TreeP TreeList){
-	list_ClassObjP list = NIL(list_ClassObj);
+	list_ClassObjP list = NEW(1, list_ClassObj);
 	
 	while(TreeList != NIL(Tree)){
 		if(getChild(TreeList, 1)->op == CLAS){
 			t_class* newClass = makeClass(getChild(getChild(TreeList, 1), 0), list->listClass);
 			t_class* lastClass;
-			
+
 			if(list->listClass == NIL(t_class)){
 				list->listClass = newClass;
 				lastClass = newClass;
@@ -74,13 +74,16 @@ t_class* makeClass(TreeP TreeClass, t_class* firstClass){
 		
 		/*EXTENDS ?*/
 		if(getChild(TreeClass, 2) != NIL(Tree)){
-			myClass->superClass = FindClass(firstClass, getChild(getChild(TreeClass, 2), 0)->u.str);
+			t_class* classTempo = NEW(1, t_class);
+			classTempo->name = getChild(getChild(TreeClass, 2), 0)->u.str; /* On lie la 'vraie' super-classe lors de la vérification contextuelle de portée.*/
+			myClass->superClass = classTempo;
+
 		}else{
 			myClass->superClass = NIL(t_class);
 		}
 		
 		/* LES METHODES  & LES ATTRIBUTS*/
-		if(getChild(TreeClass, 4) != NIL(Tree)){
+		if(getChild(TreeClass, 4) == NIL(Tree)){
 			myClass->methods = NIL(t_method);
 			myClass->attributes = NIL(VarDecl);
 		}else{
@@ -111,7 +114,7 @@ t_object* makeObj(TreeP TreeObject, t_class* firstClass){
 		}else{
 			myObject->methods = giveAllMethod(getChild(TreeObject, 1), firstClass);
 			myObject->attributes = giveAllAttributes(getChild(TreeObject, 1), firstClass);
-		}		
+		}
 		
 		return myObject;
 		
@@ -122,10 +125,9 @@ t_object* makeObj(TreeP TreeObject, t_class* firstClass){
 
 VarDeclP giveAllAttributes(TreeP tree, t_class* firstClass){
 	VarDeclP list = NIL(VarDecl);
-	
 	while(tree != NIL(Tree)){
 		if(getChild(tree, 0)->op == VAR_DEF_CHAMP){
-			VarDeclP newChamp = getChild(getChild(tree, 0), 0)->u.lvar;
+			VarDeclP newChamp = getChild(tree, 0)->u.lvar;
 			VarDeclP last;
 			
 			if(list == NIL(VarDecl)){
@@ -143,10 +145,12 @@ VarDeclP giveAllAttributes(TreeP tree, t_class* firstClass){
 }
 
 t_method* giveAllMethod(TreeP tree, t_class* firstClass){
+	
 	t_method* list = NIL(t_method);
 	
 	while(tree != NIL(Tree)){
 		if(getChild(tree, 0)->op == VAR_DEF_METH){
+			
 			t_method* newMeth = DMtoS(getChild(getChild(tree, 0), 0), firstClass);
 			t_method* last;
 			
@@ -164,7 +168,8 @@ t_method* giveAllMethod(TreeP tree, t_class* firstClass){
 	return list;
 }
 
-t_method* makeConstructor(t_class* class, VarDeclP param, TreeP corps){/* TODO */
+t_method* makeConstructor(t_class* class, VarDeclP param, TreeP corps){
+	
 	t_method* method = NEW(1,t_method);
 
 	if(class != NIL(t_class)){
@@ -212,56 +217,25 @@ t_class* FindClass(t_class* listClass, char* str){
 }
 
 
-t_method* DMtoS(TreeP Tree,t_class* listClass){
-
+t_method* DMtoS(TreeP TreeM,t_class* listClass){
+	
 	t_method* method = NEW(1,t_method);
-	if(Tree->op == DECL_METH){
+	
+	if(TreeM->op == DECL_METH_1 || TreeM->op == DECL_METH_2){
 
 		/*NOM DE LA METHODE*/
-		method->name = getChild(Tree,1)->u.str;
-		if(Tree->nbChildren == 3){					/*cas DeclMethod ::= Override DEF ID'(' ListParamClause ')' ':' ID AFF ExprRelop*/
+		method->name = getChild(TreeM,0)->u.str;
+		if(TreeM->op == DECL_METH_1){					/*cas DeclMethod ::= Override DEF ID'(' ListParamClause ')' ':' ID AFF ExprRelop*/
 
 			/*OVERRIDE*/
-			if(getChild(Tree,3) == NULL){
+			if(getChild(TreeM,2) == NULL){
 				method->isRedef = FALSE;	
 			}
 			else method->isRedef = TRUE;
 
 			/*PARAMETRES*/
-			method->parametres = getChild(Tree,4)->u.lvar;
-			if(method->parametres != NIL(VarDecl))
-			{
-				method->nbParametres = 1;
-				VarDeclP tmp = method->parametres;
-				while(tmp->next != NIL(VarDecl)){
-					tmp = tmp->next;
-					method->nbParametres++;
-				}
-			}
-			else{
-				method->nbParametres = 0; 
-			}
-
-			/*TYPE DE RETOUR*/
-			method->returnType = NEW(1,t_class);
-			method->returnType = FindClass(listClass,getChild(Tree,2)->u.str);
-
-			/*BLOC D'EXPRESSIONS*/
-			method->bloc = getChild(Tree,5);
-
-			return method;
-
-			}
-		else{			/*cas DeclMethod ::= Override DEF ID'(' ListParamClause ')' ClassClause IS block */
-
-				/*OVERRIDE*/
-				if(getChild(Tree,2) == NULL){
-				method->isRedef = FALSE;	
-				}
-				else method->isRedef = TRUE;
-
-				/*PARAMETRES*/
-				method->parametres = getChild(Tree,4)->u.lvar;
+			if(getChild(TreeM,3) != NIL(Tree)){
+				method->parametres = getChild(TreeM,3)->u.lvar;
 				if(method->parametres != NIL(VarDecl))
 				{
 					method->nbParametres = 1;
@@ -272,26 +246,112 @@ t_method* DMtoS(TreeP Tree,t_class* listClass){
 					}
 				}
 				else{
-				method->nbParametres = 0;
+					method->nbParametres = 0; 
+				}
+			}else{
+					method->parametres = NIL(VarDecl);
+					method->nbParametres = 0;
+			}
+			
+			/*TYPE DE RETOUR*/
+			method->returnType = NEW(1,t_class);
+			/*printf("%s\n",getChild(TreeM,1)->u.str);*/
+			method->returnType->name = getChild(TreeM,1)->u.str;
 
+			/*BLOC D'EXPRESSIONS*/
+			method->bloc = getChild(TreeM,4);
+
+			return method;
+
+			}
+		else{			/*cas DeclMethod ::= Override DEF ID'(' ListParamClause ')' ClassClause IS block */
+
+				/*OVERRIDE*/
+				if(getChild(TreeM,1) == NULL){
+				method->isRedef = FALSE;	
+				}
+				else method->isRedef = TRUE;
+
+				/*PARAMETRES*/
+				if(getChild(TreeM,2) != NIL(Tree)){
+					method->parametres = getChild(TreeM,2)->u.lvar;
+					if(method->parametres != NIL(VarDecl))
+					{
+						
+						method->nbParametres = 1;
+						VarDeclP tmp = method->parametres;
+						
+						while(tmp->next != NIL(VarDecl)){
+							tmp = tmp->next;
+							method->nbParametres++;
+						}
+					}
+					else{
+						method->nbParametres = 0;
+					}
+				}else{
+					method->parametres = NIL(VarDecl);
+					method->nbParametres = 0;
 				}
 
 			/*TYPE DE RETOUR*/ /*ici le l'option facultative de type de retour est a prendre en compte*/
 			method->returnType = NEW(1,t_class);
-			if(getChild(Tree,2)->u.str == NULL){
-				method->returnType = FindClass(listClass,"void");
+			if(getChild(TreeM,3) == NIL(Tree)){
+				method->returnType->name = "Void"; 		/* On lie la 'vraie' classe lors de la vérification contextuelle de portée.*/
 				
 			}
 			else{
-				method->returnType = FindClass(listClass,getChild(Tree,4)->u.str);
+				method->returnType->name = getChild(TreeM,4)->u.str;
 			}
-
+			
 			/*BLOC*/
-			method->bloc = getChild(Tree,4);
+			method->bloc = getChild(TreeM,4);
 
 			return method;
 		}
 	}
 	free(method);
 	return NULL;
+}
+
+void afficheClass(t_class* liste){
+	
+	printf("*****	LISTE DES CLASSES	*****\n\n");
+	
+	while(liste != NIL(t_class)){
+		printf("***	NAME : %s\n", liste->name);
+		printf("***	PARAMETRES : "); afficheParam(liste->parametres);
+		printf("\n");
+		printf("***	SUPER-CLASSE : ");
+		if(liste->superClass != NIL(t_class)){printf("%s\n",liste->superClass->name);}
+		else{printf("\n");}
+		printf("***	CONSTRUCTEUR : %d\n", liste->constructor != NIL(t_method));
+		printf("***	ATTRIBUTS : "); afficheParam(liste->attributes);
+		printf("\n");
+		printf("***	METHODES :\n"); afficheNomMethod(liste->methods);
+		printf("-------------------------\n");
+		liste = liste->next;
+	}
+}
+
+void afficheParam(VarDeclP liste){
+	/*printf("*****	LISTE DES PARAM	*****\n\n");*/
+	while(liste != NIL(VarDecl)){
+		printf("%s,", liste->name);
+		liste = liste->next;
+	}
+	
+	/*printf("-------------------------\n");*/
+}
+
+void afficheNomMethod(t_method* liste){
+	/*printf("*****	LISTE DES PARAM	*****\n\n");*/
+	while(liste != NIL(t_method)){
+		printf("   %s(", liste->name);
+		afficheParam(liste->parametres);
+		printf(")\n");
+		liste = liste->next;
+	}
+	printf("\n");
+	/*printf("-------------------------\n");*/
 }
