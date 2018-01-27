@@ -109,11 +109,17 @@ t_method* makeConstructor(t_class* class, VarDeclP param, TreeP corps){/* TODO *
 
 		/*PARAMETRES*/
 		method->parametres = param;
-		method->nbParametres = 0;
-		VarDeclP tmp = method->parametres;
-		while(tmp->next != NIL(VarDecl)){
-			tmp = tmp->next;
-			method->nbParametres++;
+		if(method->parametres != NIL(VarDecl))
+		{
+			method->nbParametres = 1;
+			VarDeclP tmp = method->parametres;
+			while(tmp->next != NIL(VarDecl)){
+				tmp = tmp->next;
+				method->nbParametres++;
+			}
+		}
+		else{
+			method->nbParametres = 0; 
 		}
 
 		method->returnType = class; /*TYPE DE RETOUR*/
@@ -157,11 +163,17 @@ t_method* DMtoS(TreeP Tree,t_class* listClass){
 
 			/*PARAMETRES*/
 			method->parametres = getChild(Tree,4)->u.lvar;
-			method->nbParametres = 0;
-			VarDeclP tmp = method->parametres;
-			while(tmp->next != NIL(VarDecl)){
-				tmp = tmp->next;
-				method->nbParametres++;
+			if(method->parametres != NIL(VarDecl))
+			{
+				method->nbParametres = 1;
+				VarDeclP tmp = method->parametres;
+				while(tmp->next != NIL(VarDecl)){
+					tmp = tmp->next;
+					method->nbParametres++;
+				}
+			}
+			else{
+				method->nbParametres = 0; 
 			}
 
 			/*TYPE DE RETOUR*/
@@ -173,28 +185,36 @@ t_method* DMtoS(TreeP Tree,t_class* listClass){
 
 			return method;
 
-		}
+			}
 		else{			/*cas DeclMethod ::= Override DEF ID'(' ListParamClause ')' ClassClause IS block */
 
-			/*OVERRIDE*/
-			if(getChild(Tree,2) == NULL){
+				/*OVERRIDE*/
+				if(getChild(Tree,2) == NULL){
 				method->isRedef = FALSE;	
-			}
-			else method->isRedef = TRUE;
+				}
+				else method->isRedef = TRUE;
 
-			/*PARAMETRES*/
-			method->parametres = getChild(Tree,4)->u.lvar;
-			method->nbParametres = 0;
-			VarDeclP tmp = method->parametres;
-			while(tmp->next != NIL(VarDecl)){
-				tmp = tmp->next;
-				method->nbParametres++;
-			}
+				/*PARAMETRES*/
+				method->parametres = getChild(Tree,4)->u.lvar;
+				if(method->parametres != NIL(VarDecl))
+				{
+					method->nbParametres = 1;
+					VarDeclP tmp = method->parametres;
+					while(tmp->next != NIL(VarDecl)){
+						tmp = tmp->next;
+						method->nbParametres++;
+					}
+				}
+				else{
+				method->nbParametres = 0;
+
+				}
 
 			/*TYPE DE RETOUR*/ /*ici le l'option facultative de type de retour est a prendre en compte*/
 			method->returnType = NEW(1,t_class);
-			if(getChild(Tree,4)->u.str == NULL){
+			if(getChild(Tree,2)->u.str == NULL){
 				method->returnType = FindClass(listClass,"void");
+				
 			}
 			else{
 				method->returnType = FindClass(listClass,getChild(Tree,4)->u.str);
