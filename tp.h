@@ -70,6 +70,7 @@ typedef unsigned char bool;
 #define DECL_METH_1 44
 #define DECL_METH_2 51
 #define LIST_CLASS 45
+#define EXPR_RELOP 52
 
 #define PROG 100
 

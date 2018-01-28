@@ -192,15 +192,15 @@ t_method* makeConstructor(t_class* class, VarDeclP param, TreeP corps){
 	return NULL;
 }
 
-t_class* FindClass(t_class* listClass, t_class* str){
+t_class* FindClass(t_class* listClass, char* str){
 	
-	if(0 == strcmp(listClass->name, str->name)){
+	if(0 == strcmp(listClass->name, str)){
 			return listClass;
 	}
 	
 	while(listClass->next != NIL(t_class)){
 		listClass = listClass->next;
-		if(0 == strcmp (listClass->name, str->name)){
+		if(0 == strcmp (listClass->name, str)){
 			return listClass;
 		}
 	}
@@ -377,25 +377,227 @@ int verifcationTypageEnvironnement(list_ClassObjP environnement){
 }*/
 
 /*
-Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP environnement){
+typedef struct _varDecl {
+	char *name;
+	struct t_variable* coeur;
+	struct _varDecl *next;
+} VarDecl, *VarDeclP;
+typedef struct t_variable{
+	struct t_class* _type;
+	TreeP value;
+}t_variable;
+* typedef struct Vtypage{
+	char* class;
+	int succes;
+}Vtypage, *VtypageP;
+*/
+
+Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
+	
+	Vtypage result;
+	Vtypage veriFils[5];
+	int i;
+	result.succes = 1;
+	
+	if(noeud == NIL(Tree)) return result;
 	
 	switch(noeud->op){
+		
 		case I_BLOC:
-			if (verifcationTypageNoeud(getChild(noeud, 1), environnement)->succes  )
+			return verifTypageSuccesFils(noeud->nbChildren, noeud, env);
+		
+		case DECL:
+			return verifcationTypageListVarDecl(noeud->u.lvar, env);
+		case LIST_PARAM:
+			return verifcationTypageListVarDecl(noeud->u.lvar, env);
 			
+		case INST:
+			return verifTypageSuccesFils(noeud->nbChildren, noeud, env);
+
+		case I_RETURN: /* PAS FINI ! */
+			return result;
+		
+		case I_EXPRRELOP:
+			return verifTypageSuccesFils(noeud->nbChildren, noeud, env);
+			
+		case I_ITE:
+			for(i=0 ; i<noeud->nbChildren ; i++){
+				veriFils[i] = verifcationTypageNoeud(getChild(noeud, i), env);
+				if(!(veriFils[i].succes)){
+					result.succes = 0;
+					return result;
+				}
+			}
+
+			if(0 == strcmp(veriFils[0].class->name,"Interger")){
+				return result;
+			}
+			break;
+			
+		case I_AFF:
+			for(i=0 ; i<noeud->nbChildren ; i++){
+				veriFils[i] = verifcationTypageNoeud(getChild(noeud, i), env);
+				if(!(veriFils[i].succes)){
+					result.succes = 0;
+					return result;
+				}
+			}
+
+			if(0 == strcmp(veriFils[0].class->name, veriFils[1].class->name)){
+				return result;
+			}
+			break;
+			
+		case EXPR_RELOP:
+			for(i=0 ; i<noeud->nbChildren ; i++){
+				veriFils[i] = verifcationTypageNoeud(getChild(noeud, i), env);
+				if(!(veriFils[i].succes)){
+					result.succes = 0;
+					return result;
+				}
+			}
+
+			if(0 == strcmp(veriFils[0].class->name,"Interger") && 0 == strcmp(veriFils[1].class->name,"Interger")){
+				result.class = veriFils[0].class;
+				return result;
+			}
+			break;
+			
+		case SUM:
+			for(i=0 ; i<noeud->nbChildren ; i++){
+				veriFils[i] = verifcationTypageNoeud(getChild(noeud, i), env);
+				if(!(veriFils[i].succes)){
+					result.succes = 0;
+					return result;
+				}
+			}
+
+			if(0 == strcmp(veriFils[0].class->name,"Interger") && 0 == strcmp(veriFils[1].class->name,"Interger")){
+				result.class = veriFils[0].class;
+				return result;
+			}
+			break;
+			
+		case MIN:
+			for(i=0 ; i<noeud->nbChildren ; i++){
+				veriFils[i] = verifcationTypageNoeud(getChild(noeud, i), env);
+				if(!(veriFils[i].succes)){
+					result.succes = 0;
+					return result;
+				}
+			}
+
+			if(0 == strcmp(veriFils[0].class->name,"Interger") && 0 == strcmp(veriFils[1].class->name,"Interger")){
+				result.class = veriFils[0].class;
+				return result;
+			}
+			break;
+		
+		case MULT:
+			for(i=0 ; i<noeud->nbChildren ; i++){
+				veriFils[i] = verifcationTypageNoeud(getChild(noeud, i), env);
+				if(!(veriFils[i].succes)){
+					result.succes = 0;
+					return result;
+				}
+			}
+
+			if(0 == strcmp(veriFils[0].class->name,"Interger") && 0 == strcmp(veriFils[1].class->name,"Interger")){
+				result.class = veriFils[0].class;
+				return result;
+			}
+			break;
+		
+		case DIVI:
+			for(i=0 ; i<noeud->nbChildren ; i++){
+				veriFils[i] = verifcationTypageNoeud(getChild(noeud, i), env);
+				if(!(veriFils[i].succes)){
+					result.succes = 0;
+					return result;
+				}
+			}
+
+			if(0 == strcmp(veriFils[0].class->name,"Interger") && 0 == strcmp(veriFils[1].class->name,"Interger")){
+				result.class = veriFils[0].class;
+				return result;
+			}
+			break;
+			
+		case AND:
+			for(i=0 ; i<noeud->nbChildren ; i++){
+				veriFils[i] = verifcationTypageNoeud(getChild(noeud, i), env);
+				if(!(veriFils[i].succes)){
+					result.succes = 0;
+					return result;
+				}
+			}
+
+			if(0 == strcmp(veriFils[0].class->name,"String") && 0 == strcmp(veriFils[1].class->name,"String")){
+				result.class = veriFils[0].class;
+				return result;
+			}
+			break;
+			
+		case CST:
+			result.class = FindClass(env->listClass, "Integer");
+			return result;
+			break;
+		
+		case _ID:
+			result.class = FindClass(env->listClass, "String");
+			return result;
+			break;
+			
+		case CAST:
+			for(i=0 ; i<noeud->nbChildren ; i++){
+				veriFils[i] = verifcationTypageNoeud(getChild(noeud, i), env);
+				if(!(veriFils[i].succes)){
+					result.succes = 0;
+					return result;
+				}
+			}
+
+			if(0 == strcmp(veriFils[0].class->name,"String") && 0 == strcmp(veriFils[1].class->name,"String")){
+				return result;
+			}
+			break;
 	}
+	
+	result.succes = 0;
+	return result;
 }
 
-Vtypage verifcationTypageListVarDecl(VarDeclP liste, list_ClassObjP environnement){
+Vtypage verifTypageSuccesFils(short nbre, TreeP noeud, list_ClassObjP env){
+	Vtypage res;
+	res.succes = 0;
+	
+	int i;
+	for(i=0 ; i<nbre ; i++){
+		if(!(verifcationTypageNoeud(getChild(noeud, i), env).succes)){return res;}
+	}
+	
+	res.succes = 1;
+	return res;
+}
+
+Vtypage verifcationTypageListVarDecl(VarDeclP liste, list_ClassObjP env){
 	
 	Vtypage result;
 	
-	while(liste != NIL(VarDeclP)){
+	while(liste != NIL(VarDecl)){
 		
-		if()
+		Vtypage expr = verifcationTypageNoeud(liste->coeur->value, env);
 		
+		if(!(expr.succes) || 0 != strcmp(expr.class->name, liste->coeur->_type->name)){
+			result.succes = 0;
+			return result;
+		}
+			
 		liste = liste->next;
 	}
-	return ;
+	result.succes = 1;
+	return result;
 	
-}*/
+}
+
+int 

@@ -166,7 +166,7 @@ ListInst : Inst ListInst 	{ $$ = makeTree(INST, 2, $1, $2);}
 
 Inst : ITE 			{ $$ = $1;}
 | block 			{ $$ = $1;}
-| RETURN ';'		{ $$ = makeLeafStr(I_RETURN, NIL(char));}
+| RETURN ';'		{ $$ = makeLeafStr(I_RETURN, "result");}
 | cible ';'			{ $$ = $1;}
 | ExprRelop ';' 	{ $$ = makeTree(I_EXPRRELOP, 1, $1);}	
 ;
@@ -192,7 +192,7 @@ Object : Selection		{ $$ = $1;}
 ;	
 
 
-ExprRelop : Expr RELOP Expr	{ $$ = makeTree($2, 2, $1, $3);}
+ExprRelop : Expr RELOP Expr	{ $$ = makeTree(EXPR_RELOP, 2, $1, $3);}
 | Expr						{ $$ = $1;}
 ;
 
