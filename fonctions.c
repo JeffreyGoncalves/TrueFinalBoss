@@ -192,14 +192,15 @@ t_method* makeConstructor(t_class* class, VarDeclP param, TreeP corps){
 	return NULL;
 }
 
-t_class* FindClass(t_class* listClass, char* str){
-	if(0 == strcmp (listClass->name, str)){
+t_class* FindClass(t_class* listClass, t_class* str){
+	
+	if(0 == strcmp(listClass->name, str->name)){
 			return listClass;
 	}
 	
 	while(listClass->next != NIL(t_class)){
 		listClass = listClass->next;
-		if(0 == strcmp (listClass->name, str)){
+		if(0 == strcmp (listClass->name, str->name)){
 			return listClass;
 		}
 	}
@@ -360,8 +361,41 @@ void afficheNomMethod(t_method* liste){
 
 void compile(TreeP listClassObject, TreeP core){
 	
+	/* MISE EN PLACE DES STRUCTURES */
 	list_ClassObjP environnement = makeListClassObj(listClassObject);
 	afficheClass(environnement->listClass);
 	afficheObj(environnement->listObj);
 	
+	/*  */
 }
+
+/*
+int verifcationTypageEnvironnement(list_ClassObjP environnement){
+	
+	
+	
+}*/
+
+/*
+Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP environnement){
+	
+	switch(noeud->op){
+		case I_BLOC:
+			if (verifcationTypageNoeud(getChild(noeud, 1), environnement)->succes  )
+			
+	}
+}
+
+Vtypage verifcationTypageListVarDecl(VarDeclP liste, list_ClassObjP environnement){
+	
+	Vtypage result;
+	
+	while(liste != NIL(VarDeclP)){
+		
+		if()
+		
+		liste = liste->next;
+	}
+	return ;
+	
+}*/
