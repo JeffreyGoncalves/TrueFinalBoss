@@ -301,7 +301,7 @@ t_method* DMtoS(TreeP TreeM,t_class* listClass){
 				
 			}
 			else{
-				method->returnType->name = getChild(TreeM,4)->u.str;
+				method->returnType->name = getChild(TreeM,3)->u.str;
 			}
 			
 			/*BLOC*/
@@ -337,7 +337,7 @@ void afficheClass(t_class* liste){
 void afficheParam(VarDeclP liste){
 	/*printf("*****	LISTE DES PARAM	*****\n\n");*/
 	while(liste != NIL(VarDecl)){
-		printf("%s,", liste->name);
+		printf("%s : %s, ", liste->name, liste->coeur->_type->name);
 		liste = liste->next;
 	}
 	
@@ -349,7 +349,7 @@ void afficheNomMethod(t_method* liste){
 	while(liste != NIL(t_method)){
 		printf("   %s(", liste->name);
 		afficheParam(liste->parametres);
-		printf(")\n");
+		printf(")	return %s\n", liste->returnType->name);
 		liste = liste->next;
 	}
 	printf("\n");
