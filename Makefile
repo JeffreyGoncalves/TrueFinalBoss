@@ -1,4 +1,4 @@
-OBJ=tp.o tp_l.o tp_y.o verif.o code.o
+OBJ=tp.o tp_l.o tp_y.o verif.o code.o fonctions.o
 CC=gcc
 CFLAGS=-Wall -ansi -I./ -g
 LDFLAGS= -g -lfl
@@ -19,6 +19,9 @@ verif.o: verif.c tp_y.h tp.h
 
 code.o: code.c tp_y.h tp.h
 	$(CC) $(CFLAGS) -c code.c
+
+fonctions.o: fonctions.c tp.h tp_y.h
+	$(CC) $(CFLAGS) -c fonctions.c
 
 tp_l.o: tp_l.c tp_y.h
 	$(CC) $(CFLAGS) -Wno-unused-function -Wno-implicit-function-declaration -c tp_l.c

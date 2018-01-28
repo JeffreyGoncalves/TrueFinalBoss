@@ -20,7 +20,8 @@
 
 
 %{
-#include "tp.h"
+/*#include "tp.h"*/
+#include "fonctions.h"
 #include "tp_y.h"
 
 extern int yylex();
@@ -29,7 +30,10 @@ extern void yyerror(char *);
 
 %%
 //Structure du programme
-Prog : listClassObj block 				{ $$ = makeTree(PROG, 2, $1, $2);}
+Prog : listClassObj block 				{ $$ = makeTree(PROG, 2, $1, $2);
+										  /*affTree($$, 0);*/
+										  compile($1,$2);			
+										  }
 ;	
 
 //Gestion des Objets et Classes
@@ -43,7 +47,8 @@ ClassObj : declClass					{ $$ = makeTree(CLAS, 1, $1); }
 
 declClass : CLASS ID '(' ListParamClause ')' extendsClause constructorClause IS classObjBlock 
 { TreeP id = makeLeafStr(_ID, $2);
-  $$ = makeTree(_CLASS,5,id,$2,$4,$6,$7,$9);}
+  $$ = makeTree(_CLASS,5,id,$4,$6,$7,$9);
+  }
 ;
 
 declObject : OBJECT ID IS classObjBlock { 	TreeP id = makeLeafStr(_ID, $2);
@@ -55,7 +60,9 @@ constructorClause : block			{ $$ = $1;}
 ;
 
 ////// Parametres //////
-ListParamClause : ListParam			{ $$ = $1;}
+ListParamClause : ListParam			{ $$ = $1;
+										/*afficheParam($$->u.lvar);*/
+									}
 | 									{ $$ = NIL(Tree);}
 ;
 
@@ -103,17 +110,17 @@ ListVarDef : VarDef ListVarDef		{ $$ = makeTree(LIST_VAR_DEF, 2,  $1, $2);}
 | 									{ $$ = NIL(Tree);}
 ;
 
-VarDef : declMethod					{ $$ = makeTree(VAR_DEF, 1,  $1);}
-| Champ								{ $$ = makeTree(VAR_DEF, 1,  $1);}
+VarDef : declMethod					{ $$ = makeTree(VAR_DEF_METH, 1,  $1);}
+| Champ								{ $$ = makeLeafLVar(VAR_DEF_CHAMP,  $1);}
 ;
 ///////////////////////////////
 
 // Declaration d'une methode //
 declMethod : Override DEF ID'(' ListParamClause ')' ':' ID AFF ExprRelop { TreeP id1 = makeLeafStr(_ID,$3);
 																		   TreeP id2 = makeLeafStr(_ID,$8);
-																		   $$ = makeTree(DECL_METH,3,id1,id2,$1,$5,$10);}
+																		   $$ = makeTree(DECL_METH_1,5,id1,id2,$1,$5,$10);}
 | Override DEF ID'(' ListParamClause ')' ClassClause IS block            { TreeP id = makeLeafStr(_ID,$3);
-																		   $$ = makeTree(DECL_METH,4,id,$1,$5,$7,$9);}
+																		   $$ = makeTree(DECL_METH_2,5,id,$1,$5,$7,$9);}
 ;
 
 Override : OVERRIDE		{ $$ = makeLeafStr(_OVERRIDE, "override");}
@@ -132,8 +139,10 @@ Champ : VAR ID ':' ID Init ';' 	  { $$ = makeVarDeclP($2,$4,$5);}
 
 //Appel d'une methode
 
-CallMethod : Object'.'ID'('ListArgClause')'	{ $$ = makeTree(E_CALL_METHOD, 3,  $1, $3, $5);}
-| '('ExprRelop')''.'ID'('ListArgClause')'	{ $$ = makeTree(E_CALL_METHOD, 3,  $2, $5, $7);}
+CallMethod : Object'.'ID'('ListArgClause')'	{ 	TreeP id = makeLeafStr(_ID, $3);
+												$$ = makeTree(E_CALL_METHOD, 3,  $1, id, $5);}
+| '('ExprRelop')''.'ID'('ListArgClause')'	{ 	TreeP id = makeLeafStr(_ID, $5);
+												$$ = makeTree(E_CALL_METHOD, 3,  $2, id, $7);}
 ;
 
 block: '{' ListInstClause '}'	{ TreeP decls = makeLeafLVar(DECL, NIL(VarDecl));
@@ -157,7 +166,7 @@ ListInst : Inst ListInst 	{ $$ = makeTree(INST, 2, $1, $2);}
 
 Inst : ITE 			{ $$ = $1;}
 | block 			{ $$ = $1;}
-| RETURN ';'		{ $$ = makeLeafStr(I_RETURN, NIL(char));}
+| RETURN ';'		{ $$ = makeLeafStr(I_RETURN, "result");}
 | cible ';'			{ $$ = $1;}
 | ExprRelop ';' 	{ $$ = makeTree(I_EXPRRELOP, 1, $1);}	
 ;
@@ -183,7 +192,7 @@ Object : Selection		{ $$ = $1;}
 ;	
 
 
-ExprRelop : Expr RELOP Expr	{ $$ = makeTree($2, 2, $1, $3);}
+ExprRelop : Expr RELOP Expr	{ $$ = makeTree(EXPR_RELOP, 2, $1, $3);}
 | Expr						{ $$ = $1;}
 ;
 

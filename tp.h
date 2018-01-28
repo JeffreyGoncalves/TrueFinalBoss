@@ -65,9 +65,12 @@ typedef unsigned char bool;
 #define _OVERRIDE 35
 #define DECLA_OBJECT 36
 #define LIST_VAR_DEF 37
-#define VAR_DEF 38
-#define DECL_METH 39
-#define LIST_CLASS 44
+#define VAR_DEF_METH 38
+#define VAR_DEF_CHAMP 39
+#define DECL_METH_1 44
+#define DECL_METH_2 51
+#define LIST_CLASS 45
+#define EXPR_RELOP 52
 
 #define PROG 100
 
@@ -118,23 +121,30 @@ typedef struct t_value{
 
 typedef struct t_class{
 	char* name;
-	struct t_method** constructor;
-	struct t_method** methods;
-	struct VarDecl* attributes;
+	struct t_method* constructor;
+	VarDeclP parametres;
+	struct t_method* methods;
+	VarDeclP attributes;
 	struct t_class* superClass;
+	struct t_class* next;
 }t_class;
 
 typedef struct t_object{
 	char* name;
-	struct t_method* constructor;
-	struct t_method** methods;
-	struct VarDecl** attributes;
+	struct t_method* methods;
+	VarDeclP attributes;
+	struct t_object* next;
 }t_object;
 
 typedef struct t_variable{
 	struct t_class* _type;
 	TreeP value;
 }t_variable;
+
+typedef struct list_ClassObj{
+	t_class* listClass;
+	t_object* listObj;
+}list_ClassObj, *list_ClassObjP;
 
 /*
 typedef struct t_affect{
@@ -170,10 +180,11 @@ typedef struct t_expr {
 typedef struct t_method{
 	char* name;
 	t_class* returnType;
-	short nbParametre;
-	struct t_varIdent** parametres;
-	struct TreeP* instructions;
-	int* isRedef;
+	short nbParametres ;
+	VarDeclP parametres;
+    TreeP bloc;
+	int isRedef;
+	struct t_method* next;
 }t_method;
 /* liste variables locales
 	La classe d'appartenance*/
@@ -258,3 +269,5 @@ VarDeclP lastList(VarDeclP o);
 TreeP makeLeafParam(short op, VarDeclP p);
 VarDeclP makeVarDeclP(char *nom, char *type,TreeP sArbre);
 void ajouteParam(TreeP list, VarDeclP p);
+TreeP getChild(TreeP tree, int rank);
+void affTree(TreeP tree, int stage);

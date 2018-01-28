@@ -1,24 +1,602 @@
 #include "fonctions.h"
-#include <unistd.h>
-#include <stdlib.h>
-#include <stdarg.h>
-#include <fcntl.h>
-#include <stdio.h>
-#include <string.h>
-#include "tp.h"
-#include "tp_y.h"
 
 extern int yyparse();
 extern int yylineno;
 
-/*typedef struct t_class{
-	char* name;
-	struct t_method** constructor;
-	struct t_method** methods;
-	struct VarDecl* attributes;
-	struct t_class* superClass;
-}t_class;*/
+/* REMPLISSAGE DE LA LISTE DE CLASSES & OBJETS*/
+list_ClassObjP makeListClassObj(TreeP TreeList){
+	list_ClassObjP list = NEW(1, list_ClassObj);
+	
+	while(TreeList != NIL(Tree)){
+		if(getChild(TreeList, 1)->op == CLAS){
+			t_class* newClass = makeClass(getChild(getChild(TreeList, 1), 0), list->listClass);
+			t_class* lastClass;
 
-TreeP makeListClass(TreeP List){
+			if(list->listClass == NIL(t_class)){
+				list->listClass = newClass;
+				lastClass = newClass;
+			}
+			else{
+				lastClass->next = newClass;
+				lastClass = newClass;
+			}
+		}
+		else if(getChild(TreeList, 1)->op == OBJ){
+			t_object* newObj = makeObj(getChild(getChild(TreeList, 1), 0), list->listClass);
+			t_object* lastObj;
+			
+			if(list->listObj == NIL(t_object)){
+				list->listObj = newObj;
+				lastObj = newObj;
+			}
+			else{
+				lastObj->next = newObj;
+				lastObj = newObj;
+			}
+		}
+		TreeList = getChild(TreeList, 0);
+	}
+	return list;
+}
+
+/* REMPLISSAGE STRUCT DE CLASSE */
+t_class* makeClass(TreeP TreeClass, t_class* firstClass){
+	
+	if(TreeClass != NIL(Tree)){
+		t_class* myClass = NEW(1, t_class);
+		
+		/*LE NOM*/
+		myClass->name = getChild(TreeClass, 0)->u.str;
+		
+		/*LA LISTE de PARAMETRES*/
+		if(getChild(TreeClass, 1) != NIL(Tree)){
+			myClass->parametres = getChild(TreeClass, 1)->u.lvar;
+		}else{
+			myClass->parametres = NIL(VarDecl);
+		}
+		
+		/* CONSTRUCTOR */
+		if(getChild(TreeClass, 3) != NIL(Tree)){
+			myClass->constructor = makeConstructor(myClass, myClass->parametres, getChild(TreeClass, 3));
+		}else{
+			myClass->constructor = NIL(t_method);
+		}
+		
+		/*EXTENDS ?*/
+		if(getChild(TreeClass, 2) != NIL(Tree)){
+			t_class* classTempo = NEW(1, t_class);
+			classTempo->name = getChild(getChild(TreeClass, 2), 0)->u.str; /* On lie la 'vraie' super-classe lors de la vérification contextuelle de portée.*/
+			myClass->superClass = classTempo;
+
+		}else{
+			myClass->superClass = NIL(t_class);
+		}
+		
+		/* LES METHODES  & LES ATTRIBUTS*/
+		if(getChild(TreeClass, 4) == NIL(Tree)){
+			myClass->methods = NIL(t_method);
+			myClass->attributes = NIL(VarDecl);
+		}else{
+			myClass->methods = giveAllMethod(getChild(TreeClass, 4), firstClass);
+			myClass->attributes = giveAllAttributes(getChild(TreeClass, 4), firstClass);
+		}		
+		
+		return myClass;
+		
+	}else{
+		return NIL(t_class);
+	}
+}
+
+/* REMPLISSAGE STRUCT DE OBJECT */
+t_object* makeObj(TreeP TreeObject, t_class* firstClass){
+	
+	if(TreeObject != NIL(Tree)){
+		t_object* myObject = NEW(1, t_object);
+		
+		/*LE NOM*/
+		myObject->name = getChild(TreeObject, 0)->u.str;
+		
+		/* LES METHODES  & LES ATTRIBUTS*/
+		if(getChild(TreeObject, 1) == NIL(Tree)){
+			myObject->methods = NIL(t_method);
+			myObject->attributes = NIL(VarDecl);
+		}else{
+			myObject->methods = giveAllMethod(getChild(TreeObject, 1), firstClass);
+			myObject->attributes = giveAllAttributes(getChild(TreeObject, 1), firstClass);
+		}
+		
+		return myObject;
+		
+	}else{
+		return NIL(t_object);
+	}
+}
+
+VarDeclP giveAllAttributes(TreeP tree, t_class* firstClass){
+	VarDeclP list = NIL(VarDecl);
+	while(tree != NIL(Tree)){
+		if(getChild(tree, 0)->op == VAR_DEF_CHAMP){
+			VarDeclP newChamp = getChild(tree, 0)->u.lvar;
+			VarDeclP last;
+			
+			if(list == NIL(VarDecl)){
+				list = newChamp;
+				last = newChamp;
+			}
+			else{
+				last->next = newChamp;
+				last = newChamp;
+			}
+		}
+		tree = getChild(tree, 1);
+	}
+	return list;
+}
+
+t_method* giveAllMethod(TreeP tree, t_class* firstClass){
+	
+	t_method* list = NIL(t_method);
+	
+	while(tree != NIL(Tree)){
+		if(getChild(tree, 0)->op == VAR_DEF_METH){
+			
+			t_method* newMeth = DMtoS(getChild(getChild(tree, 0), 0), firstClass);
+			t_method* last;
+			
+			if(list == NIL(t_method)){
+				list = newMeth;
+				last = newMeth;
+			}
+			else{
+				last->next = newMeth;
+				last = newMeth;
+			}
+		}
+		tree = getChild(tree, 1);
+	}
+	return list;
+}
+
+t_method* makeConstructor(t_class* class, VarDeclP param, TreeP corps){
+	
+	t_method* method = NEW(1,t_method);
+
+	if(class != NIL(t_class)){
+		/*NOM*/
+		method->name = class->name;
+
+		method->isRedef = FALSE; /*ici pas de redéfinition vu qu'il s'agit d'un constructeur*/
+
+		/*PARAMETRES*/
+		method->parametres = param;
+		if(method->parametres != NIL(VarDecl))
+		{
+			method->nbParametres = 1;
+			VarDeclP tmp = method->parametres;
+			while(tmp->next != NIL(VarDecl)){
+				tmp = tmp->next;
+				method->nbParametres++;
+			}
+		}
+		else{
+			method->nbParametres = 0; 
+		}
+
+		method->returnType = class; /*TYPE DE RETOUR*/
+		method->bloc = corps;		/*L'ensemble des instructions*/
+
+			return method;
+	}
+	free(method);
+	return NULL;
+}
+
+t_class* FindClass(t_class* listClass, char* str){
+	
+	if(0 == strcmp(listClass->name, str)){
+			return listClass;
+	}
+	
+	while(listClass->next != NIL(t_class)){
+		listClass = listClass->next;
+		if(0 == strcmp (listClass->name, str)){
+			return listClass;
+		}
+	}
+	return NIL(t_class);
+}
+
+t_method* DMtoS(TreeP TreeM,t_class* listClass){
+	
+	t_method* method = NEW(1,t_method);
+	
+	if(TreeM->op == DECL_METH_1 || TreeM->op == DECL_METH_2){
+
+		/*NOM DE LA METHODE*/
+		method->name = getChild(TreeM,0)->u.str;
+		if(TreeM->op == DECL_METH_1){					/*cas DeclMethod ::= Override DEF ID'(' ListParamClause ')' ':' ID AFF ExprRelop*/
+
+			/*OVERRIDE*/
+			if(getChild(TreeM,2) == NULL){
+				method->isRedef = FALSE;	
+			}
+			else method->isRedef = TRUE;
+
+			/*PARAMETRES*/
+			if(getChild(TreeM,3) != NIL(Tree)){
+				method->parametres = getChild(TreeM,3)->u.lvar;
+				if(method->parametres != NIL(VarDecl))
+				{
+					method->nbParametres = 1;
+					VarDeclP tmp = method->parametres;
+					while(tmp->next != NIL(VarDecl)){
+						tmp = tmp->next;
+						method->nbParametres++;
+					}
+				}
+				else{
+					method->nbParametres = 0; 
+				}
+			}else{
+					method->parametres = NIL(VarDecl);
+					method->nbParametres = 0;
+			}
+			
+			/*TYPE DE RETOUR*/
+			method->returnType = NEW(1,t_class);
+			/*printf("%s\n",getChild(TreeM,1)->u.str);*/
+			method->returnType->name = getChild(TreeM,1)->u.str;
+
+			/*BLOC D'EXPRESSIONS*/
+			method->bloc = getChild(TreeM,4);
+
+			return method;
+
+			}
+		else{			/*cas DeclMethod ::= Override DEF ID'(' ListParamClause ')' ClassClause IS block */
+
+				/*OVERRIDE*/
+				if(getChild(TreeM,1) == NULL){
+				method->isRedef = FALSE;	
+				}
+				else method->isRedef = TRUE;
+
+				/*PARAMETRES*/
+				if(getChild(TreeM,2) != NIL(Tree)){
+					method->parametres = getChild(TreeM,2)->u.lvar;
+					if(method->parametres != NIL(VarDecl))
+					{
+						
+						method->nbParametres = 1;
+						VarDeclP tmp = method->parametres;
+						
+						while(tmp->next != NIL(VarDecl)){
+							tmp = tmp->next;
+							method->nbParametres++;
+						}
+					}
+					else{
+						method->nbParametres = 0;
+					}
+				}else{
+					method->parametres = NIL(VarDecl);
+					method->nbParametres = 0;
+				}
+
+			/*TYPE DE RETOUR*/ /*ici le l'option facultative de type de retour est a prendre en compte*/
+			method->returnType = NEW(1,t_class);
+			if(getChild(TreeM,3) == NIL(Tree)){
+				method->returnType->name = "Void"; 		/* On lie la 'vraie' classe lors de la vérification contextuelle de portée.*/
+			}
+			else{
+				method->returnType->name = getChild(TreeM,3)->u.str;
+			}
+			
+			/*BLOC*/
+			method->bloc = getChild(TreeM,4);
+
+			return method;
+		}
+	}
+	free(method);
+	return NULL;
+}
+
+void afficheClass(t_class* liste){
+	
+	printf("*****************************	LISTE DES CLASSES	*****************************\n\n");
+	
+	while(liste != NIL(t_class)){
+		printf("***	NAME : %s\n", liste->name);
+		printf("***	PARAMETRES : "); afficheParam(liste->parametres);
+		printf("\n");
+		printf("***	SUPER-CLASSE : ");
+		if(liste->superClass != NIL(t_class)){printf("%s\n",liste->superClass->name);}
+		else{printf("\n");}
+		printf("***	CONSTRUCTEUR : %d\n", liste->constructor != NIL(t_method));
+		printf("***	ATTRIBUTS : "); afficheParam(liste->attributes);
+		printf("\n");
+		printf("***	METHODES :\n"); afficheNomMethod(liste->methods);
+		printf("-------------------------\n");
+		liste = liste->next;
+	}
+}
+
+void afficheObj(t_object* liste){
+	
+	printf("*****************************	LISTE DES OBJETS	*****************************\n\n");
+	
+	while(liste != NIL(t_object)){
+		printf("***	NAME : %s\n", liste->name);
+		printf("***	ATTRIBUTS : "); afficheParam(liste->attributes);
+		printf("\n");
+		printf("***	METHODES :\n"); afficheNomMethod(liste->methods);
+		printf("-------------------------\n");
+		liste = liste->next;
+	}
+}
+
+void afficheParam(VarDeclP liste){
+
+	while(liste != NIL(VarDecl)){
+		printf("%s : %s, ", liste->name, liste->coeur->_type->name);
+		liste = liste->next;
+	}
+	
+
+}
+
+void afficheNomMethod(t_method* liste){
+
+	while(liste != NIL(t_method)){
+		printf("   %s(", liste->name);
+		afficheParam(liste->parametres);
+		printf(")	return %s\n", liste->returnType->name);
+		liste = liste->next;
+	}
+	printf("\n");
+
+}
+
+void compile(TreeP listClassObject, TreeP core){
+	
+	/* MISE EN PLACE DES STRUCTURES */
+	list_ClassObjP environnement = makeListClassObj(listClassObject);
+	afficheClass(environnement->listClass);
+	afficheObj(environnement->listObj);
+	
+	/*  */
+}
+
+/*
+int verifcationTypageEnvironnement(list_ClassObjP environnement){
+	
+	
+	
+}*/
+
+/*
+typedef struct _varDecl {
+	char *name;
+	struct t_variable* coeur;
+	struct _varDecl *next;
+} VarDecl, *VarDeclP;
+typedef struct t_variable{
+	struct t_class* _type;
+	TreeP value;
+}t_variable;
+* typedef struct Vtypage{
+	char* class;
+	int succes;
+}Vtypage, *VtypageP;
+*/
+
+Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
+	
+	Vtypage result;
+	Vtypage veriFils[5];
+	int i;
+	result.succes = 1;
+	
+	if(noeud == NIL(Tree)) return result;
+	
+	switch(noeud->op){
+		
+		case I_BLOC:
+			return verifTypageSuccesFils(noeud->nbChildren, noeud, env);
+		
+		case DECL:
+			return verifcationTypageListVarDecl(noeud->u.lvar, env);
+		case LIST_PARAM:
+			return verifcationTypageListVarDecl(noeud->u.lvar, env);
+			
+		case INST:
+			return verifTypageSuccesFils(noeud->nbChildren, noeud, env);
+
+		case I_RETURN: /* PAS FINI ! */
+			return result;
+		
+		case I_EXPRRELOP:
+			return verifTypageSuccesFils(noeud->nbChildren, noeud, env);
+			
+		case I_ITE:
+			for(i=0 ; i<noeud->nbChildren ; i++){
+				veriFils[i] = verifcationTypageNoeud(getChild(noeud, i), env);
+				if(!(veriFils[i].succes)){
+					result.succes = 0;
+					return result;
+				}
+			}
+
+			if(0 == strcmp(veriFils[0].class->name,"Interger")){
+				return result;
+			}
+			break;
+			
+		case I_AFF:
+			for(i=0 ; i<noeud->nbChildren ; i++){
+				veriFils[i] = verifcationTypageNoeud(getChild(noeud, i), env);
+				if(!(veriFils[i].succes)){
+					result.succes = 0;
+					return result;
+				}
+			}
+
+			if(0 == strcmp(veriFils[0].class->name, veriFils[1].class->name)){
+				return result;
+			}
+			break;
+			
+		case EXPR_RELOP:
+			for(i=0 ; i<noeud->nbChildren ; i++){
+				veriFils[i] = verifcationTypageNoeud(getChild(noeud, i), env);
+				if(!(veriFils[i].succes)){
+					result.succes = 0;
+					return result;
+				}
+			}
+
+			if(0 == strcmp(veriFils[0].class->name,"Interger") && 0 == strcmp(veriFils[1].class->name,"Interger")){
+				result.class = veriFils[0].class;
+				return result;
+			}
+			break;
+			
+		case SUM:
+			for(i=0 ; i<noeud->nbChildren ; i++){
+				veriFils[i] = verifcationTypageNoeud(getChild(noeud, i), env);
+				if(!(veriFils[i].succes)){
+					result.succes = 0;
+					return result;
+				}
+			}
+
+			if(0 == strcmp(veriFils[0].class->name,"Interger") && 0 == strcmp(veriFils[1].class->name,"Interger")){
+				result.class = veriFils[0].class;
+				return result;
+			}
+			break;
+			
+		case MIN:
+			for(i=0 ; i<noeud->nbChildren ; i++){
+				veriFils[i] = verifcationTypageNoeud(getChild(noeud, i), env);
+				if(!(veriFils[i].succes)){
+					result.succes = 0;
+					return result;
+				}
+			}
+
+			if(0 == strcmp(veriFils[0].class->name,"Interger") && 0 == strcmp(veriFils[1].class->name,"Interger")){
+				result.class = veriFils[0].class;
+				return result;
+			}
+			break;
+		
+		case MULT:
+			for(i=0 ; i<noeud->nbChildren ; i++){
+				veriFils[i] = verifcationTypageNoeud(getChild(noeud, i), env);
+				if(!(veriFils[i].succes)){
+					result.succes = 0;
+					return result;
+				}
+			}
+
+			if(0 == strcmp(veriFils[0].class->name,"Interger") && 0 == strcmp(veriFils[1].class->name,"Interger")){
+				result.class = veriFils[0].class;
+				return result;
+			}
+			break;
+		
+		case DIVI:
+			for(i=0 ; i<noeud->nbChildren ; i++){
+				veriFils[i] = verifcationTypageNoeud(getChild(noeud, i), env);
+				if(!(veriFils[i].succes)){
+					result.succes = 0;
+					return result;
+				}
+			}
+
+			if(0 == strcmp(veriFils[0].class->name,"Interger") && 0 == strcmp(veriFils[1].class->name,"Interger")){
+				result.class = veriFils[0].class;
+				return result;
+			}
+			break;
+			
+		case AND:
+			for(i=0 ; i<noeud->nbChildren ; i++){
+				veriFils[i] = verifcationTypageNoeud(getChild(noeud, i), env);
+				if(!(veriFils[i].succes)){
+					result.succes = 0;
+					return result;
+				}
+			}
+
+			if(0 == strcmp(veriFils[0].class->name,"String") && 0 == strcmp(veriFils[1].class->name,"String")){
+				result.class = veriFils[0].class;
+				return result;
+			}
+			break;
+			
+		case CST:
+			result.class = FindClass(env->listClass, "Integer");
+			return result;
+			break;
+		
+		case _ID:
+			result.class = FindClass(env->listClass, "String");
+			return result;
+			break;
+			
+		case CAST:
+			for(i=0 ; i<noeud->nbChildren ; i++){
+				veriFils[i] = verifcationTypageNoeud(getChild(noeud, i), env);
+				if(!(veriFils[i].succes)){
+					result.succes = 0;
+					return result;
+				}
+			}
+
+			if(0 == strcmp(veriFils[0].class->name,"String") && 0 == strcmp(veriFils[1].class->name,"String")){
+				return result;
+			}
+			break;
+	}
+	
+	result.succes = 0;
+	return result;
+}
+
+Vtypage verifTypageSuccesFils(short nbre, TreeP noeud, list_ClassObjP env){
+	Vtypage res;
+	res.succes = 0;
+	
+	int i;
+	for(i=0 ; i<nbre ; i++){
+		if(!(verifcationTypageNoeud(getChild(noeud, i), env).succes)){return res;}
+	}
+	
+	res.succes = 1;
+	return res;
+}
+
+Vtypage verifcationTypageListVarDecl(VarDeclP liste, list_ClassObjP env){
+	
+	Vtypage result;
+	
+	while(liste != NIL(VarDecl)){
+		
+		Vtypage expr = verifcationTypageNoeud(liste->coeur->value, env);
+		
+		if(!(expr.succes) || 0 != strcmp(expr.class->name, liste->coeur->_type->name)){
+			result.succes = 0;
+			return result;
+		}
+			
+		liste = liste->next;
+	}
+	result.succes = 1;
+	return result;
 	
 }
+
