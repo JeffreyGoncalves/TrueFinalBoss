@@ -10,7 +10,7 @@ t_variable** varGlobales;
 int nbVarGlobales;
 
 
-int main(int argc, char **argv) {
+/*int main(int argc, char **argv) {
 
 	printf("Construction de l'arbre de test\n");
 
@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
 
     fclose (pFile);
 	return 0;
-}
+}*/
 
 /*
 Une variable globale = forcement un objet ?
@@ -60,10 +60,6 @@ void makeCode(TreeP tree, FILE* pFile) {
         TreeP t = getChild(tree, 1);
         while(t!=NULL) {
             ++nbChamps;
-<<<<<<< HEAD
-=======
-
->>>>>>> 704e4a561f78b4f498e5619a0c46dd482cdca41e
             t = getChild(t, 1);
         }
         break;
