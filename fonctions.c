@@ -3,16 +3,6 @@
 extern int yyparse();
 extern int yylineno;
 
-/*typedef struct t_class{
-	char* name;
-	struct t_method* constructor;
-	struct VarDecl* parametres;
-	struct t_method* methods;
-	struct VarDecl* attributes;
-	struct t_class* superClass;
-	struct t_class* next;
-}t_class;*/
-
 /* REMPLISSAGE DE LA LISTE DE CLASSES & OBJETS*/
 list_ClassObjP makeListClassObj(TreeP TreeList){
 	list_ClassObjP list = NEW(1, list_ClassObj);
