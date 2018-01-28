@@ -17,3 +17,4 @@ t_object* makeObj(TreeP TreeObject, t_class* firstClass);
 void afficheClass(t_class* liste);
 void afficheParam(VarDeclP liste);
 void afficheNomMethod(t_method* liste);
+void compile(TreeP listClassObject, TreeP core);

@@ -108,7 +108,7 @@ t_object* makeObj(TreeP TreeObject, t_class* firstClass){
 		myObject->name = getChild(TreeObject, 0)->u.str;
 		
 		/* LES METHODES  & LES ATTRIBUTS*/
-		if(getChild(TreeObject, 1) != NIL(Tree)){
+		if(getChild(TreeObject, 1) == NIL(Tree)){
 			myObject->methods = NIL(t_method);
 			myObject->attributes = NIL(VarDecl);
 		}else{
@@ -216,7 +216,6 @@ t_class* FindClass(t_class* listClass, char* str){
 	return NIL(t_class);
 }
 
-
 t_method* DMtoS(TreeP TreeM,t_class* listClass){
 	
 	t_method* method = NEW(1,t_method);
@@ -298,7 +297,6 @@ t_method* DMtoS(TreeP TreeM,t_class* listClass){
 			method->returnType = NEW(1,t_class);
 			if(getChild(TreeM,3) == NIL(Tree)){
 				method->returnType->name = "Void"; 		/* On lie la 'vraie' classe lors de la vérification contextuelle de portée.*/
-				
 			}
 			else{
 				method->returnType->name = getChild(TreeM,3)->u.str;
@@ -316,7 +314,7 @@ t_method* DMtoS(TreeP TreeM,t_class* listClass){
 
 void afficheClass(t_class* liste){
 	
-	printf("*****	LISTE DES CLASSES	*****\n\n");
+	printf("*****************************	LISTE DES CLASSES	*****************************\n\n");
 	
 	while(liste != NIL(t_class)){
 		printf("***	NAME : %s\n", liste->name);
@@ -334,18 +332,32 @@ void afficheClass(t_class* liste){
 	}
 }
 
+void afficheObj(t_object* liste){
+	
+	printf("*****************************	LISTE DES OBJETS	*****************************\n\n");
+	
+	while(liste != NIL(t_object)){
+		printf("***	NAME : %s\n", liste->name);
+		printf("***	ATTRIBUTS : "); afficheParam(liste->attributes);
+		printf("\n");
+		printf("***	METHODES :\n"); afficheNomMethod(liste->methods);
+		printf("-------------------------\n");
+		liste = liste->next;
+	}
+}
+
 void afficheParam(VarDeclP liste){
-	/*printf("*****	LISTE DES PARAM	*****\n\n");*/
+
 	while(liste != NIL(VarDecl)){
 		printf("%s : %s, ", liste->name, liste->coeur->_type->name);
 		liste = liste->next;
 	}
 	
-	/*printf("-------------------------\n");*/
+
 }
 
 void afficheNomMethod(t_method* liste){
-	/*printf("*****	LISTE DES PARAM	*****\n\n");*/
+
 	while(liste != NIL(t_method)){
 		printf("   %s(", liste->name);
 		afficheParam(liste->parametres);
@@ -353,5 +365,13 @@ void afficheNomMethod(t_method* liste){
 		liste = liste->next;
 	}
 	printf("\n");
-	/*printf("-------------------------\n");*/
+
+}
+
+void compile(TreeP listClassObject, TreeP core){
+	
+	list_ClassObjP environnement = makeListClassObj(listClassObject);
+	afficheClass(environnement->listClass);
+	afficheObj(environnement->listObj);
+	
 }

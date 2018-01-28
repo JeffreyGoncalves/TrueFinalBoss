@@ -32,8 +32,7 @@ extern void yyerror(char *);
 //Structure du programme
 Prog : listClassObj block 				{ $$ = makeTree(PROG, 2, $1, $2);
 										  /*affTree($$, 0);*/
-										  list_ClassObjP list = makeListClassObj($1);
-										  afficheClass(list->listClass);			
+										  compile($1,$2);			
 										  }
 ;	
 
