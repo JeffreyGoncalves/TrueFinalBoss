@@ -600,4 +600,3 @@ Vtypage verifcationTypageListVarDecl(VarDeclP liste, list_ClassObjP env){
 	
 }
 
-int 
