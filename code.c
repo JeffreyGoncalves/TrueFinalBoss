@@ -51,12 +51,11 @@ void makeCode(TreeP tree, FILE* pFile) {
         fprintf(pFile, "-- Il y a une declaration d'objet\n");
         int nbChamps = 0;
         TreeP t = getChild(tree, 1);
-        while(t!=null) {
+        while(t!=NULL) {
             ++nbChamps;
-            
-            t = getChild(t, 1)
+            t = getChild(t, 1);
         }
-        break
+        break;
 	    case LIST_CLASS :
         makeCode(getChild(tree, 0), pFile);
         fprintf(pFile, "-- Il y a une definition de classe\n");
@@ -69,14 +68,14 @@ void makeCode(TreeP tree, FILE* pFile) {
         fprintf (pFile, "-- Il y a une somme\n");
         makeCode(getChild(tree, 0), pFile);
         makeCode(getChild(tree, 1), pFile);
-        fprintf (pFile, "ADD\n", pFile);
+        fprintf (pFile, "ADD\n");
         fprintf (pFile, "-- Fin de la somme\n");
 		break;
 		case MULT :
         fprintf (pFile, "-- Il y a un produit\n");
         makeCode(getChild(tree, 0), pFile);
         makeCode(getChild(tree, 1), pFile);
-        fprintf (pFile, "MULT\n", pFile);
+        fprintf (pFile, "MULT\n");
         fprintf (pFile, "-- Fin du produit\n");
 		break;
 		case CST :

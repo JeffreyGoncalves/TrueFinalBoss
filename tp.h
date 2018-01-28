@@ -83,6 +83,9 @@ typedef unsigned char bool;
 #define DECL_ERROR	41	/* scope problem */
 #define TYPE_ERROR	42	/* type checking problem */
 #define OTHER_CONTEXTUAL_ERROR	43 /* replace by something more precise */
+#define REDECL_ERROR 44 /* Redeclaration problem */
+#define RESERV_DECL_ERROR 45 /* Forbidden use of a reserved ID (this, super, result) */
+#define RETURN_ERROR 46 /* Forbidden use of return */
 #define EVAL_ERROR	50	/* dubious when writing a compiler ! */
 #define UNEXPECTED	10O
 
