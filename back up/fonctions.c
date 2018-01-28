@@ -45,9 +45,7 @@ t_class* makeListClass(TreeP TreeClass, t_class* firstClass){
 		}else{
 			myClass->methods = giveAllMethod(getChild(TreeClass, 5), firstClass);
 			myClass->attributes = giveAllAttributes(getChild(TreeClass, 5), firstClass);
-		}
-		
-				
+		}		
 		
 		return myClass;
 		
@@ -58,6 +56,24 @@ t_class* makeListClass(TreeP TreeClass, t_class* firstClass){
 
 VarDeclP giveAllAttributes(TreeP tree, t_class* firstClass){
 	
+	/*while(tree != NIL(Tree)){
+		if(getChild(tree, 1)->op == VAR_DEF_METH){
+			t_method* newMeth = DMtoS(getChild(getChild(tree, 1), 1), firstClass);
+			t_method* last;
+			
+			if(list == NIL(t_method)){
+				newMeth = list;
+				last = newMeth;
+			}
+			else{
+				last->next = newMeth;
+				last = newMeth;
+			}
+		}
+		tree = getChild(tree, 2);
+	}
+	return list;*/
+	return NULL;
 }
 
 t_method* giveAllMethod(TreeP tree, t_class* firstClass){
@@ -66,10 +82,15 @@ t_method* giveAllMethod(TreeP tree, t_class* firstClass){
 	while(tree != NIL(Tree)){
 		if(getChild(tree, 1)->op == VAR_DEF_METH){
 			t_method* newMeth = DMtoS(getChild(getChild(tree, 1), 1), firstClass);
+			t_method* last;
 			
-			if(list == NIL(t_method)){newMeth = list;}
+			if(list == NIL(t_method)){
+				newMeth = list;
+				last = newMeth;
+			}
 			else{
-				list->next = newMeth;
+				last->next = newMeth;
+				last = newMeth;
 			}
 		}
 		tree = getChild(tree, 2);
@@ -78,11 +99,39 @@ t_method* giveAllMethod(TreeP tree, t_class* firstClass){
 }
 
 t_method* makeConstructor(t_class* class, VarDeclP param, TreeP corps){/* TODO */
+	t_method* method = NEW(1,t_method);
+
+	if(class != NIL(t_class)){
+		/*NOM*/
+		method->name = class->name;
+
+		method->isRedef = FALSE; /*ici pas de redéfinition vu qu'il s'agit d'un constructeur*/
+
+		/*PARAMETRES*/
+		method->parametres = param;
+		if(method->parametres != NIL(VarDecl))
+		{
+			method->nbParametres = 1;
+			VarDeclP tmp = method->parametres;
+			while(tmp->next != NIL(VarDecl)){
+				tmp = tmp->next;
+				method->nbParametres++;
+			}
+		}
+		else{
+			method->nbParametres = 0; 
+		}
+
+		method->returnType = class; /*TYPE DE RETOUR*/
+		method->bloc = corps;		/*L'ensemble des instructions*/
+
+			return method;
+	}
+	free(method);
 	return NULL;
 }
 
 t_class* FindClass(t_class* listClass, char* str){
-	
 	if(0 == strcmp (listClass->name, str)){
 			return listClass;
 	}
@@ -114,13 +163,18 @@ t_method* DMtoS(TreeP Tree,t_class* listClass){
 
 			/*PARAMETRES*/
 			method->parametres = getChild(Tree,4)->u.lvar;
-			method->nbParametres = 0;
-			VarDeclP tmp = method->parametres;
-			while(tmp->next != NIL(VarDecl)){
-				tmp = tmp->next;
-				method->nbParametres++;
+			if(method->parametres != NIL(VarDecl))
+			{
+				method->nbParametres = 1;
+				VarDeclP tmp = method->parametres;
+				while(tmp->next != NIL(VarDecl)){
+					tmp = tmp->next;
+					method->nbParametres++;
+				}
 			}
-			free(tmp);
+			else{
+				method->nbParametres = 0; 
+			}
 
 			/*TYPE DE RETOUR*/
 			method->returnType = NEW(1,t_class);
@@ -131,29 +185,36 @@ t_method* DMtoS(TreeP Tree,t_class* listClass){
 
 			return method;
 
-		}
-		else{
+			}
+		else{			/*cas DeclMethod ::= Override DEF ID'(' ListParamClause ')' ClassClause IS block */
 
-			/*OVERRIDE*/
-			if(getChild(Tree,2) == NULL){
+				/*OVERRIDE*/
+				if(getChild(Tree,2) == NULL){
 				method->isRedef = FALSE;	
-			}
-			else method->isRedef = TRUE;
+				}
+				else method->isRedef = TRUE;
 
-			/*PARAMETRES*/
-			method->parametres = getChild(Tree,4)->u.lvar;
-			method->nbParametres = 0;
-			VarDeclP tmp = method->parametres;
-			while(tmp->next != NIL(VarDecl)){
-				tmp = tmp->next;
-				method->nbParametres++;
-			}
-			free(tmp);
+				/*PARAMETRES*/
+				method->parametres = getChild(Tree,4)->u.lvar;
+				if(method->parametres != NIL(VarDecl))
+				{
+					method->nbParametres = 1;
+					VarDeclP tmp = method->parametres;
+					while(tmp->next != NIL(VarDecl)){
+						tmp = tmp->next;
+						method->nbParametres++;
+					}
+				}
+				else{
+					method->nbParametres = 0;
+
+				}
 
 			/*TYPE DE RETOUR*/ /*ici le l'option facultative de type de retour est a prendre en compte*/
 			method->returnType = NEW(1,t_class);
-			if(getChild(Tree,4)->u.str == NULL){
+			if(getChild(Tree,2)->u.str == NULL){
 				method->returnType = FindClass(listClass,"void");
+				
 			}
 			else{
 				method->returnType = FindClass(listClass,getChild(Tree,4)->u.str);
@@ -165,5 +226,6 @@ t_method* DMtoS(TreeP Tree,t_class* listClass){
 			return method;
 		}
 	}
+	free(method);
 	return NULL;
 }

@@ -141,7 +141,7 @@ t_method* giveAllMethod(TreeP tree, t_class* firstClass){
 	while(tree != NIL(Tree)){
 		if(getChild(tree, 0)->op == VAR_DEF_METH){
 			
-			t_method* newMeth = DMtoS(getChild(getChild(tree, 0), 0), firstClass);
+			t_method* newMeth = MakeMethod(getChild(getChild(tree, 0), 0), firstClass);
 			t_method* last;
 			
 			if(list == NIL(t_method)){
@@ -207,7 +207,7 @@ t_class* FindClass(t_class* listClass, char* str){
 	return NIL(t_class);
 }
 
-t_method* DMtoS(TreeP TreeM,t_class* listClass){
+t_method* MakeMethod(TreeP TreeM,t_class* listClass){
 	
 	t_method* method = NEW(1,t_method);
 	
@@ -598,5 +598,18 @@ Vtypage verifcationTypageListVarDecl(VarDeclP liste, list_ClassObjP env){
 	result.succes = 1;
 	return result;
 	
+}
+
+bool verificationNbParametres(t_method* method, VarDeclP entry){
+
+	VarDeclP tmp = entry;
+	int givenNb = 0;
+
+	while(tmp != NIL(VarDecl) || tmp->next != NIL(VarDecl)){
+		givenNb++;
+		tmp = tmp->next;
+	}
+
+	return (method->nbParametres == givenNb) ? TRUE : FALSE;
 }
 
