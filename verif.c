@@ -157,7 +157,51 @@ bool verifPorteeBloc(TreeP tree, VarDeclP listDecl, t_object *listObj)
 
 bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, t_object *listObj, short op)
 {
-	return FALSE;
+	int i; /* Sert de variable de parcours */
+	
+	/* Expression feuille */
+	if(Expr->nbChildren == 0)
+	{
+		/*ID (les variables crees plus recemment sont prioritaires) */
+		if(Expr->op == _ID)
+		{
+			/* Variables Crees dans le bloc */
+			VarDeclP varSel = listDecl;
+			while(varSel != NULL)
+			{
+				if(!strcmp(varSel->name, Expr->u.lvar->name))
+				{
+					free(Expr->u.lvar);
+					Expr->u.lvar = varSel;
+					return TRUE;
+				}
+				varSel = varSel->next;
+			}
+			
+			/* Objets isoles */
+			t_object *objSel = listObj;
+			while(objSel != NULL)
+			{
+				if(!strcmp(objSel->name, Expr->u.lvar->name))
+				{
+					/* Pas FINI : demande l'acceptation d'une requete */
+					return TRUE;
+				}
+				varSel = varSel->next;
+			}
+			return FALSE;
+		}
+		else return FALSE;
+	}
+	
+	else
+	{
+		bool toReturn = TRUE;
+		for(i=0;i<Expr->nbChildren;i++)
+			toReturn = toReturn && verifPorteeExpr(Expr, listDecl, listObj, op);
+			
+		return toReturn;
+	}
 }
 /******************************************************************************************/
 
@@ -199,7 +243,7 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 				}
 			}
 
-			if(0 == strcmp(veriFils[0].class->name,"Interger")){
+			if(0 == strcmp(veriFils[0].class->name,"Integer")){
 				return result;
 			}
 			break;
@@ -227,7 +271,7 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 				}
 			}
 
-			if(0 == strcmp(veriFils[0].class->name,"Interger") && 0 == strcmp(veriFils[1].class->name,"Interger")){
+			if(0 == strcmp(veriFils[0].class->name,"Integer") && 0 == strcmp(veriFils[1].class->name,"Integer")){
 				result.class = veriFils[0].class;
 				return result;
 			}
@@ -242,7 +286,7 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 				}
 			}
 
-			if(0 == strcmp(veriFils[0].class->name,"Interger") && 0 == strcmp(veriFils[1].class->name,"Interger")){
+			if(0 == strcmp(veriFils[0].class->name,"Integer") && 0 == strcmp(veriFils[1].class->name,"Integer")){
 				result.class = veriFils[0].class;
 				return result;
 			}
@@ -257,7 +301,7 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 				}
 			}
 
-			if(0 == strcmp(veriFils[0].class->name,"Interger") && 0 == strcmp(veriFils[1].class->name,"Interger")){
+			if(0 == strcmp(veriFils[0].class->name,"Integer") && 0 == strcmp(veriFils[1].class->name,"Integer")){
 				result.class = veriFils[0].class;
 				return result;
 			}
@@ -272,7 +316,7 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 				}
 			}
 
-			if(0 == strcmp(veriFils[0].class->name,"Interger") && 0 == strcmp(veriFils[1].class->name,"Interger")){
+			if(0 == strcmp(veriFils[0].class->name,"Integer") && 0 == strcmp(veriFils[1].class->name,"Integer")){
 				result.class = veriFils[0].class;
 				return result;
 			}
@@ -287,7 +331,7 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 				}
 			}
 
-			if(0 == strcmp(veriFils[0].class->name,"Interger") && 0 == strcmp(veriFils[1].class->name,"Interger")){
+			if(0 == strcmp(veriFils[0].class->name,"Integer") && 0 == strcmp(veriFils[1].class->name,"Integer")){
 				result.class = veriFils[0].class;
 				return result;
 			}

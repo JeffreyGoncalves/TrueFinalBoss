@@ -140,6 +140,7 @@ Champ : VAR ID ':' ID Init ';' 	  { $$ = makeVarDeclP($2,$4,$5);}
 //Appel d'une methode
 
 CallMethod : Object'.'ID'('ListArgClause')'	{ 	TreeP id = makeLeafStr(_ID, $3);
+												/*t_method *method = makeMethod($3, NULL, ?, $5, FALSE);*/
 												$$ = makeTree(E_CALL_METHOD, 3,  $1, id, $5);}
 | '('ExprRelop')''.'ID'('ListArgClause')'	{ 	TreeP id = makeLeafStr(_ID, $5);
 												$$ = makeTree(E_CALL_METHOD, 3,  $2, id, $7);}
@@ -187,7 +188,8 @@ Object : Selection		{ $$ = $1;}
 | CallMethod			{ $$ = $1;}
 | Instanciation			{ $$ = $1;}
 | CSTE					{ $$ = makeLeafInt(CST, $1);}
-| ID					{ $$ = makeLeafStr(_ID, $1);}
+| ID					{ VarDeclP varToSearch = makeVarDeclP($1, NULL, NULL);
+						  $$ = makeLeafLVar(_ID, varToSearch); }
 | STR					{ $$ = makeLeafStr(_STR, $1);}
 | Cast					{ $$ = $1;}
 ;	
