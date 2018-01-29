@@ -177,7 +177,6 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 		
 		case DECL:
 			return verifcationTypageListVarDecl(noeud->u.lvar, env);
-			
 		case LIST_PARAM:
 			return verifcationTypageListVarDecl(noeud->u.lvar, env);
 			
@@ -314,11 +313,6 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 			break;
 		
 		case _ID:
-			result.class = FindClass(env->listClass, noeud->u.str);/*TODO*/
-			return result;
-			break;
-			
-		case _STR:
 			result.class = FindClass(env->listClass, "String");
 			return result;
 			break;
@@ -332,14 +326,10 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 				}
 			}
 
-
-			if(AEstSuperDeB(getChild(noeud, 0)->u.str, veriFils[1].class->name, env)){
-				result.class = veriFils[0].class;
+			if(0 == strcmp(veriFils[0].class->name,"String") && 0 == strcmp(veriFils[1].class->name,"String")){
 				return result;
 			}
 			break;
-			
-		
 	}
 	
 	result.succes = 0;
@@ -379,18 +369,6 @@ Vtypage verifcationTypageListVarDecl(VarDeclP liste, list_ClassObjP env){
 	
 }
 
-int AEstSuperDeB(char* A, char* B,list_ClassObjP env){
-	t_class* i = FindClass(env->listClass, B);
-	
-	while(i != NIL(t_class)){
-		if(0 == strcmp(i->name,A)){
-		 return 1;
-		}
-		i = i->superClass;
-	}
-	return 0;
-}
-
 bool verificationNbParametres(t_method* method, VarDeclP entry){
 
 	VarDeclP tmp = entry;
@@ -404,44 +382,28 @@ bool verificationNbParametres(t_method* method, VarDeclP entry){
 	return (method->nbParametres == givenNb) ? TRUE : FALSE;
 }
 
-bool verificationBoucleHeritage(list_ClassObjP env, t_class* class){
-
-	t_class* temp = class;
-
-	while(temp != NIL(t_class)){
-
-		if(AEstSuperDeB(class->name,temp->superClass->name,env) == 0){
-			printf("%s et %s forment une boucle d'heritage : KO\n", class->name,temp->name);
-			return FALSE;
-		}
-
-		temp = temp->superClass;
-	}
-
+bool verificationBoucleHeritage(t_class* listClasses, t_class class){
 	return TRUE;
 }
 
-bool verificationNomClasse(list_ClassObjP env, t_class* class){
+bool verificationNomClasse(t_class* listClasses, t_class class){
 
-	t_class* temp = env->listClass;
+	t_class* temp = listClasses;
 
-	if('A' >= class->name[0] || class->name[0] >= 'Z'){
+	if('A' >= class.name[0] || class.name[0] >= 'Z'){
 
-		printf("%s : Nom de classe sans majuscule !\n", class->name);
+		printf("%s : Nom de classe sans majuscule !\n", class.name);
 		return FALSE;
 	}
 
 	while(temp != NIL(t_class) || temp->next != NIL(t_class)){
 
-		if(strcmp(temp->name,class->name) == 0){
+		if(strcmp(temp->name,class.name) == 0){
 
-			printf("%s : Nom de classe deja existant\n",class->name);
+			printf("%s : Nom de classe deja existant\n",class.name);
 			return FALSE;
 		}
 	}
 
 	return TRUE;
 }
-
-
-
