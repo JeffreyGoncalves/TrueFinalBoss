@@ -82,7 +82,7 @@ int motClef(){
 {ChaineCarac}		{ char *word = strdup(yytext);
 					  removeComma(word);
 					  yylval.S = word;
-					  return(ID); }
+					  return(STR); }
 
 "="					{ yylval.C = EQ; return(RELOP); }
 "<>"				{ yylval.C = NE; return(RELOP); }

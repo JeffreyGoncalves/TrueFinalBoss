@@ -177,6 +177,7 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 		
 		case DECL:
 			return verifcationTypageListVarDecl(noeud->u.lvar, env);
+			
 		case LIST_PARAM:
 			return verifcationTypageListVarDecl(noeud->u.lvar, env);
 			
@@ -317,6 +318,11 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 			return result;
 			break;
 			
+		case _STR:
+			result.class = FindClass(env->listClass, "String");
+			return result;
+			break;
+			
 		case CAST:
 			for(i=0 ; i<noeud->nbChildren ; i++){
 				veriFils[i] = verifcationTypageNoeud(getChild(noeud, i), env);
@@ -326,7 +332,9 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 				}
 			}
 
-			if(0 == strcmp(veriFils[0].class->name,"String") && 0 == strcmp(veriFils[1].class->name,"String")){
+
+			if(AEstSuperDeB(getChild(noeud, 0)->u.str, veriFils[1].class->name, env)){
+				result.class = veriFils[0].class;
 				return result;
 			}
 			break;
@@ -367,6 +375,15 @@ Vtypage verifcationTypageListVarDecl(VarDeclP liste, list_ClassObjP env){
 	result.succes = 1;
 	return result;
 	
+}
+
+int AEstSuperDeB(char* A, char* B,list_ClassObjP env){
+	t_class* i = FindClass(env->listClass, B);
+	
+	while(i != NIL(t_class)){
+		if(0 == strcmp(i->name,A)) return 1;
+	}
+	return 0;
 }
 
 bool verificationNbParametres(t_method* method, VarDeclP entry){

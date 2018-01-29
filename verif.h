@@ -14,4 +14,5 @@ typedef struct Vtypage{
 Vtypage verifcationTypageListVarDecl(VarDeclP liste, list_ClassObjP env);
 Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env);
 Vtypage verifTypageSuccesFils(short nbre, TreeP noeud, list_ClassObjP env);
+int AEstSuperDeB(char* A, char* B,list_ClassObjP env);
 bool verificationNbParametres(t_method* method, VarDeclP entry);

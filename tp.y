@@ -2,7 +2,7 @@
 %token IS OBJECT CLASS VAR EXTENDS DEF OVERRIDE IF THEN ELSE AFF RETURN NEWV 
 %token ',' ':' '(' ')' '{' '}' ';' '.' '&' 
 %token ADD SUB MUL DIV
-%token<S> ID
+%token<S> ID STR
 %token<I> CSTE
 %token<C> RELOP
 
@@ -187,7 +187,8 @@ Object : Selection		{ $$ = $1;}
 | CallMethod			{ $$ = $1;}
 | Instanciation			{ $$ = $1;}
 | CSTE					{ $$ = makeLeafInt(CST, $1);}
-| ID					{ $$ = makeLeafStr(_ID, $1);	}
+| ID					{ $$ = makeLeafStr(_ID, $1);}
+| STR					{ $$ = makeLeafStr(_STR, $1);}
 | Cast					{ $$ = $1;}
 ;	
 

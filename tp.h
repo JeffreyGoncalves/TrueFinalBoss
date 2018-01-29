@@ -36,7 +36,7 @@ typedef unsigned char bool;
 #define GE	10
 #define AND 11
 #define CST 12
-#define STR 13
+#define _STR 13
 #define _ID 14
 #define CAST 15
 #define DECL 16
