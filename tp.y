@@ -31,7 +31,7 @@ extern void yyerror(char *);
 %%
 //Structure du programme
 Prog : listClassObj block 				{ $$ = makeTree(PROG, 2, $1, $2);
-										  /*affTree($$, 0);*/
+										  affTree($$, 0);
 										  compile($1,$2);			
 										  }
 ;	
@@ -210,7 +210,8 @@ Expr : Expr ADD Expr		{ $$ = makeTree(SUM, 2, $1, $3);}
 | '(' ExprRelop ')'	 		{ $$ = $2;}
 ;
 
-Instanciation : NEWV ID '('ListArgClause')'		{ $$ = makeTree(INST, 2, $2, $4);}
+Instanciation : NEWV ID '('ListArgClause')'		{ 	TreeP id = makeLeafStr(_ID, $2);
+													$$ = makeTree(INST, 2, id, $4);}
 ;
 
 Cast : '('ID Object')' 		{ TreeP id = makeLeafStr(_ID, $2);

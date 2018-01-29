@@ -283,8 +283,8 @@ void printOP(short op)
 		case CST : 
 			printf("CST");
 			break;
-		case STR : 
-			printf("STR");
+		case _STR : 
+			printf("_STR");
 			break;
 		case _ID : 
 			printf("_ID");

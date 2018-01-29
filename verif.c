@@ -314,7 +314,7 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 			break;
 		
 		case _ID:
-			result.class = FindClass(env->listClass, "String");
+			result.class = FindClass(env->listClass, noeud->u.str);/*TODO*/
 			return result;
 			break;
 			
@@ -338,6 +338,8 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 				return result;
 			}
 			break;
+			
+		
 	}
 	
 	result.succes = 0;
