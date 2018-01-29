@@ -6,13 +6,6 @@
 #include <string.h>
 #include "tp.h"
 
-typedef struct Vtypage{
-	t_class* class;
-	int succes;
-}Vtypage, *VtypageP;
-
-
-
 VarDeclP giveAllAttributes(TreeP tree, t_class* firstClass);
 t_method* giveAllMethod(TreeP tree, t_class* firstClass);
 
@@ -30,7 +23,3 @@ void afficheNomMethod(t_method* liste);
 
 void compile(TreeP listClassObject, TreeP core);
 
-Vtypage verifcationTypageListVarDecl(VarDeclP liste, list_ClassObjP env);
-Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env);
-Vtypage verifTypageSuccesFils(short nbre, TreeP noeud, list_ClassObjP env);
-bool verificationNbParametres(t_method* method, VarDeclP entry);
