@@ -9,6 +9,8 @@ bool verifPorteeInst(TreeP inst, VarDeclP listDecl, t_object *listObj, short op)
 bool verifPorteeMeth(TreeP tree, t_class *class);
 bool verifPorteeBloc(TreeP tree, VarDeclP listDecl, t_object *listObj);
 bool verifPorteeClassObj(TreeP classObj, list_ClassObjP classObjList);
+bool verifPorteeObject(TreeP tree, list_ClassObjP classObjList);
+bool verifPorteeClass(TreeP tree, list_ClassObjP classObjList);
 
 /***************** Verifications contextuelles liees a la portee *****************/
 void verifPorteeProg(TreeP tree, list_ClassObjP classObjList)
@@ -80,6 +82,12 @@ bool verifPorteeInst(TreeP inst, VarDeclP listDecl, t_object *listObj, short op)
 			return (verifPorteeExpr(Obj, listDecl, listObj, I_BLOC) &&
 					verifPorteeExpr(Expr, listDecl, listObj, I_BLOC));
 		}
+		
+		/* Expression */
+		if(inst->op == I_EXPRRELOP)
+		{
+			return verifPorteeExpr(getChild(inst, 0), listDecl, listObj, I_BLOC);
+		} 
 	}
 	return FALSE;
 		
@@ -87,24 +95,106 @@ bool verifPorteeInst(TreeP inst, VarDeclP listDecl, t_object *listObj, short op)
 
 bool verifPorteeClassObj(TreeP classObj, list_ClassObjP classObjList)
 {
+	bool toReturn = TRUE;
+	
+	while(classObj != NIL(Tree))
+	{
+		TreeP listClassObj = getChild(classObj, 0);
+		TreeP classObjTree = getChild(classObj, 1);
+		
+		/* On regarde ce qu'est classObjTree : classe ou objet */
+		/* Cas classe */
+		if(classObjTree->op == CLAS)
+			toReturn = toReturn && verifPorteeClass(getChild(classObjTree, 0), classObjList);
+		/* Cas Objet */
+		if(classObjTree->op == OBJ)
+			toReturn = toReturn && verifPorteeObject(getChild(classObjTree, 0), classObjList);
+		
+		toReturn = toReturn && verifPorteeClassObj(listClassObj, classObjList);
+	}
+	return toReturn;
+	
+}
+
+bool verifPorteeObject(TreeP tree, list_ClassObjP classObjList)
+{
+	char *objName = getChild(tree, 0)->u.str;
+	t_object *actualObj = NIL(t_object);
+	bool toReturn = TRUE;
+	tree = getChild(tree, 1);
+	
+	/* On cherche son enregistrement dans classListObj (actualObj) dans l'optique de la recuperation
+	 * des champs (champsObj) */
+	t_object *listObj = classObjList->listObj;
+	while(listObj != NIL(t_object))
+	{
+		if(!strcmp(listObj->name, objName))
+		{
+			actualObj = listObj;
+			break;
+		}
+		else listObj = listObj->next;
+	}
+	VarDeclP champsObj = actualObj->attributes;
+	
+	/* On a fini et on s'attaque aux bloc des methodes */
+	while(tree != NIL(Tree))
+	{
+		TreeP methVar = getChild(tree, 0);
+		TreeP next = getChild(tree, 1);
+		
+		/* Traitement des blocs des methodes */
+		if(methVar->op == VAR_DEF_METH)
+		{
+			TreeP methodType = getChild(methVar, 0);
+			/* Il faut ici differencier les deux cas : 
+			* Override DEF ID'(' ListParamClause ')' ':' ID AFF ExprRelop et
+			* Override DEF ID'(' ListParamClause ')' ClassClause IS block 
+			* De plus, OVERRIDE n'a aucun sens vu qu'ici on considere un objet
+			* qui ne peut donc pas heriter */
+			if(methodType->op == DECL_METH_1)
+			{
+				if(getChild(methodType, 2) != NIL(Tree))
+				{
+					/* setError(OVERRIDE_ERROR); */
+					return FALSE;
+					/* Erreur car OVERRIDE interdit */
+				}
+				else
+				{
+					
+				}				
+			}
+			else if(methodType->op == DECL_METH_2)
+			{
+				if(getChild(methodType, 1) != NIL(Tree))
+				{
+					/* setError(OVERRIDE_ERROR); */
+					return FALSE;
+					/* Erreur car OVERRIDE interdit */
+				}
+				else
+				{
+					
+				}
+			}
+		}
+		
+		tree = next;
+	}
+	return toReturn;
+}
+
+bool verifPorteeClass(TreeP tree, list_ClassObjP classObjList)
+{
 	return FALSE;
 }
 
 bool verifPorteeBloc(TreeP tree, VarDeclP listDecl, t_object *listObj)
 {
 	bool toReturn = TRUE;
-	VarDeclP listVarDecl = listDecl;
-	TreeP listInst = tree->u.children[1];
-	
-	/* On ajoute au bloc selectionne les declaration precedentes */
-	if(listDecl == NULL)listVarDecl = (VarDeclP)tree->u.children[0];
-	else
-	{
-		VarDeclP varSel = listDecl;
-		while(varSel->next != NULL)
-			varSel = varSel->next;
-		varSel->next = (VarDeclP)tree->u.children[0];
-	}
+	VarDeclP listVarDecl = getChild(tree, 0)->u.lvar;
+	TreeP listInst = getChild(tree,1);
 	
 	/**** Verification de la liste de declaration ****/
 	VarDeclP varSel = listVarDecl;
@@ -139,6 +229,18 @@ bool verifPorteeBloc(TreeP tree, VarDeclP listDecl, t_object *listObj)
 		varSel = varSel->next;
 	}
 	/*************************************************/
+	
+	/****	Ajout des declarations precedentes non prioritaires	******/
+	/* Note : cela permet de gerer le masquage (les variables 
+	 * du bloc sont prioritaires sur les precedentes */
+	if(listDecl != NIL(VarDecl))
+	{
+		VarDeclP varSel = listVarDecl;
+		while(varSel->next != NULL)
+			varSel = varSel->next;
+		varSel->next = listDecl;
+	}
+	/*****************************************************************/
 	
 	/*** Verification des instructions (portee) ***/
 	if(listInst != NULL)
@@ -184,7 +286,7 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, t_object *listObj, short op)
 			{
 				if(!strcmp(objSel->name, Expr->u.lvar->name))
 				{
-					/* Pas FINI : demande l'acceptation d'une requete */
+					Expr->u.lvar->coeur->_obj = objSel;
 					return TRUE;
 				}
 				varSel = varSel->next;

@@ -143,6 +143,7 @@ typedef struct t_object{
 
 typedef struct t_variable{
 	struct t_class* _type;
+	struct t_object* _obj;
 	TreeP value;
 }t_variable;
 
