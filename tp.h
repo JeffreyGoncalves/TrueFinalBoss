@@ -150,11 +150,6 @@ typedef struct list_ClassObj{
 	t_object* listObj;
 }list_ClassObj, *list_ClassObjP;
 
-typedef struct list_Trees{
-	TreeP tree;
-	struct list_Trees next;
-}list_Trees;
-
 /*
 typedef struct t_affect{
 	struct t_expr* variable;

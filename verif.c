@@ -438,27 +438,27 @@ int AEstSuperDeB(char* A, char* B,list_ClassObjP env){
 bool verificationNbParametres(TreeP block){
 		TreeP tree = block;
 		bool toReturn = TRUE;
-		int i = 0;
 		while(tree != NIL(Tree)){
 			if(tree->op == E_CALL_METHOD){
 
 				t_class* c = getChild(tree,3)->u.lvar->coeur->_type;
 
 				while(strcmp(getChild(tree,3)->u.str,c->methods->name) != 0){
-					if(methods == NIL(t_method)){
+					if(c->methods == NIL(t_method)){
 						setError(NO_EXISTING_METHOD);
 					}
-					methods = methods->next;
+					c->methods = c->methods->next;
 				}
 
-				t_method* decl = methods;
+				t_method* decl = c->methods;
 				VarDeclP entry = getChild(tree,4)->u.lvar;
 				int givenNb = 0;
 				while(entry != NULL){
 					entry = entry->next;
-					givenNb++
+					givenNb++;
 				}
-				toReturn = toReturn && ((decl->nbParametres == givenNb) ? TRUE : FALSE);	
+				toReturn = toReturn && ((decl->nbParametres == givenNb) ? TRUE : FALSE);
+				tree = getChild(tree,1);	
 			}
 			else if(tree->op == INST){
 
@@ -468,17 +468,15 @@ bool verificationNbParametres(TreeP block){
 					int givenNb = 0;
 					while(entry != NULL){
 						entry = entry->next;
-						givenNb++
+						givenNb++;
 					}
 					toReturn = toReturn && ((getChild(tree,1)->u.lvar->coeur->_type->constructor->nbParametres == givenNb) ? TRUE : FALSE);
+					return toReturn;
 				}
 				else setError(NO_EXISTING_METHOD);
 			}
-
 		}
-
 		return toReturn;
-	
 }
 
 bool verificationBoucleHeritage(list_ClassObjP env, t_class* class){
