@@ -210,14 +210,24 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 	Vtypage result;
 	Vtypage veriFils[5];
 	int i;
+	t_method* m;
 	result.succes = 1;
 	
 	if(noeud == NIL(Tree)) return result;
 	
+	for(i=0 ; i<noeud->nbChildren ; i++){
+		veriFils[i] = verifcationTypageNoeud(getChild(noeud, i), env);
+		if(!(veriFils[i].succes)){
+			result.succes = 0;
+			return result;
+		}
+	}
+	
 	switch(noeud->op){
 		
 		case I_BLOC:
-			return verifTypageSuccesFils(noeud->nbChildren, noeud, env);
+			return result;
+			/*return verifTypageSuccesFils(noeud->nbChildren, noeud, env);*/
 		
 		case DECL:
 			return verifcationTypageListVarDecl(noeud->u.lvar, env);
@@ -225,165 +235,117 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 		case LIST_PARAM:
 			return verifcationTypageListVarDecl(noeud->u.lvar, env);
 			
-		case INST:
-			return verifTypageSuccesFils(noeud->nbChildren, noeud, env);
+		case LIST_INST:
+			return result;
+			/*return verifTypageSuccesFils(noeud->nbChildren, noeud, env);*/
 
 		case I_RETURN: /* PAS FINI ! */
 			return result;
 		
 		case I_EXPRRELOP:
-			return verifTypageSuccesFils(noeud->nbChildren, noeud, env);
+			return result;
+			/*return verifTypageSuccesFils(noeud->nbChildren, noeud, env);*/
 			
 		case I_ITE:
-			for(i=0 ; i<noeud->nbChildren ; i++){
-				veriFils[i] = verifcationTypageNoeud(getChild(noeud, i), env);
-				if(!(veriFils[i].succes)){
-					result.succes = 0;
-					return result;
-				}
-			}
-
-			if(0 == strcmp(veriFils[0].class->name,"Integer")){
+			if(0 == strcmp(veriFils[0].type.class->name,"Interger")){
 				return result;
 			}
 			break;
 			
 		case I_AFF:
-			for(i=0 ; i<noeud->nbChildren ; i++){
-				veriFils[i] = verifcationTypageNoeud(getChild(noeud, i), env);
-				if(!(veriFils[i].succes)){
-					result.succes = 0;
-					return result;
-				}
-			}
-
-			if(0 == strcmp(veriFils[0].class->name, veriFils[1].class->name)){
+			if(0 == strcmp(veriFils[0].type.class->name, veriFils[1].type.class->name)){
 				return result;
 			}
 			break;
 			
 		case EXPR_RELOP:
-			for(i=0 ; i<noeud->nbChildren ; i++){
-				veriFils[i] = verifcationTypageNoeud(getChild(noeud, i), env);
-				if(!(veriFils[i].succes)){
-					result.succes = 0;
-					return result;
-				}
-			}
-
-			if(0 == strcmp(veriFils[0].class->name,"Integer") && 0 == strcmp(veriFils[1].class->name,"Integer")){
-				result.class = veriFils[0].class;
+			if(0 == strcmp(veriFils[0].type.class->name,"Interger") && 0 == strcmp(veriFils[1].type.class->name,"Interger")){
+				result.type.class = veriFils[0].type.class;
 				return result;
 			}
 			break;
 			
 		case SUM:
-			for(i=0 ; i<noeud->nbChildren ; i++){
-				veriFils[i] = verifcationTypageNoeud(getChild(noeud, i), env);
-				if(!(veriFils[i].succes)){
-					result.succes = 0;
-					return result;
-				}
-			}
-
-			if(0 == strcmp(veriFils[0].class->name,"Integer") && 0 == strcmp(veriFils[1].class->name,"Integer")){
-				result.class = veriFils[0].class;
+			if(0 == strcmp(veriFils[0].type.class->name,"Interger") && 0 == strcmp(veriFils[1].type.class->name,"Interger")){
+				result.type.class = veriFils[0].type.class;
 				return result;
 			}
 			break;
 			
 		case MIN:
-			for(i=0 ; i<noeud->nbChildren ; i++){
-				veriFils[i] = verifcationTypageNoeud(getChild(noeud, i), env);
-				if(!(veriFils[i].succes)){
-					result.succes = 0;
-					return result;
-				}
-			}
-
-			if(0 == strcmp(veriFils[0].class->name,"Integer") && 0 == strcmp(veriFils[1].class->name,"Integer")){
-				result.class = veriFils[0].class;
+			if(0 == strcmp(veriFils[0].type.class->name,"Interger") && 0 == strcmp(veriFils[1].type.class->name,"Interger")){
+				result.type.class = veriFils[0].type.class;
 				return result;
 			}
 			break;
 		
 		case MULT:
-			for(i=0 ; i<noeud->nbChildren ; i++){
-				veriFils[i] = verifcationTypageNoeud(getChild(noeud, i), env);
-				if(!(veriFils[i].succes)){
-					result.succes = 0;
-					return result;
-				}
-			}
-
-			if(0 == strcmp(veriFils[0].class->name,"Integer") && 0 == strcmp(veriFils[1].class->name,"Integer")){
-				result.class = veriFils[0].class;
+			if(0 == strcmp(veriFils[0].type.class->name,"Interger") && 0 == strcmp(veriFils[1].type.class->name,"Interger")){
+				result.type.class = veriFils[0].type.class;
 				return result;
 			}
 			break;
 		
 		case DIVI:
-			for(i=0 ; i<noeud->nbChildren ; i++){
-				veriFils[i] = verifcationTypageNoeud(getChild(noeud, i), env);
-				if(!(veriFils[i].succes)){
-					result.succes = 0;
-					return result;
-				}
-			}
-
-			if(0 == strcmp(veriFils[0].class->name,"Integer") && 0 == strcmp(veriFils[1].class->name,"Integer")){
-				result.class = veriFils[0].class;
+			if(0 == strcmp(veriFils[0].type.class->name,"Interger") && 0 == strcmp(veriFils[1].type.class->name,"Interger")){
+				result.type.class = veriFils[0].type.class;
 				return result;
 			}
 			break;
 			
 		case AND:
-			for(i=0 ; i<noeud->nbChildren ; i++){
-				veriFils[i] = verifcationTypageNoeud(getChild(noeud, i), env);
-				if(!(veriFils[i].succes)){
-					result.succes = 0;
-					return result;
-				}
-			}
-
-			if(0 == strcmp(veriFils[0].class->name,"String") && 0 == strcmp(veriFils[1].class->name,"String")){
-				result.class = veriFils[0].class;
+			if(0 == strcmp(veriFils[0].type.class->name,"String") && 0 == strcmp(veriFils[1].type.class->name,"String")){
+				result.type.class = veriFils[0].type.class;
 				return result;
 			}
 			break;
 			
 		case CST:
-			result.class = FindClass(env->listClass, "Integer");
+			result.type.class = FindClass(env->listClass, "Integer");
 			return result;
 			break;
 		
 		case _ID:
-			result.class = FindClass(env->listClass, noeud->u.str);/*TODO*/
+			result.type.class = FindClass(env->listClass, noeud->u.str);/*TODO*/
 			return result;
 			break;
 			
 		case _STR:
-			result.class = FindClass(env->listClass, "String");
+			result.type.class = FindClass(env->listClass, "String");
 			return result;
 			break;
 			
-		case CAST:
-			for(i=0 ; i<noeud->nbChildren ; i++){
-				veriFils[i] = verifcationTypageNoeud(getChild(noeud, i), env);
-				if(!(veriFils[i].succes)){
-					result.succes = 0;
-					return result;
-				}
-			}
-
-
-			if(AEstSuperDeB(getChild(noeud, 0)->u.str, veriFils[1].class->name, env)){
-				result.class = veriFils[0].class;
+		case CAST: /* TODO */
+			if(AEstSuperDeB(getChild(noeud, 0)->u.str, veriFils[1].type.class->name, env)){
+				result.type.class = veriFils[0].type.class;
 				return result;
 			}
 			break;
-			
 		
+		case E_SELECT: /* L'espression est faite dans la verif de portée */
+			result.type.class = veriFils[1].type.class;
+			return result;
+			break;
+		
+		case E_CALL_METHOD: /*  */
+			m = veriFils[1].type.class->methods;
+			while(m != NIL(t_method)){
+				if(0 == strcmp(m->name, getChild(noeud, 1)->u.lvar->name)){
+					result.type.class = m->returnType;
+				}
+				m = m->next;
+			}
+			return result;
+			break;
+			
+		case LIST_ARG: 
+			return verifTypageSuccesFils(noeud->nbChildren, noeud, env);
+			
+		case INST: /* TODO */
+			result.type.class = veriFils[0].type.class;
+			return result;
+			break;
+			
 	}
 	
 	result.succes = 0;
@@ -411,7 +373,7 @@ Vtypage verifcationTypageListVarDecl(VarDeclP liste, list_ClassObjP env){
 		
 		Vtypage expr = verifcationTypageNoeud(liste->coeur->value, env);
 		
-		if(!(expr.succes) || 0 != strcmp(expr.class->name, liste->coeur->_type->name)){
+		if(!(expr.succes) || 0 != strcmp(expr.type.class->name, liste->coeur->_type->name)){
 			result.succes = 0;
 			return result;
 		}
@@ -433,6 +395,118 @@ int AEstSuperDeB(char* A, char* B,list_ClassObjP env){
 		i = i->superClass;
 	}
 	return 0;
+}
+
+int verificationTypageMethode(t_class* C, t_method* method, list_ClassObjP env){
+	while(method != NIL(t_method)){
+		if (!(verifcationTypageListVarDecl(method->parametres, env).succes)) return 0;
+		if (!(verifcationTypageNoeud(method->bloc, env).succes)) return 0;
+		
+		/* TYPE DE RETOUR OK ? */
+		Vtypage okko /*= getReturnType(method->bloc)*/;
+		if(0 != strcmp(method->returnType->name, okko.type.class->name)) return 0;
+		
+		/*****ON VERIFIE SI LA METHODE EST BIEN REDEFINIE*****/
+		if(method->isRedef){
+			
+			t_class* Ci = C->superClass;
+			int valide = 0;
+			
+			while(Ci != NIL(t_class)){
+				t_method* i = Ci->methods;
+				
+				while(i != NIL(t_method)){
+					if(0 == strcmp(i->name, method->name)
+						&& i->nbParametres == method->nbParametres
+						&& i->returnType == method->returnType){
+							
+							VarDeclP j = i->parametres;
+							VarDeclP h = method->parametres;
+							
+							while(j != NIL(VarDecl)){
+								if(0 == strcmp(j->name, h->name) && 0 == strcmp(j->coeur->_type->name, h->coeur->_type->name)){
+										valide = 1;
+									}
+								j = j->next;
+								h = h->next;
+							}
+					}
+					i = i->next;
+				}
+				Ci = Ci->superClass;
+			}
+			if(!valide) return 0;
+		}
+		
+	}
+	return 1;
+}
+
+int verificationTypageMethodeO(t_method* method, list_ClassObjP env){
+	while(method != NIL(t_method)){
+		if (!(verifcationTypageListVarDecl(method->parametres, env).succes)) return 0;
+		if (!(verifcationTypageNoeud(method->bloc, env).succes)) return 0;
+		
+		/* TYPE DE RETOUR OK ? */
+		Vtypage okko /*= getReturnType(method->bloc)*/;
+		if(0 != strcmp(method->returnType->name, okko.type.class->name)) return 0;
+
+		if(method->isRedef) return 0;
+	}
+	return 1;
+}
+
+int verificationTypageEnvironnement(list_ClassObjP env){
+	t_class* i = env->listClass;
+	t_object* j = env->listObj;
+	
+	while(i != NIL(t_class)){
+		if (!(verifcationTypageListVarDecl(i->parametres, env).succes)) return 0;
+		if (!(verifcationTypageListVarDecl(i->attributes, env).succes)) return 0;
+		if (!(verificationTypageMethode(i, i->methods, env))) return 0;
+		if (!(verificationTypageMethode(i, i->constructor, env))) return 0;
+		
+		i = i->next;
+	}
+	
+	while(j != NIL(t_object)){
+		if (!(verifcationTypageListVarDecl(j->attributes, env).succes)) return 0;
+		if (!(verificationTypageMethodeO(j->methods, env))) return 0;
+		
+		j = j->next;
+	}
+	
+	return 1;
+}
+
+int verificationTypage(list_ClassObjP env, TreeP core){
+	return (verifcationTypageNoeud(core, env).succes && verificationTypageEnvironnement(env));
+}
+
+t_class* getReturnType(TreeP tree, list_ClassObjP env){
+	if(tree->op == I_RETURN){
+		return getChild(tree, 0)->u.lvar->coeur->_type;
+	}else if(tree->nbChildren != 0){
+		t_class* res = NIL(t_class);
+		
+		int i;
+		for(i=0 ; i<tree->nbChildren ; i++){
+			t_class* ite = getReturnType(getChild(tree, i), env);
+			if(ite != NIL(t_class)){
+				if(res == NIL(t_class)){
+					res = ite;
+				}else{
+					if(0 == strcmp(res->name, ite->name)) return res;
+					return NIL(t_class);
+				}
+			}else{
+				return NIL(t_class);
+			}
+		}
+		return res;
+	}else{
+		return FindClass(env->listClass, "Void");
+	}
 }
 
 bool verificationNbParametres(TreeP block){

@@ -46,7 +46,7 @@ t_class* makeClass(TreeP TreeClass, t_class* firstClass){
 		t_class* myClass = NEW(1, t_class);
 		
 		/*LE NOM*/
-		myClass->name = getChild(TreeClass, 0)->u.str;
+		myClass->name = getChild(TreeClass, 0)->u.lvar->name;
 		
 		/*LA LISTE de PARAMETRES*/
 		if(getChild(TreeClass, 1) != NIL(Tree)){
@@ -65,7 +65,7 @@ t_class* makeClass(TreeP TreeClass, t_class* firstClass){
 		/*EXTENDS ?*/
 		if(getChild(TreeClass, 2) != NIL(Tree)){
 			t_class* classTempo = NEW(1, t_class);
-			classTempo->name = getChild(getChild(TreeClass, 2), 0)->u.str; /* On lie la 'vraie' super-classe lors de la vérification contextuelle de portée.*/
+			classTempo->name = getChild(getChild(TreeClass, 2), 0)->u.lvar->name; /* On lie la 'vraie' super-classe lors de la vérification contextuelle de portée.*/
 			myClass->superClass = classTempo;
 
 		}else{
@@ -95,7 +95,7 @@ t_object* makeObj(TreeP TreeObject, t_class* firstClass){
 		t_object* myObject = NEW(1, t_object);
 		
 		/*LE NOM*/
-		myObject->name = getChild(TreeObject, 0)->u.str;
+		myObject->name = getChild(TreeObject, 0)->u.lvar->name;
 		
 		/* LES METHODES  & LES ATTRIBUTS*/
 		if(getChild(TreeObject, 1) == NIL(Tree)){
@@ -214,7 +214,7 @@ t_method* MakeMethod(TreeP TreeM,t_class* listClass){
 	if(TreeM->op == DECL_METH_1 || TreeM->op == DECL_METH_2){
 
 		/*NOM DE LA METHODE*/
-		method->name = getChild(TreeM,0)->u.str;
+		method->name = getChild(TreeM,0)->u.lvar->name;
 		if(TreeM->op == DECL_METH_1){					/*cas DeclMethod ::= Override DEF ID'(' ListParamClause ')' ':' ID AFF ExprRelop*/
 
 			/*OVERRIDE*/
@@ -246,7 +246,7 @@ t_method* MakeMethod(TreeP TreeM,t_class* listClass){
 			/*TYPE DE RETOUR*/
 			method->returnType = NEW(1,t_class);
 			/*printf("%s\n",getChild(TreeM,1)->u.str);*/
-			method->returnType->name = getChild(TreeM,1)->u.str;
+			method->returnType->name = getChild(TreeM,1)->u.lvar->name;
 
 			/*BLOC D'EXPRESSIONS*/
 			method->bloc = getChild(TreeM,4);
@@ -290,7 +290,7 @@ t_method* MakeMethod(TreeP TreeM,t_class* listClass){
 				method->returnType->name = "Void"; 		/* On lie la 'vraie' classe lors de la vérification contextuelle de portée.*/
 			}
 			else{
-				method->returnType->name = getChild(TreeM,3)->u.str;
+				method->returnType->name = getChild(TreeM,3)->u.lvar->name;
 			}
 			
 			/*BLOC*/
