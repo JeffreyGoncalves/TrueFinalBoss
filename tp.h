@@ -86,6 +86,7 @@ typedef unsigned char bool;
 #define REDECL_ERROR 44 /* Redeclaration problem */
 #define RESERV_DECL_ERROR 45 /* Forbidden use of a reserved ID (this, super, result) */
 #define RETURN_ERROR 46 /* Forbidden use of return */
+#define NO_EXISTING_METHOD 47 /*This method does not exist in its class*/
 #define EVAL_ERROR	50	/* dubious when writing a compiler ! */
 #define UNEXPECTED	10O
 
@@ -148,6 +149,11 @@ typedef struct list_ClassObj{
 	t_class* listClass;
 	t_object* listObj;
 }list_ClassObj, *list_ClassObjP;
+
+typedef struct list_Trees{
+	TreeP tree;
+	struct list_Trees next;
+}list_Trees;
 
 /*
 typedef struct t_affect{

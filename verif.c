@@ -435,17 +435,50 @@ int AEstSuperDeB(char* A, char* B,list_ClassObjP env){
 	return 0;
 }
 
-bool verificationNbParametres(t_method* method, VarDeclP entry){
+bool verificationNbParametres(TreeP block){
+		TreeP tree = block;
+		bool toReturn = TRUE;
+		int i = 0;
+		while(tree != NIL(Tree)){
+			if(tree->op == E_CALL_METHOD){
 
-	VarDeclP tmp = entry;
-	int givenNb = 0;
+				t_class* c = getChild(tree,3)->u.lvar->coeur->_type;
 
-	while(tmp != NIL(VarDecl) || tmp->next != NIL(VarDecl)){
-		givenNb++;
-		tmp = tmp->next;
-	}
+				while(strcmp(getChild(tree,3)->u.str,c->methods->name) != 0){
+					if(methods == NIL(t_method)){
+						setError(NO_EXISTING_METHOD);
+					}
+					methods = methods->next;
+				}
 
-	return (method->nbParametres == givenNb) ? TRUE : FALSE;
+				t_method* decl = methods;
+				VarDeclP entry = getChild(tree,4)->u.lvar;
+				int givenNb = 0;
+				while(entry != NULL){
+					entry = entry->next;
+					givenNb++
+				}
+				toReturn = toReturn && ((decl->nbParametres == givenNb) ? TRUE : FALSE);	
+			}
+			else if(tree->op == INST){
+
+				if(strcmp(getChild(tree,1)->u.lvar->coeur->_type->constructor->name,getChild(tree,1)->u.str) == 0){
+
+					VarDeclP entry = getChild(tree,4)->u.lvar;
+					int givenNb = 0;
+					while(entry != NULL){
+						entry = entry->next;
+						givenNb++
+					}
+					toReturn = toReturn && ((getChild(tree,1)->u.lvar->coeur->_type->constructor->nbParametres == givenNb) ? TRUE : FALSE);
+				}
+				else setError(NO_EXISTING_METHOD);
+			}
+
+		}
+
+		return toReturn;
+	
 }
 
 bool verificationBoucleHeritage(list_ClassObjP env, t_class* class){

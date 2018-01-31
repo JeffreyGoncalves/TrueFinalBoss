@@ -91,12 +91,17 @@ void setError(int code) {
   errorCode = code;
   if (code != NO_ERROR) {
     noCode = TRUE;
+
     /* la ligne suivante peut servir a "planter" volontairement le programme
      * des qu'une de vos fonctions detectent une erreur et appelle setError.
      * Si vous executez le rpogramme sous le debuggeur vous aurez donc la main
      * et pourrez examiner la pile d'execution.
      */
     /*  abort(); */
+  }
+  if(code == NO_EXISTING_METHOD){
+    printf("Cette methode n'existe pas (cf ligne %d)\n",yylineno);
+    abort();
   }
 }
 
