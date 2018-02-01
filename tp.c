@@ -101,7 +101,6 @@ void setError(int code) {
   }
   if(code == NO_EXISTING_METHOD){
     printf("Cette methode n'existe pas (cf ligne %d)\n",yylineno);
-    abort();
   } 
 
   if(code == PARAM_ERROR_1){

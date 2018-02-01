@@ -89,6 +89,9 @@ bool verifPorteeInst(TreeP inst, VarDeclP listDecl, t_object *listObj, short op)
 			return verifPorteeExpr(getChild(inst, 0), listDecl, listObj, I_BLOC);
 		} 
 	}
+	
+	/* Bloc de Methode */
+	else if(op == VAR_DEF_METH)
 	return FALSE;
 		
 }
