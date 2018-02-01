@@ -24,6 +24,6 @@ int verificationTypageMethode(t_class* C, t_method* method, list_ClassObjP env);
 int verificationTypageMethodeO(t_method* method, list_ClassObjP env);
 t_class* getReturnType(TreeP tree, list_ClassObjP env);
 
-bool verificationNbParametres(TreeP block);
+bool verificationParametres(TreeP block);
 bool verificationBoucleHeritage(list_ClassObjP env, t_class* class);
 bool verificationNomClasse(list_ClassObjP env, t_class* class);

@@ -611,7 +611,7 @@ t_class* getReturnType(TreeP tree, list_ClassObjP env){
 	}
 }
 
-bool verificationNbParametres(TreeP block){
+bool verificationParametres(TreeP block){
 		TreeP tree = block;
 		bool toReturn = TRUE;
 		while(tree != NIL(Tree)){
@@ -625,7 +625,7 @@ bool verificationNbParametres(TreeP block){
 					}
 					c->methods = c->methods->next;
 				}
-
+				/*VERIF NB PARAMETRES*/
 				t_method* decl = c->methods;
 				VarDeclP entry = getChild(tree,4)->u.lvar;
 				int givenNb = 0;
@@ -634,19 +634,61 @@ bool verificationNbParametres(TreeP block){
 					givenNb++;
 				}
 				toReturn = toReturn && ((decl->nbParametres == givenNb) ? TRUE : FALSE);
+
+				if(toReturn == FALSE){
+					setError(PARAM_ERROR_1);
+				}
+				else{
+
+				/*VERIF TYPE PARAMETRES*/
+
+					entry = getChild(tree,4)->u.lvar;
+					VarDeclP PDecl = decl->parametres;
+					while(entry != NIL(VarDecl) || PDecl !=NIL(VarDecl)){
+
+						toReturn = toReturn && ((strcmp(PDecl->coeur->_type->name,entry->coeur->_type->name) == 0) ? TRUE : FALSE);
+						if(toReturn == FALSE){
+							setError(PARAM_ERROR_2);
+						}
+						entry = entry->next;
+						PDecl = PDecl->next; 
+					}
+				}
 				tree = getChild(tree,1);	
 			}
 			else if(tree->op == INST){
 
-				if(strcmp(getChild(tree,1)->u.lvar->coeur->_type->constructor->name,getChild(tree,1)->u.str) == 0){
+				t_method* constructor = getChild(tree,1)->u.lvar->coeur->_type->constructor;
+				if(strcmp(constructor->name,getChild(tree,1)->u.str) == 0){
 
+					/*VERIF NB PARAMETRES*/
 					VarDeclP entry = getChild(tree,4)->u.lvar;
 					int givenNb = 0;
 					while(entry != NULL){
 						entry = entry->next;
 						givenNb++;
 					}
-					toReturn = toReturn && ((getChild(tree,1)->u.lvar->coeur->_type->constructor->nbParametres == givenNb) ? TRUE : FALSE);
+					toReturn = toReturn && ((constructor->nbParametres == givenNb) ? TRUE : FALSE);
+
+					if(toReturn == FALSE){
+					setError(PARAM_ERROR_1);
+					}
+					else{
+
+					/*VERIF TYPE PARAMETRES*/
+
+						entry = getChild(tree,4)->u.lvar;
+						VarDeclP PDecl = constructor->parametres;
+						while(entry != NIL(VarDecl) || PDecl !=NIL(VarDecl)){
+
+							toReturn = toReturn && ((strcmp(PDecl->coeur->_type->name,entry->coeur->_type->name) == 0) ? TRUE : FALSE);
+							if(toReturn == FALSE){
+								setError(PARAM_ERROR_2);
+							}
+							entry = entry->next;
+							PDecl = PDecl->next; 
+					}
+				}
 					return toReturn;
 				}
 				else setError(NO_EXISTING_METHOD);
@@ -654,7 +696,6 @@ bool verificationNbParametres(TreeP block){
 		}
 		return toReturn;
 }
-
 bool verificationBoucleHeritage(list_ClassObjP env, t_class* class){
 
 	t_class* temp = class;

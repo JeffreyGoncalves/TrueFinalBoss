@@ -88,6 +88,8 @@ typedef unsigned char bool;
 #define RESERV_DECL_ERROR 45 /* Forbidden use of a reserved ID (this, super, result) */
 #define RETURN_ERROR 46 /* Forbidden use of return */
 #define NO_EXISTING_METHOD 47 /*This method does not exist in its class*/
+#define PARAM_ERROR_1 /*Wrong number of parameters*/
+#define PARAM_ERROR_2 /*A parameter or several parameters do not have the right type*/
 #define EVAL_ERROR	50	/* dubious when writing a compiler ! */
 #define UNEXPECTED	10O
 

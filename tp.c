@@ -102,6 +102,14 @@ void setError(int code) {
   if(code == NO_EXISTING_METHOD){
     printf("Cette methode n'existe pas (cf ligne %d)\n",yylineno);
     abort();
+  } 
+
+  if(code == PARAM_ERROR_1){
+  	printf("Une methode/Un constructeur ne possede pas le bon nombre de parametres : ligne %d\n",yylineno);
+  }
+
+  if(code == PARAM_ERROR_2){
+  	printf("Un parametre ou plusieurs parametres n'ont pas le bon type : ligne %d\n",yylineno);
   }
 }
 
