@@ -177,6 +177,10 @@ void setChild(TreeP tree, int rank, TreeP arg) {
   tree->u.children[rank] = arg;
 }
 
+/* Constructeur de feuille qui cree une classe avec juste un nom */
+/*TreeP makeLeafClass(short op, char* className) {
+	TreeP 
+}*/
 
 /* Constructeur de feuille dont la valeur est une chaine de caracteres */
 TreeP makeLeafStr(short op, char *str) {

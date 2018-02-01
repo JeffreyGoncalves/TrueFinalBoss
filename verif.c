@@ -90,8 +90,10 @@ bool verifPorteeInst(TreeP inst, VarDeclP listDecl, t_object *listObj, short op)
 		} 
 	}
 	
-	/* Bloc de Methode */
-	else if(op == VAR_DEF_METH)
+	else if(op == VAR_DEF_METH)/* Bloc de Methode */
+	{
+		
+	}
 	return FALSE;
 		
 }
@@ -159,7 +161,7 @@ bool verifPorteeObject(TreeP tree, list_ClassObjP classObjList)
 			{
 				if(getChild(methodType, 2) != NIL(Tree))
 				{
-					/* setError(OVERRIDE_ERROR); */
+					setError(OVERRIDE_ERROR);
 					return FALSE;
 					/* Erreur car OVERRIDE interdit */
 				}
@@ -172,13 +174,36 @@ bool verifPorteeObject(TreeP tree, list_ClassObjP classObjList)
 			{
 				if(getChild(methodType, 1) != NIL(Tree))
 				{
-					/* setError(OVERRIDE_ERROR); */
+					setError(OVERRIDE_ERROR);
 					return FALSE;
 					/* Erreur car OVERRIDE interdit */
 				}
 				else
 				{
-					
+					/* Recuperer la VarDeclP des parametres 
+					 * puis ajouter le VarDeclP des champs
+					 * et enfin tester le bloc*/
+					VarDeclP listParam = NIL(VarDecl), returnType = NIL(VarDecl);
+					if(getChild(methodType, 2) != NIL(Tree))
+						listParam = getChild(methodType, 2)->u.lvar;
+					if(getChild(methodType, 3) != NIL(Tree))
+						returnType = getChild(methodType, 3)->u.lvar;	/* VarDeclP isole avec seulement le
+																			nom de la classe de retour */
+					if(returnType != NIL(VarDecl))	/* On cherche dans la liste des classes le type de retour */
+					{
+						t_class* classSel = classObjList->listClass;
+						bool isClassFound = FALSE;
+						while(classSel != NIL(t_class))
+						{
+							if(!strcmp(classSel->name, returnType->name))	/* On trouve la classe */
+							{
+								free(returnType);
+								returnType = NEW(1, VarDecl);
+								/* Lier par pointage la class selectionne avec returnType */
+							}
+						}
+						
+					}
 				}
 			}
 		}

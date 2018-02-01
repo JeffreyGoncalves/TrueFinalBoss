@@ -61,8 +61,7 @@ constructorClause : block			{ $$ = $1;}
 
 ////// Parametres //////
 ListParamClause : ListParam			{ $$ = $1;
-										/*afficheParam($$->u.lvar);*/
-									}
+										/*afficheParam($$->u.lvar);*/ }
 | 									{ $$ = NIL(Tree);}
 ;
 
