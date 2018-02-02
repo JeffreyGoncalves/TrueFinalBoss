@@ -8,9 +8,14 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, t_object *listObj, short op)
 bool verifPorteeInst(TreeP inst, VarDeclP listDecl, t_object *listObj, short op);
 bool verifPorteeMeth(TreeP tree, t_class *class);
 bool verifPorteeBloc(TreeP tree, VarDeclP listDecl, t_object *listObj);
-bool verifPorteeClassObj(TreeP classObj, list_ClassObjP classObjList);
-bool verifPorteeObject(TreeP tree, list_ClassObjP classObjList);
-bool verifPorteeClass(TreeP tree, list_ClassObjP classObjList);
+bool verifPorteeClassObj(list_ClassObjP classObjList);
+bool verifPorteeListObject(list_ClassObjP classObjList);
+bool verifPorteeObject(t_object* object, list_ClassObjP classObjList);
+bool verifPorteeListClass(list_ClassObjP classObjList);
+bool verifPorteeClass(t_class* class, list_ClassObjP classObjList);
+bool verifPorteeMethodC(t_method* method, t_class* class, list_ClassObjP classObjList);
+bool verifPorteeMethodO(t_method* method, t_object* object, list_ClassObjP classObjList);
+bool verifPorteeConstructor(t_method* method, t_class* class, list_ClassObjP classObjList);
 
 /***************** Verifications contextuelles liees a la portee *****************/
 void verifPorteeProg(TreeP tree, list_ClassObjP classObjList)
@@ -29,16 +34,16 @@ void verifPorteeProg(TreeP tree, list_ClassObjP classObjList)
 		 * preemptives, y compris si elles n'existent pas. Il faut aussi traiter les 
 		 * blocs dans le bloc vu qu'un bloc est une instruction. 
 		 */
-		
-		/* Separation de la partie classe/objet et de la partie bloc principal */
-		TreeP classObj = getChild(tree, 0);
-		TreeP principalBlock = getChild(tree, 1);
-		
-		/* Verification du bloc principal (portee) */
-		verifPorteeBloc(principalBlock, NULL, classObjList->listObj);
+		 
+		 /* TreeP tree : représente le corps du programme.
+		  * list_ClassObjP classObjList : représente l'ensemble des déclarations des objets et classes.
+		  */
 		
 		/* Verification partie classe/objet */
-		verifPorteeClassObj(classObj, classObjList);
+		verifPorteeClassObj(classObjList);
+		
+		/* Verification du bloc principal (portee) */
+		verifPorteeBloc(tree, NULL, classObjList->listObj);
 	}
 }
 
@@ -98,125 +103,217 @@ bool verifPorteeInst(TreeP inst, VarDeclP listDecl, t_object *listObj, short op)
 		
 }
 
-bool verifPorteeClassObj(TreeP classObj, list_ClassObjP classObjList)
-{
-	bool toReturn = TRUE;
-	
-	while(classObj != NIL(Tree))
-	{
-		TreeP listClassObj = getChild(classObj, 0);
-		TreeP classObjTree = getChild(classObj, 1);
-		
-		/* On regarde ce qu'est classObjTree : classe ou objet */
-		/* Cas classe */
-		if(classObjTree->op == CLAS)
-			toReturn = toReturn && verifPorteeClass(getChild(classObjTree, 0), classObjList);
-		/* Cas Objet */
-		if(classObjTree->op == OBJ)
-			toReturn = toReturn && verifPorteeObject(getChild(classObjTree, 0), classObjList);
-		
-		toReturn = toReturn && verifPorteeClassObj(listClassObj, classObjList);
-	}
-	return toReturn;
-	
+bool verifPorteeClassObj(list_ClassObjP classObjList)
+{	
+	if(!verifPorteeListClass(classObjList)) return FALSE;
+	if(!verifPorteeListObject(classObjList)) return FALSE;
+	return TRUE;
 }
 
-bool verifPorteeObject(TreeP tree, list_ClassObjP classObjList)
+bool verifPorteeListObject(list_ClassObjP classObjList)
 {
-	char *objName = getChild(tree, 0)->u.str;
-	t_object *actualObj = NIL(t_object);
-	bool toReturn = TRUE;
-	tree = getChild(tree, 1);
+	t_object* objectBuffer = classObjList->listObj;
 	
-	/* On cherche son enregistrement dans classListObj (actualObj) dans l'optique de la recuperation
-	 * des champs (champsObj) */
-	t_object *listObj = classObjList->listObj;
-	while(listObj != NIL(t_object))
-	{
-		if(!strcmp(listObj->name, objName))
-		{
-			actualObj = listObj;
-			break;
-		}
-		else listObj = listObj->next;
+	while(objectBuffer != NIL(t_object)){
+		if(!verifPorteeObject(objectBuffer, classObjList)) return FALSE;
+		objectBuffer = objectBuffer->next;
 	}
-	VarDeclP champsObj = actualObj->attributes;
 	
-	/* On a fini et on s'attaque aux bloc des methodes */
-	while(tree != NIL(Tree))
-	{
-		TreeP methVar = getChild(tree, 0);
-		TreeP next = getChild(tree, 1);
-		
-		/* Traitement des blocs des methodes */
-		if(methVar->op == VAR_DEF_METH)
-		{
-			TreeP methodType = getChild(methVar, 0);
-			/* Il faut ici differencier les deux cas : 
-			* Override DEF ID'(' ListParamClause ')' ':' ID AFF ExprRelop et
-			* Override DEF ID'(' ListParamClause ')' ClassClause IS block 
-			* De plus, OVERRIDE n'a aucun sens vu qu'ici on considere un objet
-			* qui ne peut donc pas heriter */
-			if(methodType->op == DECL_METH_1)
-			{
-				if(getChild(methodType, 2) != NIL(Tree))
-				{
-					setError(OVERRIDE_ERROR);
-					return FALSE;
-					/* Erreur car OVERRIDE interdit */
-				}
-				else
-				{
-					
-				}				
-			}
-			else if(methodType->op == DECL_METH_2)
-			{
-				if(getChild(methodType, 1) != NIL(Tree))
-				{
-					setError(OVERRIDE_ERROR);
-					return FALSE;
-					/* Erreur car OVERRIDE interdit */
-				}
-				else
-				{
-					/* Recuperer la VarDeclP des parametres 
-					 * puis ajouter le VarDeclP des champs
-					 * et enfin tester le bloc*/
-					VarDeclP listParam = NIL(VarDecl), returnType = NIL(VarDecl);
-					if(getChild(methodType, 2) != NIL(Tree))
-						listParam = getChild(methodType, 2)->u.lvar;
-					if(getChild(methodType, 3) != NIL(Tree))
-						returnType = getChild(methodType, 3)->u.lvar;	/* VarDeclP isole avec seulement le
-																			nom de la classe de retour */
-					if(returnType != NIL(VarDecl))	/* On cherche dans la liste des classes le type de retour */
-					{
-						t_class* classSel = classObjList->listClass;
-						bool isClassFound = FALSE;
-						while(classSel != NIL(t_class))
-						{
-							if(!strcmp(classSel->name, returnType->name))	/* On trouve la classe */
-							{
-								free(returnType);
-								returnType = NEW(1, VarDecl);
-								/* Lier par pointage la class selectionne avec returnType */
-							}
-						}
-						
-					}
-				}
-			}
-		}
-		
-		tree = next;
-	}
-	return toReturn;
+	return TRUE;
 }
 
-bool verifPorteeClass(TreeP tree, list_ClassObjP classObjList)
+bool verifPorteeObject(t_object* object, list_ClassObjP classObjList)
 {
-	return FALSE;
+	/*	On vérifie que le nom n'existe pas deja */
+	if(!verificationNomClasse(classObjList, object->name)) return FALSE;
+	
+	/* Verification attributs */
+	VarDeclP VarDeclBuffer = object->attributes;
+	while(VarDeclBuffer != NIL(VarDecl)){
+		if(!verificationNomVarDecl(object->attributes, VarDeclBuffer->name)) return FALSE;
+		
+		t_class* ClassBuffer = FindClass(classObjList->listClass, VarDeclBuffer->coeur->_type->name);
+		if(ClassBuffer == NIL(t_class)) return FALSE;
+		free(VarDeclBuffer->coeur->_type); /** C'était une classe temporaire.*/
+		VarDeclBuffer->coeur->_type = ClassBuffer;
+		
+		VarDeclBuffer = VarDeclBuffer->next;
+	}
+	
+	/* Verification methodes */
+	t_method* methodBuffer = object->methods;
+	while(methodBuffer != NIL(t_method)){
+		if(!verificationNomMethod(object->methods, methodBuffer->name)) return FALSE;
+		
+		if(!verifPorteeMethodO(methodBuffer, object, classObjList)) return FALSE;
+		
+		methodBuffer = methodBuffer->next;
+	}
+	
+	return TRUE;
 }
+
+bool verifPorteeListClass(list_ClassObjP classObjList)
+{
+	t_class* iterator = classObjList->listClass;
+	
+	while(iterator != NIL(t_class))
+	{
+		if(!verifPorteeClass(iterator, classObjList)) return FALSE;
+		iterator = iterator->next;
+	}
+	return TRUE;
+}
+
+bool verifPorteeClass(t_class* class, list_ClassObjP classObjList){
+	
+	/*	On vérifie que le nom n'existe pas deja */
+	if(!verificationNomClasse(classObjList, class->name)) return FALSE;
+	
+	/*	Verification de la super-classe */
+	t_class* ClassBuffer = FindClass(classObjList->listClass, class->superClass->name);
+	if(ClassBuffer == NIL(t_class)) return FALSE;
+	free(class->superClass); /** C'était une classe temporaire.*/
+	class->superClass = ClassBuffer;
+	
+	/* Verification parametres */
+	VarDeclP VarDeclBuffer = class->parametres;
+	while(VarDeclBuffer != NIL(VarDecl)){
+		if(!verificationNomVarDecl(class->parametres, VarDeclBuffer->name)) return FALSE;
+		
+		ClassBuffer = FindClass(classObjList->listClass, VarDeclBuffer->coeur->_type->name);
+		if(ClassBuffer == NIL(t_class)) return FALSE;
+		free(VarDeclBuffer->coeur->_type); /** C'était une classe temporaire.*/
+		VarDeclBuffer->coeur->_type = ClassBuffer;
+		
+		VarDeclBuffer = VarDeclBuffer->next;
+	}
+	
+	/* Verification attributs */
+	VarDeclBuffer = class->attributes;
+	while(VarDeclBuffer != NIL(VarDecl)){
+		if(!verificationNomVarDecl(class->attributes, VarDeclBuffer->name)) return FALSE;
+		
+		ClassBuffer = FindClass(classObjList->listClass, VarDeclBuffer->coeur->_type->name);
+		if(ClassBuffer == NIL(t_class)) return FALSE;
+		free(VarDeclBuffer->coeur->_type); /** C'était une classe temporaire.*/
+		VarDeclBuffer->coeur->_type = ClassBuffer;
+		
+		VarDeclBuffer = VarDeclBuffer->next;
+	}
+	
+	/* Verification methodes */
+	t_method* methodBuffer = class->methods;
+	while(methodBuffer != NIL(t_method)){
+		if(!verificationNomMethod(class->methods, methodBuffer->name)) return FALSE;
+		
+		if(!verifPorteeMethodC(methodBuffer, class, classObjList)) return FALSE;
+		
+		methodBuffer = methodBuffer->next;
+	}
+	
+	/* Verification constructeur */
+	methodBuffer = class->constructor;
+	if(!verifPorteeConstructor(methodBuffer, class, classObjList)) return FALSE;
+	
+	return TRUE;
+}
+
+/*
+typedef struct t_method{
+	char* name;
+	t_class* returnType;
+	short nbParametres ;
+	VarDeclP parametres;
+    TreeP bloc;
+	int isRedef;
+	struct t_method* next;
+}t_method;
+*/
+
+bool verifPorteeMethodC(t_method* method, t_class* class, list_ClassObjP classObjList){
+	t_class* ClassBuffer;
+	
+	/* Verification parametres */
+	VarDeclP VarDeclBuffer = method->parametres;
+	while(VarDeclBuffer != NIL(VarDecl)){
+		if(!verificationNomVarDecl(method->parametres, VarDeclBuffer->name)) return FALSE;
+		
+		ClassBuffer = FindClass(classObjList->listClass, VarDeclBuffer->coeur->_type->name);
+		if(ClassBuffer == NIL(t_class)) return FALSE;
+		free(VarDeclBuffer->coeur->_type); /** C'était une classe temporaire.*/
+		VarDeclBuffer->coeur->_type = ClassBuffer;
+		
+		VarDeclBuffer = VarDeclBuffer->next;
+	}
+	
+	/* Verification du type de retour */
+	ClassBuffer = FindClass(classObjList->listClass, method->returnType->name);
+	if(ClassBuffer == NIL(t_class)) return FALSE;
+	free(method->returnType); /** C'était une classe temporaire.*/
+	method->returnType = ClassBuffer;
+	
+	
+	
+	/*if(!verifPorteeBloc(TreeP tree, VarDeclP listDecl, t_object *listObj)) return FALSE;*/
+	
+	return TRUE;
+}
+
+bool verifPorteeMethodO(t_method* method, t_object* object, list_ClassObjP classObjList){
+	t_class* ClassBuffer;
+	
+	/* Verification parametres */
+	VarDeclP VarDeclBuffer = method->parametres;
+	while(VarDeclBuffer != NIL(VarDecl)){
+		if(!verificationNomVarDecl(method->parametres, VarDeclBuffer->name)) return FALSE;
+		
+		ClassBuffer = FindClass(classObjList->listClass, VarDeclBuffer->coeur->_type->name);
+		if(ClassBuffer == NIL(t_class)) return FALSE;
+		free(VarDeclBuffer->coeur->_type); /** C'était une classe temporaire.*/
+		VarDeclBuffer->coeur->_type = ClassBuffer;
+		
+		VarDeclBuffer = VarDeclBuffer->next;
+	}
+	
+	/* Verification du type de retour */
+	ClassBuffer = FindClass(classObjList->listClass, method->returnType->name);
+	if(ClassBuffer == NIL(t_class)) return FALSE;
+	free(method->returnType); /** C'était une classe temporaire.*/
+	method->returnType = ClassBuffer;
+	
+	
+	
+	/*if(!verifPorteeBloc(TreeP tree, VarDeclP listDecl, t_object *listObj)) return FALSE;*/
+	
+	return TRUE;
+}
+
+bool verifPorteeConstructor(t_method* method, t_class* class, list_ClassObjP classObjList){
+	/* PEU de chose à vérifier ici. */
+	
+	/* Verification parametres */
+	VarDeclP VarDeclBuffer = method->parametres;
+	while(VarDeclBuffer != NIL(VarDecl)){
+		if(!verificationNomVarDecl(method->parametres, VarDeclBuffer->name)) return FALSE;
+		
+		t_class* ClassBuffer = FindClass(classObjList->listClass, VarDeclBuffer->coeur->_type->name);
+		if(ClassBuffer == NIL(t_class)) return FALSE;
+		free(VarDeclBuffer->coeur->_type); /** C'était une classe temporaire.*/
+		VarDeclBuffer->coeur->_type = ClassBuffer;
+		
+		VarDeclBuffer = VarDeclBuffer->next;
+	}
+	
+	/* le type de retour est déjà vérifié de par la génération des structures. */
+	
+	/*  Idem pour le nom. */
+	
+	/*if(!verifPorteeBloc(TreeP tree, VarDeclP listDecl, t_object *listObj)) return FALSE;*/
+	
+	return TRUE;
+}
+
 
 bool verifPorteeBloc(TreeP tree, VarDeclP listDecl, t_object *listObj)
 {
@@ -533,7 +630,8 @@ int verificationTypageMethode(t_class* C, t_method* method, list_ClassObjP env){
 		if (!(verifcationTypageNoeud(method->bloc, env).succes)) return 0;
 		
 		/* TYPE DE RETOUR OK ? */
-		Vtypage okko /*= getReturnType(method->bloc)*/;
+		Vtypage okko;
+		okko.type.class = getReturnType(method->bloc, env);
 		if(0 != strcmp(method->returnType->name, okko.type.class->name)) return 0;
 		
 		/*****ON VERIFIE SI LA METHODE EST BIEN REDEFINIE*****/
@@ -578,7 +676,8 @@ int verificationTypageMethodeO(t_method* method, list_ClassObjP env){
 		if (!(verifcationTypageNoeud(method->bloc, env).succes)) return 0;
 		
 		/* TYPE DE RETOUR OK ? */
-		Vtypage okko /*= getReturnType(method->bloc)*/;
+		Vtypage okko;
+		okko.type.class = getReturnType(method->bloc, env);
 		if(0 != strcmp(method->returnType->name, okko.type.class->name)) return 0;
 
 		if(method->isRedef) return 0;
@@ -724,6 +823,7 @@ bool verificationParametres(TreeP block){
 		}
 		return toReturn;
 }
+
 bool verificationBoucleHeritage(list_ClassObjP env, t_class* class){
 
 	t_class* temp = class;
@@ -741,27 +841,69 @@ bool verificationBoucleHeritage(list_ClassObjP env, t_class* class){
 	return TRUE;
 }
 
-bool verificationNomClasse(list_ClassObjP env, t_class* class){
+bool verificationNomClasse(list_ClassObjP env, char* name){
+	
+	int DejaVu = 0;
+	t_class* temp1 = env->listClass;
+	t_object* temp2 = env->listObj;
 
-	t_class* temp = env->listClass;
-
-	if('A' >= class->name[0] || class->name[0] >= 'Z'){
-
-		printf("%s : Nom de classe sans majuscule !\n", class->name);
-		return FALSE;
-	}
-
-	while(temp != NIL(t_class) || temp->next != NIL(t_class)){
-
-		if(strcmp(temp->name,class->name) == 0){
-
-			printf("%s : Nom de classe deja existant\n",class->name);
-			return FALSE;
+	while(temp1 != NIL(t_class)){
+		if(strcmp(temp1->name,name) == 0){
+			if(DejaVu){
+				printf("%s : Nom classe deja existant\n", name);
+				return FALSE;
+			}else{
+				DejaVu = 1;
+			}
 		}
+		temp1 = temp1->next;
+	}
+	
+	while(temp2 != NIL(t_object)){
+		if(strcmp(temp2->name,name) == 0){
+			if(DejaVu){
+				printf("%s : Nom classe deja existant\n", name);
+				return FALSE;
+			}else{
+				DejaVu = 1;
+			}
+		}
+		temp2 = temp2->next;
 	}
 
 	return TRUE;
 }
 
+bool verificationNomVarDecl(VarDeclP env, char* name){
+	
+	int DejaVu = 0;
+	while(env != NIL(VarDecl)){
+		if(strcmp(env->name,name) == 0){
+			if(DejaVu){
+				printf("%s : Nom attribut deja existant\n", name);
+				return FALSE;
+			}else{
+				DejaVu = 1;
+			}
+		}
+		env = env->next;
+	}
+	return TRUE;
+}
 
-
+bool verificationNomMethod(t_method* env, char* name){
+	
+	int DejaVu = 0;
+	while(env != NIL(t_method)){
+		if(strcmp(env->name,name) == 0){
+			if(DejaVu){
+				printf("%s : Nom methode deja existant\n", name);
+				return FALSE;
+			}else{
+				DejaVu = 1;
+			}
+		}
+		env = env->next;
+	}
+	return TRUE;
+}

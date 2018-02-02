@@ -26,4 +26,6 @@ t_class* getReturnType(TreeP tree, list_ClassObjP env);
 
 bool verificationParametres(TreeP block);
 bool verificationBoucleHeritage(list_ClassObjP env, t_class* class);
-bool verificationNomClasse(list_ClassObjP env, t_class* class);
+bool verificationNomClasse(list_ClassObjP env, char* name);
+bool verificationNomMethod(t_method* env, char* name);
+bool verificationNomVarDecl(VarDeclP env, char* name);

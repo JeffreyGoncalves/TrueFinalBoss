@@ -155,37 +155,6 @@ typedef struct list_ClassObj{
 	t_object* listObj;
 }list_ClassObj, *list_ClassObjP;
 
-/*
-typedef struct t_affect{
-	struct t_expr* variable;
-	struct t_expr* valeur;
-}t_affect;*/
-
-/*
-typedef struct t_expr {
-	enum{
-		Affect, Add, Soustr, Mult, Div, Equal, Ineq, And, Leaf, Cast, New
-	}label_op;
-	
-	union{
-		struct t_expr** fils;
-		t_variable* ident;
-		t_value* constante;
-		struct {
-			struct t_variable* fieldName;
-			struct t_expr* expression;
-		}selection;
-		struct t_instanciation* instanciation;
-		struct t_cast* cast;
-		struct{
-			struct t_expr* expression;	
-			struct t_variable* name;
-			struct t_listParam* list;
-		}callMethod;
-	}elem;
-	
-}t_expr;*/
-
 typedef struct t_method{
 	char* name;
 	t_class* returnType;
@@ -195,58 +164,6 @@ typedef struct t_method{
 	int isRedef;
 	struct t_method* next;
 }t_method;
-/* liste variables locales
-	La classe d'appartenance*/
-	
-/*
-typedef struct t_instanciation{
-	t_class* class;
-	short nbArgs;
-	t_expr** args;
-}t_instanciation;*/
-
-/*
-typedef struct t_instr{
-	enum {
-		Bloc, Return, Affectation, IfThenElse, Expression
-	}Instr_enum;
-	union {
-		struct t_instr* bloc;
-		t_expr* expr;
-		t_affect* aff;
-		struct {
-			t_expr* condition;
-			struct t_instr* instrThen;
-			struct t_instr* instrElse;
-		}ite;
-		struct t_champ* champ;
-	}instr;
-}t_instr;*/
-
-/* valeur à l'initialisation (faire en dernier)
- * booleen pour savoir si c'est un paramètre*/
- 
-/*
-typedef struct t_listParam{
-    VarDecl* varIdent;
-    struct t_listParam* listParam;
-}t_listParam;*/
-
-/*
-typedef struct t_cast{
-    t_expr* expression;
-    t_class* newType;
-}t_cast;*/
-
-/*
-typedef struct t_init{
-	t_expr* expression_to_affect;
-}t_init;*/
-/*
-typedef struct t_champ{
-	t_variable* ident1;
-	t_variable* ident2;
-}t_champ;*/
 
 /* FIN PERSO */
 
