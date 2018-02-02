@@ -29,7 +29,6 @@ int errorCode = NO_ERROR; /* defini dans tp.h */
 
 FILE *out; /* fichier de sortie pour le code engendre */
 
-
 int main(int argc, char **argv) {
   int fi;
   int i, res;
