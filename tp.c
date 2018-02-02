@@ -341,6 +341,9 @@ void printOP(short op)
 		case LIST_ARG : 
 			printf("LIST_ARG");
 			break;
+		case LIST_INST :
+			printf("LIST_INST");
+			break;
 		case LIST_PARAM : 
 			printf("LIST_PARAM");
 			break;
