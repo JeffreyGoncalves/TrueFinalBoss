@@ -96,8 +96,13 @@ void makeCode(TreeP tree, FILE* pFile) {
 		break;
 		case MIN :
             fprintf (pFile, "-- Il y a une soustraction\n");
-            makeCode(getChild(tree, 0), pFile);
-            makeCode(getChild(tree, 1), pFile);
+		    if (tree->nbChildren == 2) {
+                makeCode(getChild(tree, 0), pFile);
+                makeCode(getChild(tree, 1), pFile);
+		    } else {
+                fprintf (pFile, "PUSHI 0\n");
+                makeCode(getChild(tree, 0), pFile);
+		    }
             fprintf (pFile, "SUB\n");
             fprintf (pFile, "-- Fin de la soustraction\n");
 		break;
@@ -107,6 +112,63 @@ void makeCode(TreeP tree, FILE* pFile) {
             makeCode(getChild(tree, 1), pFile);
             fprintf (pFile, "DIV\n");
             fprintf (pFile, "-- Fin du division\n");
+		break;
+		case DIVI :
+            fprintf (pFile, "-- Il y a une division\n");
+            makeCode(getChild(tree, 0), pFile);
+            makeCode(getChild(tree, 1), pFile);
+            fprintf (pFile, "DIV\n");
+            fprintf (pFile, "-- Fin du division\n");
+		break;
+		case EQ :
+            fprintf (pFile, "-- Il y a une egalite\n");
+            makeCode(getChild(tree, 0), pFile);
+            makeCode(getChild(tree, 1), pFile);
+            fprintf (pFile, "EQUAL\n");
+            fprintf (pFile, "-- Fin de l egalite\n");
+		break;
+		case NE :
+            fprintf (pFile, "-- Il y a une inegalite\n");
+            makeCode(getChild(tree, 0), pFile);
+            makeCode(getChild(tree, 1), pFile);
+            fprintf (pFile, "EQUAL\n");
+            fprintf (pFile, "NOT\n");
+            fprintf (pFile, "-- Fin de l inegalite\n");
+		break;
+		case LT :
+            fprintf (pFile, "-- Il y a un inferieur strict\n");
+            makeCode(getChild(tree, 0), pFile);
+            makeCode(getChild(tree, 1), pFile);
+            fprintf (pFile, "INF\n");
+            fprintf (pFile, "-- Fin du inferieur strict\n");
+		break;
+		case LE :
+            fprintf (pFile, "-- Il y a un inferieur ou egal\n");
+            makeCode(getChild(tree, 0), pFile);
+            makeCode(getChild(tree, 1), pFile);
+            fprintf (pFile, "INFEQ\n");
+            fprintf (pFile, "-- Fin du inferieur ou egal\n");
+		break;
+		case GT :
+            fprintf (pFile, "-- Il y a un superieur strict\n");
+            makeCode(getChild(tree, 0), pFile);
+            makeCode(getChild(tree, 1), pFile);
+            fprintf (pFile, "SUP\n");
+            fprintf (pFile, "-- Fin du superieur strict\n");
+		break;
+		case GE :
+            fprintf (pFile, "-- Il y a un superieur ou egal\n");
+            makeCode(getChild(tree, 0), pFile);
+            makeCode(getChild(tree, 1), pFile);
+            fprintf (pFile, "SUPEQ\n");
+            fprintf (pFile, "-- Fin du superieur ou egal\n");
+		break;
+		case AND : /* on utilise '&' pour les concatenations */
+            fprintf (pFile, "-- Il y a une concatenation\n");
+            makeCode(getChild(tree, 0), pFile);
+            makeCode(getChild(tree, 1), pFile);
+            fprintf (pFile, "CONCAT\n");
+            fprintf (pFile, "-- Fin de la concatenation\n");
 		break;
 		case CST :
             fprintf (pFile, "PUSHI %d\n", tree->u.val);
@@ -155,7 +217,3 @@ int tailleAlloc(VarDeclP varDecl, int* taille) {
     return taille;
 
 }
-
-
-
-
