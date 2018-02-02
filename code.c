@@ -94,6 +94,20 @@ void makeCode(TreeP tree, FILE* pFile) {
             fprintf (pFile, "MULT\n");
             fprintf (pFile, "-- Fin du produit\n");
 		break;
+		case MIN :
+            fprintf (pFile, "-- Il y a une soustraction\n");
+            makeCode(getChild(tree, 0), pFile);
+            makeCode(getChild(tree, 1), pFile);
+            fprintf (pFile, "SUB\n");
+            fprintf (pFile, "-- Fin de la soustraction\n");
+		break;
+		case DIVI :
+            fprintf (pFile, "-- Il y a une division\n");
+            makeCode(getChild(tree, 0), pFile);
+            makeCode(getChild(tree, 1), pFile);
+            fprintf (pFile, "DIV\n");
+            fprintf (pFile, "-- Fin du division\n");
+		break;
 		case CST :
             fprintf (pFile, "PUSHI %d\n", tree->u.val);
 		break;
