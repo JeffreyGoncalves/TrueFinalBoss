@@ -77,7 +77,9 @@ int motClef(){
 
 %%
 {Entier} 			{ yylval.I = atoi(yytext); return(CSTE); }
-{Lettre}{LC}*		{ return motClef();}
+{Lower}{LC}*		{ return motClef();}
+{Upper}{LC}*		{ 	yylval.S = strdup(yytext);
+						return(ID_C);}
 ":="				{ return(AFF); }
 {ChaineCarac}		{ char *word = strdup(yytext);
 					  removeComma(word);
