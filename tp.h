@@ -151,11 +151,10 @@ typedef struct t_variable{
 	struct t_class* _type;
 	struct t_object* _obj;
 	TreeP value;
-	/*union{
-		TreeP tree;
+	union{
 		int i;
 		char* s;
-	}value;*/
+	}res;
 }t_variable;
 
 typedef struct list_ClassObj{
