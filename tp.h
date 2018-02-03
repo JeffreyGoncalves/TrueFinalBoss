@@ -1,3 +1,6 @@
+#ifndef TP_H
+#define TP_H
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -204,3 +207,5 @@ VarDeclP makeVarDeclP(char *nom, char *type,TreeP sArbre);
 void ajouteParam(TreeP list, VarDeclP p);
 TreeP getChild(TreeP tree, int rank);
 void affTree(TreeP tree, int stage);
+
+#endif

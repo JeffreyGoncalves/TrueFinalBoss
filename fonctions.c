@@ -367,7 +367,13 @@ void compile(TreeP listClassObject, TreeP core){
 	afficheClass(environnement->listClass);
 	afficheObj(environnement->listObj);
 	
-	/*  */
+	/** VERIFICATION CONTEXTUELLE */
+	/* Verification de portée */
+	verifPorteeProg(core, environnement);
+	printf("ok ?\n");
+	/* Verification de typage */
+	/*int ok = verificationTypage(environnement, core);
+	printf("ok ? %d\n",ok);*/
 }
 
 void creationClasseIntegerStringVoid(list_ClassObjP env){	

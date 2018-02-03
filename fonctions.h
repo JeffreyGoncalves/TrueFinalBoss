@@ -1,3 +1,6 @@
+#ifndef FONCTIONS_H
+#define FONCTIONS_H
+
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -5,6 +8,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "tp.h"
+#include "verif.h"
 
 VarDeclP giveAllAttributes(TreeP tree, t_class* firstClass);
 t_method* giveAllMethod(TreeP tree, t_class* firstClass);
@@ -23,3 +27,5 @@ void afficheNomMethod(t_method* liste);
 
 void compile(TreeP listClassObject, TreeP core);
 void creationClasseIntegerStringVoid(list_ClassObjP env);
+
+#endif

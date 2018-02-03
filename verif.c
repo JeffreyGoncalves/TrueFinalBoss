@@ -4,19 +4,6 @@ extern char *strdup(const char*);
 
 extern void setError(int code);
 
-bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, t_object *listObj, short op);
-bool verifPorteeInst(TreeP inst, VarDeclP listDecl, t_object *listObj, short op);
-bool verifPorteeMeth(TreeP tree, t_class *class);
-bool verifPorteeBloc(TreeP tree, VarDeclP listDecl, t_object *listObj);
-bool verifPorteeClassObj(list_ClassObjP classObjList);
-bool verifPorteeListObject(list_ClassObjP classObjList);
-bool verifPorteeObject(t_object* object, list_ClassObjP classObjList);
-bool verifPorteeListClass(list_ClassObjP classObjList);
-bool verifPorteeClass(t_class* class, list_ClassObjP classObjList);
-bool verifPorteeMethodC(t_method* method, t_class* class, list_ClassObjP classObjList);
-bool verifPorteeMethodO(t_method* method, t_object* object, list_ClassObjP classObjList);
-bool verifPorteeConstructor(t_method* method, t_class* class, list_ClassObjP classObjList);
-
 /***************** Verifications contextuelles liees a la portee *****************/
 /*NB : FAUDRAIT-IL VERIFIER UNIQUEMENT LA PORTEE SI ELLE EST FAUSSE OU LA PORTEE ET LE TYPE MEME SI LE PREMIER SE REVELE FAUX ? */
 void verifPorteeProg(TreeP tree, list_ClassObjP classObjList)
@@ -626,6 +613,10 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 		case INST: /* TODO */
 			result.type.class = veriFils[0].type.class;
 			return result;
+			break;
+		
+		default:
+			printf("ERRRRRRRRRRRRRROOOORRRRRRR	%d\n",noeud->op);
 			break;
 			
 	}
