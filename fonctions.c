@@ -363,6 +363,7 @@ void compile(TreeP listClassObject, TreeP core){
 	
 	/* MISE EN PLACE DES STRUCTURES */
 	list_ClassObjP environnement = makeListClassObj(listClassObject);
+	creationClasseIntegerStringVoid(environnement);
 	afficheClass(environnement->listClass);
 	afficheObj(environnement->listObj);
 	
@@ -389,7 +390,7 @@ void creationClasseIntegerStringVoid(list_ClassObjP env){
 	/*parametre*/
 	integer->parametres = NIL(VarDecl);
 	/*attribut*/
-	integer->attributes = NEW(1, VarDecl);	
+	/*integer->attributes = NEW(1, VarDecl);*/
 	/*methode*/
 	integer->methods = NEW(1, t_method);
 		integer->methods->name = "toString";
@@ -429,7 +430,7 @@ void creationClasseIntegerStringVoid(list_ClassObjP env){
 	/*parametre*/
 	string->parametres = NIL(VarDecl);
 	/*attribut*/
-	string->attributes = NEW(1, VarDecl);
+	/*string->attributes = NEW(1, VarDecl);*/
 	/*string->attributes->coeur = NEW(1, t_variable);*/
 	/*methode*/
 	string->methods = NEW(1, t_method);
@@ -440,12 +441,12 @@ void creationClasseIntegerStringVoid(list_ClassObjP env){
 		string->methods->parametres = NIL(VarDecl);
 		string->methods->returnType = _void;
 	string->methods->next = NEW(1, t_method);
-		string->methods->name = "println";
-		string->methods->isRedef = 0;
-		string->methods->bloc = NIL(Tree);
-		string->methods->nbParametres = 0;
-		string->methods->parametres = NIL(VarDecl);
-		string->methods->returnType = _void;
+		string->methods->next->name = "println";
+		string->methods->next->isRedef = 0;
+		string->methods->next->bloc = NIL(Tree);
+		string->methods->next->nbParametres = 0;
+		string->methods->next->parametres = NIL(VarDecl);
+		string->methods->next->returnType = _void;
 	/* next et superClass sont deja sur NIL(t_class)*/
 	
 	/* On les lie pour faire la chaine de classe*/
@@ -461,37 +462,3 @@ void creationClasseIntegerStringVoid(list_ClassObjP env){
 		iterator->next = integer;
 	}
 }
-
-/*typedef struct t_class{
-	char* name;
-	struct t_method* constructor;
-	VarDeclP parametres;
-	struct t_method* methods;
-	VarDeclP attributes;
-	struct t_class* superClass;
-	struct t_class* next;
-}t_class;
-typedef struct _varDecl {
-	char *name;
-	struct t_variable* coeur;
-	struct _varDecl *next;
-} VarDecl, *VarDeclP;
-typedef struct t_variable{
-	struct t_class* _type;
-	struct t_object* _obj;
-	union{
-		TreeP tree;
-		int i;
-		char* s;
-	}value;
-}t_variable;*/
-/*
-typedef struct t_method{
-	char* name;
-	t_class* returnType;
-	short nbParametres ;
-	VarDeclP parametres;
-    TreeP bloc;
-	int isRedef;
-	struct t_method* next;
-}t_method;*/

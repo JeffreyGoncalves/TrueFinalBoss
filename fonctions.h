@@ -22,4 +22,4 @@ void afficheParam(VarDeclP liste);
 void afficheNomMethod(t_method* liste);
 
 void compile(TreeP listClassObject, TreeP core);
-
+void creationClasseIntegerStringVoid(list_ClassObjP env);
