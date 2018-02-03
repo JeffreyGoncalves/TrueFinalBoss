@@ -369,14 +369,108 @@ void compile(TreeP listClassObject, TreeP core){
 	/*  */
 }
 
-/*
-int verifcationTypageEnvironnement(list_ClassObjP environnement){
+void creationClasseIntegerStringVoid(list_ClassObjP env){	
+	
+	t_class* _void = NEW(1, t_class);
+	t_class* integer = NEW(1, t_class);
+	t_class* string = NEW(1, t_class);
+	
+	/**	INTEGER */
+	/*nom*/
+	integer->name = "Integer";
+	/*constructeur*/
+	integer->constructor = NEW(1, t_method);
+		integer->constructor->name = "Integer";
+		integer->constructor->isRedef = 0;
+		integer->constructor->bloc = NIL(Tree);
+		integer->constructor->nbParametres = 0;
+		integer->constructor->parametres = NIL(VarDecl);
+		integer->constructor->returnType = integer;
+	/*parametre*/
+	integer->parametres = NIL(VarDecl);
+	/*attribut*/
+	integer->attributes = NEW(1, VarDecl);	
+	/*methode*/
+	integer->methods = NEW(1, t_method);
+		integer->methods->name = "toString";
+		integer->methods->isRedef = 0;
+		integer->methods->bloc = NIL(Tree);
+		integer->methods->nbParametres = 0;
+		integer->methods->parametres = NIL(VarDecl);
+		integer->methods->returnType = string;
+	/* next et superClass sont deja sur NIL(t_class)*/
 	
 	
+	/**	VOID */
+	/*nom*/
+	_void->name = "Void";
+	/*constructeur*/
+	_void->constructor = NIL(t_method);
+	/*parametre*/
+	_void->parametres = NIL(VarDecl);
+	/*attribut*/
+	_void->attributes = NIL(VarDecl);
+	/*methode*/
+	_void->methods = NIL(t_method);
+	/* next et superClass sont deja sur NIL(t_class)*/
 	
-}*/
+	
+	/**	INTEGER */
+	/*nom*/
+	string->name = "String";
+	/*constructeur*/
+	string->constructor = NEW(1, t_method);
+		string->constructor->name = "String";
+		string->constructor->isRedef = 0;
+		string->constructor->bloc = NIL(Tree);
+		string->constructor->nbParametres = 0;
+		string->constructor->parametres = NIL(VarDecl);
+		string->constructor->returnType = string;
+	/*parametre*/
+	string->parametres = NIL(VarDecl);
+	/*attribut*/
+	string->attributes = NEW(1, VarDecl);
+	/*string->attributes->coeur = NEW(1, t_variable);*/
+	/*methode*/
+	string->methods = NEW(1, t_method);
+		string->methods->name = "print";
+		string->methods->isRedef = 0;
+		string->methods->bloc = NIL(Tree);
+		string->methods->nbParametres = 0;
+		string->methods->parametres = NIL(VarDecl);
+		string->methods->returnType = _void;
+	string->methods->next = NEW(1, t_method);
+		string->methods->name = "println";
+		string->methods->isRedef = 0;
+		string->methods->bloc = NIL(Tree);
+		string->methods->nbParametres = 0;
+		string->methods->parametres = NIL(VarDecl);
+		string->methods->returnType = _void;
+	/* next et superClass sont deja sur NIL(t_class)*/
+	
+	/* On les lie pour faire la chaine de classe*/
+	integer->next = string;
+	string->next = _void;
+	
+	t_class* iterator = env->listClass;
+	if(iterator == NIL(t_class)) env->listClass = integer;
+	else{
+		while(iterator->next != NIL(t_class)){
+			iterator = iterator->next;
+		}
+		iterator->next = integer;
+	}
+}
 
-/*
+/*typedef struct t_class{
+	char* name;
+	struct t_method* constructor;
+	VarDeclP parametres;
+	struct t_method* methods;
+	VarDeclP attributes;
+	struct t_class* superClass;
+	struct t_class* next;
+}t_class;
 typedef struct _varDecl {
 	char *name;
 	struct t_variable* coeur;
@@ -384,11 +478,20 @@ typedef struct _varDecl {
 } VarDecl, *VarDeclP;
 typedef struct t_variable{
 	struct t_class* _type;
-	TreeP value;
-}t_variable;
-* typedef struct Vtypage{
-	char* class;
-	int succes;
-}Vtypage, *VtypageP;
-*/
-
+	struct t_object* _obj;
+	union{
+		TreeP tree;
+		int i;
+		char* s;
+	}value;
+}t_variable;*/
+/*
+typedef struct t_method{
+	char* name;
+	t_class* returnType;
+	short nbParametres ;
+	VarDeclP parametres;
+    TreeP bloc;
+	int isRedef;
+	struct t_method* next;
+}t_method;*/

@@ -1,5 +1,4 @@
 #include <stdlib.h>
-#include <string.h>
 
 #define TRUE 1
 #define FALSE 0
@@ -93,8 +92,6 @@ typedef unsigned char bool;
 #define PARAM_ERROR_2 49 /*A parameter or several parameters do not have the right type*/
 #define EVAL_ERROR	50	/* dubious when writing a compiler ! */
 #define OVERRIDE_ERROR 51 /* Override forbidden for methods of object */
-#define VAR_NOT_FOUND 52 /* Variable not found */
-#define CLASS_NOT_FOUND 404 /* Class is not found :) */
 #define UNEXPECTED	10O
 
 
@@ -151,11 +148,6 @@ typedef struct t_variable{
 	struct t_class* _type;
 	struct t_object* _obj;
 	TreeP value;
-	/*union{
-		TreeP tree;
-		int i;
-		char* s;
-	}value;*/
 }t_variable;
 
 typedef struct list_ClassObj{
@@ -182,11 +174,6 @@ typedef union
 	int I;
 	TreeP pT;
 	VarDeclP pV;
-	t_value* pvalue;
-	t_object* pobject;
-	t_class* pclass;
-	t_variable*  pvariable;
-	t_method* pmethod;
 } YYSTYPE;
 
 #define YYSTYPE YYSTYPE
