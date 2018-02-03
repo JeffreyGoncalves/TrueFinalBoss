@@ -1,10 +1,4 @@
-#include <stdio.h>
-#include "tp.h"
-#include <fcntl.h>
-
-void makeCode(TreeP tree, FILE* pFile);
-int getOffset(TreeP attribut, int* offset);
-int tailleAlloc(VarDeclP varDecl, int* taille);
+#include "code.h"
 
 extern char* strdup(const char *);
 
@@ -13,7 +7,7 @@ int nbVarGlobales;
 t_object** objets;
 int nbObjets;
 
-/*
+
 int main(int argc, char **argv) {
 
 	printf("Construction de l'arbre de test\n");
@@ -40,7 +34,6 @@ int main(int argc, char **argv) {
     fclose (pFile);
 	return 0;
 }
-*/
 /*
 Une variable globale = forcement un objet ?
 "DECL_METH_1DECL_METH_2" dans l'arbre de obj.txt => normal ?
@@ -207,7 +200,7 @@ int tailleAlloc(VarDeclP varDecl, int* taille) {
 
     while(varDecl->next != NULL) {
         varDecl = varDecl->next;
-        if (strcmp(varDecl->coeur->_type->name, "Integer")) {
+        if (strcmp(varDecl->coeur->_type->name, "Integer") != 0) {
             *taille += 1;
         } else {
             tailleAlloc(varDecl->coeur->_type->attributes, taille);

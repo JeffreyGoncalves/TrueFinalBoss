@@ -37,6 +37,7 @@ class Point(xc: Integer, yc: Integer) {
   var p2: Point := new Point(2, 3);
   is
   p2.setName("glop");
+  p1.getx() > p2.getx();
   p1.printAll();
   p2.printAll();
 }
