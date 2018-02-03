@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 
 #define TRUE 1
 #define FALSE 0
@@ -92,6 +93,7 @@ typedef unsigned char bool;
 #define PARAM_ERROR_2 49 /*A parameter or several parameters do not have the right type*/
 #define EVAL_ERROR	50	/* dubious when writing a compiler ! */
 #define OVERRIDE_ERROR 51 /* Override forbidden for methods of object */
+#define CLASS_NOT_FOUND 404 /* Class is not found :) */
 #define UNEXPECTED	10O
 
 

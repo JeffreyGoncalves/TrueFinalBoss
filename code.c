@@ -4,6 +4,7 @@
 
 void makeCode(TreeP tree, FILE* pFile);
 int getOffset(TreeP attribut, int* offset);
+int tailleAlloc(VarDeclP varDecl, int* taille);
 
 extern char* strdup(const char *);
 
@@ -68,7 +69,13 @@ void makeCode(TreeP tree, FILE* pFile) {
                 }
                 trObj = getChild(trObj, 1);
             }
+            /*******************************************************************
+             * NON !!!!!!!!!! objets est de type t_object**, tu peux pas mettre
+             * de TreeP dans un t_object*, ca n'a aucun sens !!!!!!!!!!!!!!!!!!
+             * S'IL TE PLAIT RECTIFIE CA !!!
+			*******************************************************************/
             objets[nbObjets] = tree;
+            /******************************************************************/
             nbObjets++;
             fprintf(pFile, "ALLOC %d\n", nbChamps);
         break;
@@ -105,13 +112,6 @@ void makeCode(TreeP tree, FILE* pFile) {
 		    }
             fprintf (pFile, "SUB\n");
             fprintf (pFile, "-- Fin de la soustraction\n");
-		break;
-		case DIVI :
-            fprintf (pFile, "-- Il y a une division\n");
-            makeCode(getChild(tree, 0), pFile);
-            makeCode(getChild(tree, 1), pFile);
-            fprintf (pFile, "DIV\n");
-            fprintf (pFile, "-- Fin du division\n");
 		break;
 		case DIVI :
             fprintf (pFile, "-- Il y a une division\n");
@@ -214,6 +214,6 @@ int tailleAlloc(VarDeclP varDecl, int* taille) {
         }
     }
 
-    return taille;
+    return *taille;
 
 }

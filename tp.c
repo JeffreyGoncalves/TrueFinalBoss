@@ -82,7 +82,7 @@ int main(int argc, char **argv) {
    * erreur lexicale ou syntaxique
    */
   if (out != NIL(FILE) && out != stdout) fclose(out);
-  return res ? SYNTAX_ERROR : errorCode;
+  return res ? SYNTAX_ERROR : errorCode; /* lui même pour le comparé aux structures (ce qui est inutile) */
 }
 
 
