@@ -29,7 +29,14 @@ int main(int argc, char **argv) {
 	}
 	printf("Ecriture du code\n");
 
+    fprintf(pFile, "START\n");
 	makeCode(tree, pFile);
+    fprintf(pFile, "PUSHS \"resultat = \"\n");
+    fprintf(pFile, "WRITES\n");
+    fprintf(pFile, "WRITEI\n");
+    fprintf(pFile, "PUSHS\"\\n\"\n");
+    fprintf(pFile, "WRITES\n");
+    fprintf(pFile, "STOP\n");
 
     fclose (pFile);
 	return 0;
@@ -91,7 +98,7 @@ void makeCode(TreeP tree, FILE* pFile) {
             fprintf (pFile, "-- Il y a un produit\n");
             makeCode(getChild(tree, 0), pFile);
             makeCode(getChild(tree, 1), pFile);
-            fprintf (pFile, "MULT\n");
+            fprintf (pFile, "MUL\n");
             fprintf (pFile, "-- Fin du produit\n");
 		break;
 		case MIN :
