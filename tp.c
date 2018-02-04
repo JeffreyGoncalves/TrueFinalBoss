@@ -29,7 +29,7 @@ int errorCode = NO_ERROR; /* defini dans tp.h */
 
 FILE *out; /* fichier de sortie pour le code engendre */
 
-/*int main(int argc, char **argv) {
+int main(int argc, char **argv) {
   int fi;
   int i, res;
 
@@ -69,21 +69,21 @@ FILE *out; /* fichier de sortie pour le code engendre */
     exit(USAGE_ERROR);
   }
 
-   redirige l'entree standard sur le fichier... 
+  /* redirige l'entree standard sur le fichier... */
   close(0); dup(fi); close(fi);
 
   res = yyparse();
-  * si yyparse renvoie 0, le programme en entree etait syntaxiquement correct.
+  /* si yyparse renvoie 0, le programme en entree etait syntaxiquement correct.
    * Le plus simple est que les verifications contextuelles et la generation
    * de copde soient lancees par les actions associees a la regle de grammaire
    * pour l'axiome. Dans ce cas, quand yyparse renvoie sa valeur on n'a plus
    * rien a faire, sauf fermer les fichiers qui doivent l'etre.
    * Si yyparse renvoie autre chose que 0 c'est que le programme avait une
    * erreur lexicale ou syntaxique
-   *
+   */
   if (out != NIL(FILE) && out != stdout) fclose(out);
-  return res ? SYNTAX_ERROR : errorCode; /* lui même pour le comparé aux structures (ce qui est inutile) *
-}*/
+  return res ? SYNTAX_ERROR : errorCode; /* lui même pour le comparé aux structures (ce qui est inutile) */
+}
 
 
 void setError(int code) {

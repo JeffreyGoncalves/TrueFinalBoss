@@ -1,8 +1,8 @@
-/* A Bison parser, made by GNU Bison 3.0.4.  */
+/* A Bison parser, made by GNU Bison 3.0.  */
 
 /* Bison implementation for Yacc-like parsers in C
 
-   Copyright (C) 1984, 1989-1990, 2000-2015 Free Software Foundation, Inc.
+   Copyright (C) 1984, 1989-1990, 2000-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@
 #define YYBISON 1
 
 /* Bison version.  */
-#define YYBISON_VERSION "3.0.4"
+#define YYBISON_VERSION "3.0"
 
 /* Skeleton name.  */
 #define YYSKELETON_NAME "yacc.c"
@@ -94,11 +94,11 @@ extern int yylineno;
 
 #line 96 "gram.c" /* yacc.c:339  */
 
-# ifndef YY_NULLPTR
+# ifndef YY_NULL
 #  if defined __cplusplus && 201103L <= __cplusplus
-#   define YY_NULLPTR nullptr
+#   define YY_NULL nullptr
 #  else
-#   define YY_NULLPTR 0
+#   define YY_NULL 0
 #  endif
 # endif
 
@@ -144,7 +144,7 @@ extern int yydebug;
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-
+typedef union YYSTYPE YYSTYPE;
 union YYSTYPE
 {
 #line 31 "gram.y" /* yacc.c:355  */
@@ -154,8 +154,6 @@ union YYSTYPE
 
 #line 156 "gram.c" /* yacc.c:355  */
 };
-
-typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif
@@ -169,7 +167,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 173 "gram.c" /* yacc.c:358  */
+#line 171 "gram.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -226,30 +224,11 @@ typedef short int yytype_int16;
 # endif
 #endif
 
-#ifndef YY_ATTRIBUTE
-# if (defined __GNUC__                                               \
-      && (2 < __GNUC__ || (__GNUC__ == 2 && 96 <= __GNUC_MINOR__)))  \
-     || defined __SUNPRO_C && 0x5110 <= __SUNPRO_C
-#  define YY_ATTRIBUTE(Spec) __attribute__(Spec)
-# else
-#  define YY_ATTRIBUTE(Spec) /* empty */
-# endif
-#endif
-
-#ifndef YY_ATTRIBUTE_PURE
-# define YY_ATTRIBUTE_PURE   YY_ATTRIBUTE ((__pure__))
-#endif
-
-#ifndef YY_ATTRIBUTE_UNUSED
-# define YY_ATTRIBUTE_UNUSED YY_ATTRIBUTE ((__unused__))
-#endif
-
-#if !defined _Noreturn \
-     && (!defined __STDC_VERSION__ || __STDC_VERSION__ < 201112)
-# if defined _MSC_VER && 1200 <= _MSC_VER
-#  define _Noreturn __declspec (noreturn)
-# else
-#  define _Noreturn YY_ATTRIBUTE ((__noreturn__))
+#ifndef __attribute__
+/* This feature is available in gcc versions 2.5 and later.  */
+# if (! defined __GNUC__ || __GNUC__ < 2 \
+      || (__GNUC__ == 2 && __GNUC_MINOR__ < 5))
+#  define __attribute__(Spec) /* empty */
 # endif
 #endif
 
@@ -479,7 +458,7 @@ static const char *const yytname[] =
 {
   "$end", "error", "$undefined", "OP0", "OP1", "OP2", "OPS", "OPL", "OPC",
   "INT", "NAME", "LABEL", "STRING", "EOL", "BREAK", "','", "$accept",
-  "prog", "linstr", "inst", "pre", "break", "label", YY_NULLPTR
+  "prog", "linstr", "inst", "pre", "break", "label", YY_NULL
 };
 #endif
 
@@ -853,11 +832,11 @@ static int
 yysyntax_error (YYSIZE_T *yymsg_alloc, char **yymsg,
                 yytype_int16 *yyssp, int yytoken)
 {
-  YYSIZE_T yysize0 = yytnamerr (YY_NULLPTR, yytname[yytoken]);
+  YYSIZE_T yysize0 = yytnamerr (YY_NULL, yytname[yytoken]);
   YYSIZE_T yysize = yysize0;
   enum { YYERROR_VERBOSE_ARGS_MAXIMUM = 5 };
   /* Internationalized format string. */
-  const char *yyformat = YY_NULLPTR;
+  const char *yyformat = YY_NULL;
   /* Arguments of yyformat. */
   char const *yyarg[YYERROR_VERBOSE_ARGS_MAXIMUM];
   /* Number of reported tokens (one for the "unexpected", one per
@@ -914,7 +893,7 @@ yysyntax_error (YYSIZE_T *yymsg_alloc, char **yymsg,
                   }
                 yyarg[yycount++] = yytname[yyx];
                 {
-                  YYSIZE_T yysize1 = yysize + yytnamerr (YY_NULLPTR, yytname[yyx]);
+                  YYSIZE_T yysize1 = yysize + yytnamerr (YY_NULL, yytname[yyx]);
                   if (! (yysize <= yysize1
                          && yysize1 <= YYSTACK_ALLOC_MAXIMUM))
                     return 2;
@@ -1248,65 +1227,65 @@ yyreduce:
         case 2:
 #line 47 "gram.y" /* yacc.c:1646  */
     { ResolveLabels (); }
-#line 1252 "gram.c" /* yacc.c:1646  */
+#line 1231 "gram.c" /* yacc.c:1646  */
     break;
 
   case 5:
 #line 54 "gram.y" /* yacc.c:1646  */
     { RecordOp ((yyvsp[-2].intval), (yyvsp[-1].intval), 0, 0, 0, (yyvsp[0].strval)); }
-#line 1258 "gram.c" /* yacc.c:1646  */
+#line 1237 "gram.c" /* yacc.c:1646  */
     break;
 
   case 6:
 #line 55 "gram.y" /* yacc.c:1646  */
     { RecordOp ((yyvsp[-3].intval), (yyvsp[-2].intval), (yyvsp[-1].intval), 0, 0, (yyvsp[0].strval)); }
-#line 1264 "gram.c" /* yacc.c:1646  */
+#line 1243 "gram.c" /* yacc.c:1646  */
     break;
 
   case 7:
 #line 56 "gram.y" /* yacc.c:1646  */
     { RecordOp ((yyvsp[-3].intval), (yyvsp[-2].intval), 0, 0, (yyvsp[-1].strval), (yyvsp[0].strval)); }
-#line 1270 "gram.c" /* yacc.c:1646  */
+#line 1249 "gram.c" /* yacc.c:1646  */
     break;
 
   case 8:
 #line 57 "gram.y" /* yacc.c:1646  */
     { RecordOp ((yyvsp[-3].intval), (yyvsp[-2].intval), 0, 0, (yyvsp[-1].strval), (yyvsp[0].strval)); }
-#line 1276 "gram.c" /* yacc.c:1646  */
+#line 1255 "gram.c" /* yacc.c:1646  */
     break;
 
   case 9:
 #line 58 "gram.y" /* yacc.c:1646  */
     { }
-#line 1282 "gram.c" /* yacc.c:1646  */
+#line 1261 "gram.c" /* yacc.c:1646  */
     break;
 
   case 10:
 #line 61 "gram.y" /* yacc.c:1646  */
     { (yyval.intval) = (yyvsp[-1].intval); }
-#line 1288 "gram.c" /* yacc.c:1646  */
+#line 1267 "gram.c" /* yacc.c:1646  */
     break;
 
   case 11:
 #line 64 "gram.y" /* yacc.c:1646  */
     { (yyval.intval) = 0; }
-#line 1294 "gram.c" /* yacc.c:1646  */
+#line 1273 "gram.c" /* yacc.c:1646  */
     break;
 
   case 12:
 #line 65 "gram.y" /* yacc.c:1646  */
     { (yyval.intval) = 1; }
-#line 1300 "gram.c" /* yacc.c:1646  */
+#line 1279 "gram.c" /* yacc.c:1646  */
     break;
 
   case 14:
 #line 69 "gram.y" /* yacc.c:1646  */
     { RecordLabel ((yyvsp[0].strval)); }
-#line 1306 "gram.c" /* yacc.c:1646  */
+#line 1285 "gram.c" /* yacc.c:1646  */
     break;
 
 
-#line 1310 "gram.c" /* yacc.c:1646  */
+#line 1289 "gram.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
