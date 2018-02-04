@@ -1,9 +1,16 @@
+START
 -- Il y a une somme
 PUSHI 2
 -- Il y a un produit
 PUSHI 3
 PUSHI 4
-MULT
+MUL
 -- Fin du produit
 ADD
 -- Fin de la somme
+PUSHS "resultat = "
+WRITES
+WRITEI
+PUSHS"\n"
+WRITES
+STOP

@@ -7,7 +7,7 @@ int nbVarGlobales;
 t_object** objets;
 int nbObjets;
 
-
+/*
 int main(int argc, char **argv) {
 
 	printf("Construction de l'arbre de test\n");
@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
 
     fclose (pFile);
 	return 0;
-}
+}*/
 /*
 Une variable globale = forcement un objet ?
 "DECL_METH_1DECL_METH_2" dans l'arbre de obj.txt => normal ?
