@@ -368,9 +368,10 @@ void compile(TreeP listClassObject, TreeP core){
 	afficheObj(environnement->listObj);
 	
 	/** VERIFICATION CONTEXTUELLE */
+	printf("********	Debut de vérification contextuelle	********\n");
+	printf("********			Portée			********\n");
 	/* Verification de portée */
 	verifPorteeProg(core, environnement);
-	printf("ok ?\n");
 	/* Verification de typage */
 	/*int ok = verificationTypage(environnement, core);
 	printf("ok ? %d\n",ok);*/
@@ -422,7 +423,7 @@ void creationClasseIntegerStringVoid(list_ClassObjP env){
 	/* next et superClass sont deja sur NIL(t_class)*/
 	
 	
-	/**	INTEGER */
+	/**	STRING */
 	/*nom*/
 	string->name = "String";
 	/*constructeur*/
