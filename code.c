@@ -3,8 +3,8 @@
 extern char* strdup(const char *);
 
 int nbObjets;
+t_object* obj;
 
-/*
 int main(int argc, char **argv) {
 
 	printf("Construction de l'arbre de test\n");
@@ -39,13 +39,13 @@ int main(int argc, char **argv) {
 
     fclose (pFile);
 	return 0;
-}*/
+}
 
 void makeCodeClasse(t_class* class, FILE* pFile) {
     ;
 }
 void makeCodeObjet(t_object* obj, FILE* pFile) {
-    int offsetSuivant = 0;
+    /*int offsetSuivant = 0; // Ne sera peut-etre pas utile */
     while (obj != NULL) {
         int nbChamps = 0;
         nbChamps = tailleAlloc(obj->attributes);
@@ -55,8 +55,8 @@ void makeCodeObjet(t_object* obj, FILE* pFile) {
             methode = methode->next;
         }
         fprintf(pFile,"ALLOC %d\n", nbChamps);
-        obj->offset = offsetSuivant;
-        offsetSuivant += nbChamps;
+        /*obj->offset = offsetSuivant;
+        offsetSuivant++;*/
         obj = obj->next;
     }
 }
@@ -174,11 +174,38 @@ void makeCode(TreeP tree, FILE* pFile) {
             fprintf (pFile, "PUSHI %d\n", tree->u.val);
 		break;
 		case E_SELECT :
-
+            makeCode(getChild(tree, 0), pFile);/* On ecrit le code donnant l'offset de l'expression */
+            fprintf("LOAD %d", getOffsetAttr(obj->attributes, getChild(tree, 1)->u.str));
+        break;
+        case _ID :
+            /* on empile l'offset de l'instance de classe ou de l'objet independant ayant cet identifiant */
+            fprintf("PUSHG %d", getOffsetObj(obj, tree->u.str));
         break;
 		default :
             fprintf (pFile, "-- Il y a quelque chose\n");
 		break;
 	}
 
+}
+
+int getOffsetObj(t_object* obj, char* nom) {
+    int i = 0;
+    while (obj != NULL && strcmp(obj->name, nom)) {
+        i++;
+        obj = obj->next;
+    }
+    if (obj == NULL)
+        printf("Attribut introuvable");
+    return i;
+}
+/* utilisable pour les attributs dans un objet ou dans une classe */
+int getOffsetAttr(VarDeclP decl, char* nom) {
+    int i = 0;
+    while (decl != NULL && strcmp(decl->name, nom)) {
+        i++;
+        decl = decl->next;
+    }
+    if (decl == NULL)
+        printf("Attribut introuvable");
+    return i;
 }
