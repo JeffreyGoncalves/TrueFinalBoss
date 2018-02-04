@@ -168,7 +168,7 @@ ListInst : Inst ListInst 	{ $$ = makeTree(LIST_INST, 2, $1, $2);}
 
 Inst : ITE 			{ $$ = $1;}
 | block 			{ $$ = $1;}
-| RETURN ';'		{ $$ = makeLeafLVar(I_RETURN, makeVarDeclP("result", NULL, NIL(Tree))); }
+| RETURN ';'		{ $$ = makeLeafLVar(I_RETURN, makeVarDeclP("result_tempo", NULL, NIL(Tree))); }
 | cible ';'			{ $$ = $1;}
 | ExprRelop ';' 	{ $$ = makeTree(I_EXPRRELOP, 1, $1);}	
 ;

@@ -45,22 +45,30 @@ bool verifPorteeMeth(TreeP tree, t_class *class)
 	return FALSE;
 }
 
-bool verifPorteeInst(TreeP inst, VarDeclP listDecl, t_object *listObj, short op)
+bool verifPorteeInst(TreeP inst, VarDeclP listDecl, list_ClassObjP classObjList)
 {
 	bool toReturn;
 	
-	if(op == I_BLOC) /* Instruction dans le bloc principal ou 
-						un sous bloc du bloc principal */ 
-	{
 		/* Bloc */
-		if(inst->op == I_BLOC)
-			toReturn = verifPorteeBloc(inst, listDecl, listObj);
+		if(inst->op == I_BLOC) toReturn = verifPorteeBloc(inst, listDecl, classObjList);
 			
-		/* Return, non autorise ici */
+		/* Return, non autorise ici s'il n'existe pas de VarDecl avec le nom "result" dans la liste. */
 		else if(inst->op == I_RETURN)
 		{
-			setError(RETURN_ERROR);
-			toReturn = FALSE;
+			VarDeclP varSel = listDecl;
+			while(varSel != NULL)
+			{
+				if(!strcmp(varSel->name, "result"))
+				{
+					free(inst->u.lvar);
+					inst->u.lvar = varSel;
+				}
+				varSel = varSel->next;
+			}
+			if(!strcmp(inst->u.lvar->name, "result_tempo")){
+				setError(RETURN_ERROR);
+				toReturn = FALSE;
+			}
 		}
 		
 		/* ITE */
@@ -69,9 +77,9 @@ bool verifPorteeInst(TreeP inst, VarDeclP listDecl, t_object *listObj, short op)
 			TreeP Expr = getChild(inst, 0),
 				  Inst1 = getChild(inst, 1),
 				  Inst2 = getChild(inst, 2);
-			toReturn = verifPorteeExpr(Expr, listDecl, listObj, I_BLOC)
-					&& verifPorteeInst(Inst1, listDecl, listObj, I_BLOC) 
-					&& verifPorteeInst(Inst2, listDecl, listObj, I_BLOC);
+			toReturn = verifPorteeExpr(Expr, listDecl, classObjList)
+					&& verifPorteeInst(Inst1, listDecl, classObjList) 
+					&& verifPorteeInst(Inst2, listDecl, classObjList);
 		}
 		
 		/* Affectation */
@@ -79,26 +87,20 @@ bool verifPorteeInst(TreeP inst, VarDeclP listDecl, t_object *listObj, short op)
 		{
 			TreeP Obj = getChild(inst, 0),
 				  Expr = getChild(inst, 1);
-			toReturn = verifPorteeExpr(Obj, listDecl, listObj, I_BLOC)
-					&& verifPorteeExpr(Expr, listDecl, listObj, I_BLOC);
+			toReturn = verifPorteeExpr(Obj, listDecl, classObjList)
+					&& verifPorteeExpr(Expr, listDecl, classObjList);
 		}
 		
 		/* Expression */
 		else if(inst->op == I_EXPRRELOP)
 		{
-			toReturn = verifPorteeExpr(getChild(inst, 0), listDecl, listObj, I_BLOC);
+			toReturn = verifPorteeExpr(getChild(inst, 0), listDecl, classObjList);
 		}  
 		
 		else
 			toReturn = FALSE;
 			/* CAS NE DEVANT JAMAIS ARRIVER */
-	}
-	
-	else if(op == VAR_DEF_METH)/* Bloc de Methode */
-	{
-		/* A CONTINUER */
-	}
-	
+
 	return toReturn;
 }
 
@@ -289,7 +291,7 @@ bool verifPorteeMethodC(t_method* method, t_class* class, list_ClassObjP classOb
 	printf("		%d type du return\n",toReturn);
 	
 	
-	/*if(!verifPorteeBloc(TreeP tree, VarDeclP listDecl, t_object *listObj)) return FALSE;*/
+	if(!verifPorteeBloc(method->bloc, InitialisationSuperThisResultC(method, class), classObjList)) toReturn = FALSE;
 	printf("		%d bloc ok\n",toReturn);
 	
 	return toReturn;
@@ -328,7 +330,7 @@ bool verifPorteeMethodO(t_method* method, t_object* object, list_ClassObjP class
 	method->returnType = ClassBuffer;
 	printf("		%d type du return\n",toReturn);
 	
-	/*if(!verifPorteeBloc(TreeP tree, VarDeclP listDecl, t_object *listObj)) return FALSE;*/
+	if(!verifPorteeBloc(method->bloc, InitialisationSuperThisResultO(method, object), classObjList)) toReturn = FALSE;
 	printf("		%d bloc ok\n",toReturn);
 	
 	return toReturn;
@@ -363,61 +365,55 @@ bool verifPorteeConstructor(t_method* method, t_class* class, list_ClassObjP cla
 	
 	/*  Idem pour le nom. */
 	
-	/*if(!verifPorteeBloc(TreeP tree, VarDeclP listDecl, t_object *listObj)) return FALSE;*/
+	if(!verifPorteeBloc(method->bloc, InitialisationSuperThisResultC(method, class), classObjList)) toReturn = FALSE;
 	printf("		bloc ok\n");
 	
 	return toReturn;
 }
 
-bool verifPorteeBloc(TreeP tree, VarDeclP listDecl, t_object *listObj)
-{
+bool verifPorteeBloc(TreeP tree, VarDeclP listDecl, list_ClassObjP classObjList)
+{	
 	bool toReturn = TRUE;
 	VarDeclP listVarDecl = getChild(tree, 0)->u.lvar;
 	TreeP listInst = getChild(tree,1);
 	
 	/**** Verification de la liste de declaration ****/
-	VarDeclP varSel = listVarDecl;
-	int i=0, j=0, bufferSize = 10;
-	char **names = malloc(bufferSize*sizeof(char*));
-	for(i=0;varSel != NULL;i++)
-	{
-		/*Cas ou le buffer de noms n'est pas assez grand*/
-		if(i+1 > bufferSize)
-		{
-			bufferSize *= 2;
-			char **newName = realloc(names, bufferSize*sizeof(char*));
-			if(newName != NULL)names = newName;
+	VarDeclP iterator = listVarDecl;
+	while(iterator != NIL(VarDecl)){
+		/* On regarde si la variable n'a pas déjà été déclarée dans ce bloc, puis si le nom super/result/this est utilisé. */
+		if(!verificationNomVarDecl(listVarDecl, iterator->name)){
+			setError(REDECL_ERROR);
+			toReturn = FALSE;
+		}else if(!strcmp(iterator->name, "this") || !strcmp(iterator->name, "super") || !strcmp(iterator->name, "result")){
+			setError(RESERV_DECL_ERROR);
+			toReturn = FALSE;
 		}
 		
-		/*On compare les noms*/
-		names[i] = varSel->name;
-		for(j=0;j<i;j++)
+		/* On associe les "vraies" classes pour les variables. */
+		t_class* ClassBuffer = FindClass(classObjList->listClass, iterator->coeur->_type->name);
+		if(ClassBuffer == NIL(t_class))
 		{
-			if(!strcmp(names[i], names[j]))
-			{
-				setError(REDECL_ERROR);
-				toReturn = FALSE;
-			}
-			else if(!strcmp(names[i], "this") || !strcmp(names[i], "super") || !strcmp(names[i], "result"))
-			{
-				setError(RESERV_DECL_ERROR);
-				toReturn = FALSE;
-			}
+			setError(CLASS_NOT_FOUND);
+			toReturn = FALSE;
 		}
-		/*Passage a la variable suivante*/
-		varSel = varSel->next;
+		free(iterator->coeur->_type); /** C'était une classe temporaire.*/
+		iterator->coeur->_type = ClassBuffer;
+		
+		iterator = iterator->next;
 	}
+	
 	/*************************************************/
 	
 	/****	Ajout des declarations precedentes non prioritaires	******/
 	/* Note : cela permet de gerer le masquage (les variables 
 	 * du bloc sont prioritaires sur les precedentes */
-	if(listDecl != NIL(VarDecl))
+	if(listVarDecl != NIL(VarDecl))
 	{
-		VarDeclP varSel = listVarDecl;
-		while(varSel->next != NULL)
-			varSel = varSel->next;
-		varSel->next = listDecl;
+		/*On va chercher le dernier élément de la liste prioritaire*/
+		iterator = listVarDecl;
+		while(iterator->next != NIL(VarDecl)) iterator = iterator->next;
+		iterator->next = listDecl;
+		listDecl = listVarDecl;
 	}
 	/*****************************************************************/
 	
@@ -426,10 +422,10 @@ bool verifPorteeBloc(TreeP tree, VarDeclP listDecl, t_object *listObj)
 	{
 		while(listInst->nbChildren == 2)
 		{
-			toReturn = toReturn && verifPorteeInst(getChild(listInst, 0), listVarDecl, listObj, I_BLOC);
+			toReturn = toReturn && verifPorteeInst(getChild(listInst, 0), listVarDecl, classObjList);
 			listInst = getChild(listInst, 1);
 		}
-		toReturn = toReturn && verifPorteeInst(getChild(listInst, 0), listVarDecl, listObj, I_BLOC);
+		toReturn = toReturn && verifPorteeInst(getChild(listInst, 0), listVarDecl, classObjList);
 	}
 	/**********************************************/
 	
@@ -437,7 +433,7 @@ bool verifPorteeBloc(TreeP tree, VarDeclP listDecl, t_object *listObj)
 }
 
 /* A TRAVAILLER */
-bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, t_object *listObj, short op)
+bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList)
 {
 	bool toReturn = TRUE;
 	int i; /* Sert de variable de parcours */
@@ -461,12 +457,23 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, t_object *listObj, short op)
 			}
 			
 			/* Objets isoles */
-			t_object *objSel = listObj;
+			t_object *objSel = classObjList->listObj;
 			while(objSel != NULL)
 			{
 				if(!strcmp(objSel->name, Expr->u.lvar->name))
 				{
 					Expr->u.lvar->coeur->_obj = objSel;
+				}
+				varSel = varSel->next;
+			}
+			
+			/* Classes */
+			t_class *claSel = classObjList->listClass;
+			while(claSel != NULL)
+			{
+				if(!strcmp(claSel->name, Expr->u.lvar->name))
+				{
+					Expr->u.lvar->coeur->_type = claSel;
 				}
 				varSel = varSel->next;
 			}
@@ -480,9 +487,34 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, t_object *listObj, short op)
 	
 	else
 	{
-		bool toReturn = TRUE;
-		for(i=0;i<Expr->nbChildren;i++)
-			toReturn = toReturn && verifPorteeExpr(Expr, listDecl, listObj, op);
+		switch(Expr->op){
+			case INST:
+				toReturn = toReturn && verifPorteeExpr(getChild(Expr, 1), listDecl, classObjList);
+				t_class* classBuffer = FindClass(classObjList->listClass, getChild(Expr, 1)->u.lvar->name);
+				if(classBuffer == NIL(t_class)){
+					setError(CLASS_NOT_FOUND);
+					toReturn = FALSE;
+				}
+				break;
+				
+			case E_SELECT:
+				if(getChild(Expr, 1)->op == _ID){
+					/*non fini*/
+				}else{
+					/*non fini*/
+				}
+				break;
+				
+			case E_CALL_METHOD:
+				/*non fini*/
+				
+			default:
+				/*bool toReturn = TRUE;*/
+				for(i=0;i<Expr->nbChildren;i++)
+					toReturn = toReturn && verifPorteeExpr(getChild(Expr, i), listDecl, classObjList);
+	
+		}
+		
 	}
 	
 	return toReturn;
@@ -968,4 +1000,68 @@ bool verificationNomMethod(t_method* env, char* name){
 		env = env->next;
 	}
 	return TRUE;
+}
+
+VarDeclP InitialisationSuperThisResultC(t_method* method, t_class* class){
+	
+	/**		CREATION DE this	*/
+	VarDeclP this = NEW(1, VarDecl);
+	this->coeur = NEW(1, t_variable);
+	this->coeur->_type = class;
+	this->name = "this";
+	
+	/**		CREATION DE result	*/
+	VarDeclP result;
+	if(0 != strcmp(method->returnType->name,"Void")){
+		result = NEW(1, VarDecl);
+		result->coeur = NEW(1, t_variable);
+		result->coeur->_type = method->returnType;
+		result->name = "result";
+		
+	}
+	
+	/**		CREATION DE super	*/
+	VarDeclP super;
+	if(class->superClass != NIL(t_class)){
+		super = NEW(1, VarDecl);
+		super->coeur = NEW(1, t_variable);
+		super->coeur->_type = class->superClass;
+		super->name = "result";
+	}
+	
+	if(super != NIL(VarDecl) && result != NIL(VarDecl)){
+		this->next = super;
+		super->next = result;
+	}else if(result != NIL(VarDecl)){
+		this->next = result;
+	}else if(super != NIL(VarDecl)){
+		this->next = super;
+	}
+	
+	return this;
+}
+
+VarDeclP InitialisationSuperThisResultO(t_method* method, t_object* object){
+	
+	/**		CREATION DE this	*/
+	VarDeclP this = NEW(1, VarDecl);
+	this->coeur = NEW(1, t_variable);
+	this->coeur->_obj = object;
+	this->name = "this";
+	
+	/**		CREATION DE result	*/
+	VarDeclP result;
+	if(0 != strcmp(method->returnType->name,"Void")){
+		result = NEW(1, VarDecl);
+		result->coeur = NEW(1, t_variable);
+		result->coeur->_type = method->returnType;
+		result->name = "result";
+		
+	}
+
+	if(result != NIL(VarDecl)){
+		this->next = result;
+	}
+	
+	return this;
 }

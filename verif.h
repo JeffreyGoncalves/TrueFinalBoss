@@ -34,10 +34,10 @@ bool verificationNomClasse(list_ClassObjP env, char* name);
 bool verificationNomMethod(t_method* env, char* name);
 bool verificationNomVarDecl(VarDeclP env, char* name);
 
-bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, t_object *listObj, short op);
-bool verifPorteeInst(TreeP inst, VarDeclP listDecl, t_object *listObj, short op);
+bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList);
+bool verifPorteeInst(TreeP inst, VarDeclP listDecl, list_ClassObjP classObjList);
 bool verifPorteeMeth(TreeP tree, t_class *class);
-bool verifPorteeBloc(TreeP tree, VarDeclP listDecl, t_object *listObj);
+bool verifPorteeBloc(TreeP tree, VarDeclP listDecl, list_ClassObjP classObjList);
 bool verifPorteeClassObj(list_ClassObjP classObjList);
 bool verifPorteeListObject(list_ClassObjP classObjList);
 bool verifPorteeObject(t_object* object, list_ClassObjP classObjList);
@@ -48,4 +48,6 @@ bool verifPorteeMethodO(t_method* method, t_object* object, list_ClassObjP class
 bool verifPorteeConstructor(t_method* method, t_class* class, list_ClassObjP classObjList);
 void verifPorteeProg(TreeP tree, list_ClassObjP classObjList);
 
+VarDeclP InitialisationSuperThisResultC(t_method* method, t_class* class);
+VarDeclP InitialisationSuperThisResultO(t_method* method, t_object* object);
 #endif
