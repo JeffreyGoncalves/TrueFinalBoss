@@ -2,9 +2,6 @@
 
 extern char* strdup(const char *);
 
-t_variable** varGlobales;
-int nbVarGlobales;
-t_object** objets;
 int nbObjets;
 
 /*
@@ -18,8 +15,10 @@ int main(int argc, char **argv) {
     setChild(getChild(tree, 1), 0, makeLeafInt(CST, 3));
     setChild(getChild(tree, 1), 1, makeLeafInt(CST, 4));
 
-    varGlobales = NEW(100, t_variable*);
-    nbVarGlobales = 0;
+    t_object* obj = NEW(1, t_object);
+    VarDeclP declA = NEW (1, VarDecl);
+    declA = makeVarDeclP("A", "Integer", NULL);
+    obj->attributes = declA;
 
 	FILE* pFile;
 	pFile = fopen ("myfile.txt","w");
@@ -41,14 +40,35 @@ int main(int argc, char **argv) {
     fclose (pFile);
 	return 0;
 }*/
-/*
-Une variable globale = forcement un objet ?
-"DECL_METH_1DECL_METH_2" dans l'arbre de obj.txt => normal ?
-Rajouter des champs a t_variable (offset et portee)
-Explications generales sur l'arbre
-explications sur varDecl
-*/
 
+void makeCodeClasse(t_class* class, FILE* pFile) {
+    ;
+}
+void makeCodeObjet(t_object* obj, FILE* pFile) {
+    int offsetSuivant = 0;
+    while (obj != NULL) {
+        int nbChamps = 0;
+        nbChamps = tailleAlloc(obj->attributes);
+        t_method* methode = obj->methods;
+        while(methode != NULL) {
+            nbChamps++;
+            methode = methode->next;
+        }
+        fprintf(pFile,"ALLOC %d\n", nbChamps);
+        obj->offset = offsetSuivant;
+        offsetSuivant += nbChamps;
+        obj = obj->next;
+    }
+}
+
+int tailleAlloc(VarDeclP decl) {
+    decl->next;
+    int taille = 0;
+    while(decl != NULL) {
+        taille++;
+        decl = decl->next;
+    }
+}
 
 void makeCode(TreeP tree, FILE* pFile) {
 
@@ -58,27 +78,7 @@ void makeCode(TreeP tree, FILE* pFile) {
     }
 
 	switch(tree->op) {
-        case OBJ :
-            fprintf(pFile, "-- Il y a une declaration d'objet\n");
-            int nbChamps = 0;
-            TreeP trObj = getChild(tree, 1);
-            while(trObj != NULL) {
-                if (trObj->op == OBJ) {
-                    int temp = 0;
-                    nbChamps += tailleAlloc(trObj->u.lvar, &temp);
-                }
-                trObj = getChild(trObj, 1);
-            }
-            /*******************************************************************
-             * NON !!!!!!!!!! objets est de type t_object**, tu peux pas mettre
-             * de TreeP dans un t_object*, ca n'a aucun sens !!!!!!!!!!!!!!!!!!
-             * S'IL TE PLAIT RECTIFIE CA !!!
-			*******************************************************************/
-            objets[nbObjets] = tree;
-            /******************************************************************/
-            nbObjets++;
-            fprintf(pFile, "ALLOC %d\n", nbChamps);
-        break;
+
 	    case LIST_CLASS :
             makeCode(getChild(tree, 0), pFile);
             fprintf(pFile, "-- Il y a une definition de classe\n");
@@ -174,46 +174,11 @@ void makeCode(TreeP tree, FILE* pFile) {
             fprintf (pFile, "PUSHI %d\n", tree->u.val);
 		break;
 		case E_SELECT :
-		    ; /* En C il ne peut pas y avoir une declaration juste apres un label*/
-            TreeP expr =  getChild(tree, 0);
-            /* trouver l'objet en memoire (ou en creer un temporaire si c'est une expression) */
-            /*t_object* obj;
-            if (expr->u.label_op == Leaf) {
-                for(int i=0; i<nbObjGlobaux; ++i) {
-                    if (strcmp(expr->ident->))
-                }
-            }
-            treeP champ = getChild(tree, 1);*/
-            /* trouver le champ de l'objet */
-            /*int idChamp = 0;
-            while(champ != null) {
-                if(strcmp(champ->u.lvar->str, ))
-            }*/
+
         break;
 		default :
             fprintf (pFile, "-- Il y a quelque chose\n");
 		break;
 	}
-
-}
-
-int getOffset(TreeP attribut, int* offset) {
-    return 0;
-}
-
-int tailleAlloc(VarDeclP varDecl, int* taille) {
-
-    VarDeclP next;
-
-    while(varDecl->next != NULL) {
-        varDecl = varDecl->next;
-        if (strcmp(varDecl->coeur->_type->name, "Integer") != 0) {
-            *taille += 1;
-        } else {
-            tailleAlloc(varDecl->coeur->_type->attributes, taille);
-        }
-    }
-
-    return *taille;
 
 }
