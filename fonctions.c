@@ -207,6 +207,21 @@ t_class* FindClass(t_class* listClass, char* str){
 	return NIL(t_class);
 }
 
+t_object* FindObject(t_object* listObj, char* str){
+	
+	if(0 == strcmp(listObj->name, str)){
+			return listObj;
+	}
+	
+	while(listObj->next != NIL(t_object)){
+		listObj = listObj->next;
+		if(0 == strcmp (listObj->name, str)){
+			return listObj;
+		}
+	}
+	return NIL(t_object);
+}
+
 t_method* MakeMethod(TreeP TreeM,t_class* listClass){
 	
 	t_method* method = NEW(1,t_method);

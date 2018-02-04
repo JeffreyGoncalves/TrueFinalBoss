@@ -14,6 +14,7 @@ VarDeclP giveAllAttributes(TreeP tree, t_class* firstClass);
 t_method* giveAllMethod(TreeP tree, t_class* firstClass);
 
 t_class* FindClass(t_class* listClass, char* str);
+t_object* FindObject(t_object* listObj, char* str);
 
 t_class* makeClass(TreeP TreeClass, t_class* firstClass);
 list_ClassObjP makeListClassObj(TreeP TreeList);
