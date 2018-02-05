@@ -102,9 +102,11 @@ bool verifPorteeInst(TreeP inst, VarDeclP listDecl, list_ClassObjP classObjList)
 		}  
 		
 		else
+		{
 			printf("ici\n");
 			toReturn = FALSE;
 			/* CAS NE DEVANT JAMAIS ARRIVER */
+		}
 
 	return toReturn;
 }
