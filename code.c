@@ -5,7 +5,7 @@ extern char* strdup(const char *);
 int nbObjets;
 t_object* obj;
 
-int main(int argc, char **argv) {
+/*int main(int argc, char **argv) {
 
 	printf("Construction de l'arbre de test\n");
 
@@ -39,7 +39,7 @@ int main(int argc, char **argv) {
 
     fclose (pFile);
 	return 0;
-}
+}*/
 
 void makeCodeClasse(t_class* class, FILE* pFile) {
     ;
@@ -62,12 +62,12 @@ void makeCodeObjet(t_object* obj, FILE* pFile) {
 }
 
 int tailleAlloc(VarDeclP decl) {
-    decl->next;
     int taille = 0;
     while(decl != NULL) {
         taille++;
         decl = decl->next;
     }
+    return taille;
 }
 
 void makeCode(TreeP tree, FILE* pFile) {
@@ -175,11 +175,11 @@ void makeCode(TreeP tree, FILE* pFile) {
 		break;
 		case E_SELECT :
             makeCode(getChild(tree, 0), pFile);/* On ecrit le code donnant l'offset de l'expression */
-            fprintf("LOAD %d", getOffsetAttr(obj->attributes, getChild(tree, 1)->u.str));
+            fprintf(pFile, "LOAD %d", getOffsetAttr(obj->attributes, getChild(tree, 1)->u.str));
         break;
         case _ID :
             /* on empile l'offset de l'instance de classe ou de l'objet independant ayant cet identifiant */
-            fprintf("PUSHG %d", getOffsetObj(obj, tree->u.str));
+            fprintf(pFile, "PUSHG %d", getOffsetObj(obj, tree->u.str));
         break;
 		default :
             fprintf (pFile, "-- Il y a quelque chose\n");
