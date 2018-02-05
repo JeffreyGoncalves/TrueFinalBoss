@@ -54,7 +54,6 @@ typedef unsigned char bool;
 #define I_RETURN 22
 #define I_AFF 23
 #define I_EXPRRELOP 24
-#define I_CHAMP 25
 
 #define LIST_ARG 26
 #define LIST_PARAM 27
