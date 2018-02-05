@@ -298,7 +298,7 @@ bool verifPorteeMethodC(t_method* method, t_class* class, list_ClassObjP classOb
 	printf("		%d type du return\n",toReturn);
 	
 	
-	if(!verifPorteeBloc(method->bloc, InitialisationSuperThisResultC(method, class), classObjList)) toReturn = FALSE;
+	if(!verifPorteeBloc(method->bloc, InitialisationSuperThisResultC(method, class, method->parametres), classObjList)) toReturn = FALSE;
 	printf("		%d bloc ok\n",toReturn);
 	
 	return toReturn;
@@ -337,7 +337,7 @@ bool verifPorteeMethodO(t_method* method, t_object* object, list_ClassObjP class
 	method->returnType = ClassBuffer;
 	printf("		%d type du return\n",toReturn);
 	
-	if(!verifPorteeBloc(method->bloc, InitialisationSuperThisResultO(method, object), classObjList)) toReturn = FALSE;
+	if(!verifPorteeBloc(method->bloc, InitialisationSuperThisResultO(method, object, method->parametres), classObjList)) toReturn = FALSE;
 	printf("		%d bloc ok\n",toReturn);
 	
 	return toReturn;
@@ -372,7 +372,7 @@ bool verifPorteeConstructor(t_method* method, t_class* class, list_ClassObjP cla
 	
 	/*  Idem pour le nom. */
 	
-	if(!verifPorteeBloc(method->bloc, InitialisationSuperThisResultC(method, class), classObjList)) toReturn = FALSE;
+	if(!verifPorteeBloc(method->bloc, InitialisationSuperThisResultC(method, class, method->parametres), classObjList)) toReturn = FALSE;
 	printf("		bloc ok\n");
 	
 	return toReturn;
@@ -1100,7 +1100,7 @@ bool verificationNomMethod(t_method* env, char* name){
 	return TRUE;
 }
 
-VarDeclP InitialisationSuperThisResultC(t_method* method, t_class* class){
+VarDeclP InitialisationSuperThisResultC(t_method* method, t_class* class, VarDeclP param){
 	
 	/**		CREATION DE this	*/
 	VarDeclP this = NEW(1, VarDecl);
@@ -1130,16 +1130,19 @@ VarDeclP InitialisationSuperThisResultC(t_method* method, t_class* class){
 	if(super != NIL(VarDecl) && result != NIL(VarDecl)){
 		this->next = super;
 		super->next = result;
+		result->next = param;
 	}else if(result != NIL(VarDecl)){
 		this->next = result;
+		result->next = param;
 	}else if(super != NIL(VarDecl)){
 		this->next = super;
+		super->next = param;
 	}
 	
 	return this;
 }
 
-VarDeclP InitialisationSuperThisResultO(t_method* method, t_object* object){
+VarDeclP InitialisationSuperThisResultO(t_method* method, t_object* object, VarDeclP param){
 	
 	/**		CREATION DE this	*/
 	VarDeclP this = NEW(1, VarDecl);
@@ -1148,7 +1151,7 @@ VarDeclP InitialisationSuperThisResultO(t_method* method, t_object* object){
 	this->name = "this";
 	
 	/**		CREATION DE result	*/
-	VarDeclP result;
+	VarDeclP result = NIL(VarDecl);
 	if(0 != strcmp(method->returnType->name,"Void")){
 		result = NEW(1, VarDecl);
 		result->coeur = NEW(1, t_variable);
@@ -1159,7 +1162,17 @@ VarDeclP InitialisationSuperThisResultO(t_method* method, t_object* object){
 
 	if(result != NIL(VarDecl)){
 		this->next = result;
+		result->next = param;
 	}
 	
 	return this;
+}
+
+void afficheListVarDeclP(VarDeclP liste){
+	printf("Variables\n");
+	while(liste != NIL(VarDecl)){
+		printf("%s..",liste->name);
+		liste = liste->next;
+	}
+	printf("\n");
 }

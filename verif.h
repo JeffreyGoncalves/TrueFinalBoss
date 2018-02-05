@@ -48,6 +48,8 @@ bool verifPorteeMethodO(t_method* method, t_object* object, list_ClassObjP class
 bool verifPorteeConstructor(t_method* method, t_class* class, list_ClassObjP classObjList);
 void verifPorteeProg(TreeP tree, list_ClassObjP classObjList);
 
-VarDeclP InitialisationSuperThisResultC(t_method* method, t_class* class);
-VarDeclP InitialisationSuperThisResultO(t_method* method, t_object* object);
+VarDeclP InitialisationSuperThisResultC(t_method* method, t_class* class, VarDeclP param);
+VarDeclP InitialisationSuperThisResultO(t_method* method, t_object* object, VarDeclP param);
+
+void afficheListVarDeclP(VarDeclP liste);
 #endif
