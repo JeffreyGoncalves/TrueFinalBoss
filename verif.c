@@ -1119,7 +1119,7 @@ VarDeclP InitialisationSuperThisResultC(t_method* method, t_class* class){
 	}
 	
 	/**		CREATION DE super	*/
-	VarDeclP super;
+	VarDeclP super = NIL(VarDecl);
 	if(class->superClass != NIL(t_class)){
 		super = NEW(1, VarDecl);
 		super->coeur = NEW(1, t_variable);
