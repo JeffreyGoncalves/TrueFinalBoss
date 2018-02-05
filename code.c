@@ -5,7 +5,7 @@ extern char* strdup(const char *);
 int nbObjets;
 t_object* obj;
 
-/*int main(int argc, char **argv) {
+int main(int argc, char **argv) {
 
 	printf("Construction de l'arbre de test\n");
 
@@ -39,7 +39,7 @@ t_object* obj;
 
     fclose (pFile);
 	return 0;
-}*/
+}
 
 void makeCodeClasse(t_class* class, FILE* pFile) {
     ;
@@ -182,24 +182,33 @@ void makeCode(TreeP tree, FILE* pFile) {
             fprintf(pFile, "PUSHG %d", getOffsetObj(obj, tree->u.str));
         break;
         case CAST :
+            fprintf(pFile, "-- Il y a un cast\n" );
+            /*je vois pas comment faire celui-là*/
         break;
         case E_CALL_METHOD :
+            fprintf(pFile, "Il y a un appel de methode\n");
+            /*faudra probablement faire une fonction a part*/
         break;
         case I_ITE :
+            fprintf(pFile, "Il y a un bloc If Then Else\n");
+            /*ça c'est comme les tds/dm/exams ez*/
         break;
         case I_BLOC :
+            fprintf(pFile, "Il y a un bloc d'instructions\n");
+            /*plusieurs instructions a lire*/
         break;
         case I_RETURN :
+        /*pas sûr sûr du truc*/
         break;
         case I_AFF :
-        break;
-        case I_EXPRRELOP :
-        break;
-        case I_CHAMP :
+            fprintf(pFile, "Il y a une affectation\n");
+            /*dupliquer la valeur dans la pile uniquement ?*/
         break;
         case CLASS_NAME :
+            /*dunno how to do dis Oo*/
         break;
         case _OVERRIDE :
+            /*pas sûr sûr*/
         break;
 		default :
             fprintf (pFile, "-- Il y a quelque chose\n");
