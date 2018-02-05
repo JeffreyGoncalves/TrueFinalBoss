@@ -472,18 +472,7 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList)
 				{
 					Expr->u.lvar->coeur->_obj = objSel;
 				}
-				varSel = varSel->next;
-			}
-			
-			/* Classes */
-			t_class *claSel = classObjList->listClass;
-			while(claSel != NULL)
-			{
-				if(!strcmp(claSel->name, Expr->u.lvar->name))
-				{
-					Expr->u.lvar->coeur->_type = claSel;
-				}
-				varSel = varSel->next;
+				objSel = objSel->next;
 			}
 			
 			/* Aucun objet n'a ete trouve */
@@ -1109,7 +1098,7 @@ VarDeclP InitialisationSuperThisResultC(t_method* method, t_class* class, VarDec
 	this->name = "this";
 	
 	/**		CREATION DE result	*/
-	VarDeclP result;
+	VarDeclP result = NIL(VarDecl);
 	if(0 != strcmp(method->returnType->name,"Void")){
 		result = NEW(1, VarDecl);
 		result->coeur = NEW(1, t_variable);
