@@ -245,6 +245,11 @@ bool verifPorteeClass(t_class* class, list_ClassObjP classObjList){
 	printf("%d Attributs\n",toReturn);
 	/* Verification methodes */
 	t_method* methodBuffer = class->methods;
+					while(methodBuffer != NIL(t_method)){
+						printf("%d Attributs\n",toReturn);
+						methodBuffer = methodBuffer->next;
+					}
+					methodBuffer = class->methods;
 	while(methodBuffer != NIL(t_method)){
 		printf("	Portée de [%s]:\n",methodBuffer->name);
 		
@@ -255,6 +260,7 @@ bool verifPorteeClass(t_class* class, list_ClassObjP classObjList){
 		methodBuffer = methodBuffer->next;
 	}
 	printf("%d Methodes\n",toReturn);
+	
 	/* Verification constructeur */
 	methodBuffer = class->constructor;
 	if(methodBuffer != NIL(t_method)) {
@@ -376,7 +382,9 @@ bool verifPorteeConstructor(t_method* method, t_class* class, list_ClassObjP cla
 	
 	/*  Idem pour le nom. */
 	
-	if(!verifPorteeBloc(method->bloc, InitialisationSuperThisResultC(method, class, method->parametres), classObjList)) toReturn = FALSE;
+	if(strcmp(class->name, "String") && strcmp(class->name, "Integer") && strcmp(class->name, "Void")){
+		if(!verifPorteeBloc(method->bloc, InitialisationSuperThisResultC(method, class, method->parametres), classObjList)) toReturn = FALSE;
+	}
 	printf("		bloc ok\n");
 	
 	return toReturn;
