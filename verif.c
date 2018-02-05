@@ -503,16 +503,14 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList)
 				
 			case E_SELECT:
 				/* On cherche le ID_C, s'il existe ou non.*/
-				if(getChild(Expr, 0)->op == _ID){
-					classBuffer = FindClass(classObjList->listClass, getChild(Expr, 1)->u.lvar->name);
+				if(getChild(Expr, 0)->op == _ID && getChild(Expr, 0)->u.lvar->name[0] <= 90){
 					objectBuffer = FindObject(classObjList->listObj, getChild(Expr, 1)->u.lvar->name);
 					
-					if(classBuffer == NIL(t_class) && objectBuffer == NIL(t_object)){
+					if(objectBuffer == NIL(t_object)){
 						setError(CLASS_NOT_FOUND);
 						toReturn = FALSE;
 					}
 					else{
-						getChild(Expr, 0)->u.lvar->coeur->_type = classBuffer;
 						getChild(Expr, 0)->u.lvar->coeur->_obj = objectBuffer;
 					}
 				}else{/**		cas avec Object.ID ou (ExprRelop).ID		*/
@@ -554,16 +552,14 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList)
 				
 			case E_CALL_METHOD:
 				/* On cherche le ID_C, s'il existe ou non.*/
-				if(getChild(Expr, 0)->op == _ID){
-					classBuffer = FindClass(classObjList->listClass, getChild(Expr, 1)->u.lvar->name);
+				if(getChild(Expr, 0)->op == _ID && getChild(Expr, 0)->u.lvar->name[0] <= 90){
 					objectBuffer = FindObject(classObjList->listObj, getChild(Expr, 1)->u.lvar->name);
 					
-					if(classBuffer == NIL(t_class) && objectBuffer == NIL(t_object)){
+					if(objectBuffer == NIL(t_object)){
 						setError(CLASS_NOT_FOUND);
 						toReturn = FALSE;
 					}
 					else{
-						getChild(Expr, 0)->u.lvar->coeur->_type = classBuffer;
 						getChild(Expr, 0)->u.lvar->coeur->_obj = objectBuffer;
 					}
 				}else{/**		cas avec Object.ID ou (ExprRelop).ID		*/
@@ -709,7 +705,13 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 			break;
 		
 		case _ID:
-			result.type.class = FindClass(env->listClass, noeud->u.str);/*TODO*/
+			if(noeud->u.str[0] <= 91){
+				result.type.class = FindClass(env->listClass, noeud->u.lvar->name);
+				if(result.type.class == NIL(t_class)) result.type.object = FindObject(env->listObj, noeud->u.lvar->name);
+			}else{
+				result.type.class = noeud->u.lvar->coeur->_type;
+			}
+			/*TODO*/
 			return result;
 			break;
 			
