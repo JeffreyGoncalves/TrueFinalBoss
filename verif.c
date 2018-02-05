@@ -300,8 +300,9 @@ bool verifPorteeMethodC(t_method* method, t_class* class, list_ClassObjP classOb
 	method->returnType = ClassBuffer;
 	printf("		%d type du return\n",toReturn);
 	
-	
-	if(!verifPorteeBloc(method->bloc, InitialisationSuperThisResultC(method, class, method->parametres), classObjList)) toReturn = FALSE;
+	if(strcmp(class->name, "String") && strcmp(class->name, "Integer") && strcmp(class->name, "Void")){
+		if(!verifPorteeBloc(method->bloc, InitialisationSuperThisResultC(method, class, method->parametres), classObjList)) toReturn = FALSE;
+	}
 	printf("		%d bloc ok\n",toReturn);
 	
 	return toReturn;
@@ -384,62 +385,65 @@ bool verifPorteeConstructor(t_method* method, t_class* class, list_ClassObjP cla
 bool verifPorteeBloc(TreeP tree, VarDeclP listDecl, list_ClassObjP classObjList)
 {	
 	afficheListVarDeclP(listDecl);
-	bool toReturn = TRUE;
-	VarDeclP listVarDecl = getChild(tree, 0)->u.lvar;
-	TreeP listInst = getChild(tree,1);
-	
-	/**** Verification de la liste de declaration ****/
-	VarDeclP iterator = listVarDecl;
-	while(iterator != NIL(VarDecl)){
-		/* On regarde si la variable n'a pas déjà été déclarée dans ce bloc, puis si le nom super/result/this est utilisé. */
-		if(!verificationNomVarDecl(listVarDecl, iterator->name)){
-			setError(REDECL_ERROR);
-			toReturn = FALSE;
-		}else if(!strcmp(iterator->name, "this") || !strcmp(iterator->name, "super") || !strcmp(iterator->name, "result")){
-			setError(RESERV_DECL_ERROR);
-			toReturn = FALSE;
-		}
+		if(tree->op == I_BLOC){
+		bool toReturn = TRUE;
+		VarDeclP listVarDecl = getChild(tree, 0)->u.lvar;
+		TreeP listInst = getChild(tree,1);
 		
-		/* On associe les "vraies" classes pour les variables. */
-		t_class* ClassBuffer = FindClass(classObjList->listClass, iterator->coeur->_type->name);
-		if(ClassBuffer == NIL(t_class))
-		{
-			setError(CLASS_NOT_FOUND);
-			toReturn = FALSE;
+		/**** Verification de la liste de declaration ****/
+		VarDeclP iterator = listVarDecl;
+		while(iterator != NIL(VarDecl)){
+			/* On regarde si la variable n'a pas déjà été déclarée dans ce bloc, puis si le nom super/result/this est utilisé. */
+			if(!verificationNomVarDecl(listVarDecl, iterator->name)){
+				setError(REDECL_ERROR);
+				toReturn = FALSE;
+			}else if(!strcmp(iterator->name, "this") || !strcmp(iterator->name, "super") || !strcmp(iterator->name, "result")){
+				setError(RESERV_DECL_ERROR);
+				toReturn = FALSE;
+			}
+			
+			/* On associe les "vraies" classes pour les variables. */
+			t_class* ClassBuffer = FindClass(classObjList->listClass, iterator->coeur->_type->name);
+			if(ClassBuffer == NIL(t_class))
+			{
+				setError(CLASS_NOT_FOUND);
+				toReturn = FALSE;
+			}
+			free(iterator->coeur->_type); /** C'était une classe temporaire.*/
+			iterator->coeur->_type = ClassBuffer;
+			
+			iterator = iterator->next;
 		}
-		free(iterator->coeur->_type); /** C'était une classe temporaire.*/
-		iterator->coeur->_type = ClassBuffer;
+		/*************************************************/
 		
-		iterator = iterator->next;
-	}
-	/*************************************************/
-	
-	/****	Ajout des declarations precedentes non prioritaires	******/
-	/* Note : cela permet de gerer le masquage (les variables 
-	 * du bloc sont prioritaires sur les precedentes */
-	if(listVarDecl != NIL(VarDecl))
-	{
-		/*On va chercher le dernier élément de la liste prioritaire*/
-		iterator = listVarDecl;
-		while(iterator->next != NIL(VarDecl)) iterator = iterator->next;
-		iterator->next = listDecl;
-		listDecl = listVarDecl;
-	}
-	/*****************************************************************/
-	
-	/*** Verification des instructions (portee) ***/
-	if(listInst != NULL)
-	{
-		while(listInst->nbChildren == 2)
+		/****	Ajout des declarations precedentes non prioritaires	******/
+		/* Note : cela permet de gerer le masquage (les variables 
+		 * du bloc sont prioritaires sur les precedentes */
+		if(listVarDecl != NIL(VarDecl))
 		{
+			/*On va chercher le dernier élément de la liste prioritaire*/
+			iterator = listVarDecl;
+			while(iterator->next != NIL(VarDecl)) iterator = iterator->next;
+			iterator->next = listDecl;
+			listDecl = listVarDecl;
+		}
+		/*****************************************************************/
+		
+		/*** Verification des instructions (portee) ***/
+		if(listInst != NULL)
+		{
+			while(listInst->nbChildren == 2)
+			{
+				toReturn = toReturn && verifPorteeInst(getChild(listInst, 0), listVarDecl, classObjList);
+				listInst = getChild(listInst, 1);
+			}
 			toReturn = toReturn && verifPorteeInst(getChild(listInst, 0), listVarDecl, classObjList);
-			listInst = getChild(listInst, 1);
 		}
-		toReturn = toReturn && verifPorteeInst(getChild(listInst, 0), listVarDecl, classObjList);
-	}
-	/**********************************************/
+		/**********************************************/
 
-	return toReturn;
+		return toReturn;
+	}
+	else return verifPorteeExpr(tree, listDecl, classObjList);
 }
 
 /* A TRAVAILLER */
