@@ -70,6 +70,7 @@ bool verifPorteeInst(TreeP inst, VarDeclP listDecl, list_ClassObjP classObjList)
 				setError(RETURN_ERROR);
 				toReturn = FALSE;
 			}
+			printf("ici\n");
 		}
 		
 		/* ITE */
@@ -380,7 +381,6 @@ bool verifPorteeConstructor(t_method* method, t_class* class, list_ClassObjP cla
 
 bool verifPorteeBloc(TreeP tree, VarDeclP listDecl, list_ClassObjP classObjList)
 {	
-	printf("ici\n");
 	bool toReturn = TRUE;
 	VarDeclP listVarDecl = getChild(tree, 0)->u.lvar;
 	TreeP listInst = getChild(tree,1);
@@ -409,7 +409,6 @@ bool verifPorteeBloc(TreeP tree, VarDeclP listDecl, list_ClassObjP classObjList)
 		
 		iterator = iterator->next;
 	}
-	printf("ici\n");
 	/*************************************************/
 	
 	/****	Ajout des declarations precedentes non prioritaires	******/
@@ -424,7 +423,7 @@ bool verifPorteeBloc(TreeP tree, VarDeclP listDecl, list_ClassObjP classObjList)
 		listDecl = listVarDecl;
 	}
 	/*****************************************************************/
-	printf("ici\n");
+	
 	/*** Verification des instructions (portee) ***/
 	if(listInst != NULL)
 	{
@@ -436,7 +435,7 @@ bool verifPorteeBloc(TreeP tree, VarDeclP listDecl, list_ClassObjP classObjList)
 		toReturn = toReturn && verifPorteeInst(getChild(listInst, 0), listVarDecl, classObjList);
 	}
 	/**********************************************/
-	printf("ici\n");
+
 	return toReturn;
 }
 
@@ -460,6 +459,7 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList)
 				{
 					free(Expr->u.lvar);
 					Expr->u.lvar = varSel;
+					return TRUE;
 				}
 				varSel = varSel->next;
 			}
@@ -471,6 +471,7 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList)
 				if(!strcmp(objSel->name, Expr->u.lvar->name))
 				{
 					Expr->u.lvar->coeur->_obj = objSel;
+					return TRUE;
 				}
 				objSel = objSel->next;
 			}
@@ -479,7 +480,7 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList)
 			setError(VAR_NOT_FOUND);
 			toReturn = FALSE;
 		}
-		else return FALSE;
+		else return TRUE;
 	}
 	
 	else
@@ -653,7 +654,7 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 			/*return verifTypageSuccesFils(noeud->nbChildren, noeud, env);*/
 			
 		case I_ITE:
-			if(0 == strcmp(veriFils[0].type.class->name,"Interger")){
+			if(0 == strcmp(veriFils[0].type.class->name,"Integer")){
 				return result;
 			}
 			break;
@@ -665,28 +666,28 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 			break;
 			
 		case SUM:
-			if(0 == strcmp(veriFils[0].type.class->name,"Interger") && 0 == strcmp(veriFils[1].type.class->name,"Interger")){
+			if(0 == strcmp(veriFils[0].type.class->name,"Integer") && 0 == strcmp(veriFils[1].type.class->name,"Integer")){
 				result.type.class = veriFils[0].type.class;
 				return result;
 			}
 			break;
 			
 		case MIN:
-			if(0 == strcmp(veriFils[0].type.class->name,"Interger") && 0 == strcmp(veriFils[1].type.class->name,"Interger")){
+			if(0 == strcmp(veriFils[0].type.class->name,"Integer") && 0 == strcmp(veriFils[1].type.class->name,"Integer")){
 				result.type.class = veriFils[0].type.class;
 				return result;
 			}
 			break;
 		
 		case MULT:
-			if(0 == strcmp(veriFils[0].type.class->name,"Interger") && 0 == strcmp(veriFils[1].type.class->name,"Interger")){
+			if(0 == strcmp(veriFils[0].type.class->name,"Interger") && 0 == strcmp(veriFils[1].type.class->name,"Integer")){
 				result.type.class = veriFils[0].type.class;
 				return result;
 			}
 			break;
 		
 		case DIVI:
-			if(0 == strcmp(veriFils[0].type.class->name,"Interger") && 0 == strcmp(veriFils[1].type.class->name,"Interger")){
+			if(0 == strcmp(veriFils[0].type.class->name,"Interger") && 0 == strcmp(veriFils[1].type.class->name,"Integer")){
 				result.type.class = veriFils[0].type.class;
 				return result;
 			}

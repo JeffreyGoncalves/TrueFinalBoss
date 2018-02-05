@@ -4,7 +4,7 @@ extern char* strdup(const char *);
 
 int nbObjets;
 t_object* obj;
-
+/*
 int main(int argc, char **argv) {
 
 	printf("Construction de l'arbre de test\n");
@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
     fclose (pFile);
 	return 0;
 }
-
+*/
 void makeCodeClasse(t_class* class, FILE* pFile) {
     ;
 }

@@ -28,7 +28,7 @@ bool debug = FALSE;
 int errorCode = NO_ERROR; /* defini dans tp.h */
 
 FILE *out; /* fichier de sortie pour le code engendre */
-/*
+
 int main(int argc, char **argv) {
   int fi;
   int i, res;
@@ -74,7 +74,7 @@ int main(int argc, char **argv) {
 
   if (out != NIL(FILE) && out != stdout) fclose(out);
   return res ? SYNTAX_ERROR : errorCode;
-}*/
+}
 
 
 void setError(int code) {
