@@ -62,7 +62,6 @@ void makeCodeObjet(t_object* obj, FILE* pFile) {
 }
 
 int tailleAlloc(VarDeclP decl) {
-    decl->next;
     int taille = 0;
     while(decl != NULL) {
         taille++;
@@ -181,6 +180,26 @@ void makeCode(TreeP tree, FILE* pFile) {
             /* on empile l'offset de l'instance de classe ou de l'objet independant ayant cet identifiant */
             fprintf("PUSHG %d", getOffsetObj(obj, tree->u.str));
         break;
+        case CAST :
+        break;
+        case E_CALL_METHOD :
+        break;
+        case I_ITE :
+        break;
+        case I_BLOC :
+        break;
+        case I_RETURN :
+        break;
+        case I_AFF :
+        break;
+        case I_EXPRRELOP :
+        break;
+        case I_CHAMP :
+        break;
+        case CLASS_NAME :
+        break;
+        case _OVERRIDE :
+        break;
 		default :
             fprintf (pFile, "-- Il y a quelque chose\n");
 		break;
@@ -198,6 +217,7 @@ int getOffsetObj(t_object* obj, char* nom) {
         printf("Attribut introuvable");
     return i;
 }
+
 /* utilisable pour les attributs dans un objet ou dans une classe */
 int getOffsetAttr(VarDeclP decl, char* nom) {
     int i = 0;

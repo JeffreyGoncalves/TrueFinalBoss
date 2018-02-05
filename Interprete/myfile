@@ -1,6 +1,8 @@
 	START
 	PUSHI 2
 	PUSHI 3
+	PUSHI 4
+	MUL
 	ADD
 -- afficher le resultat
 	PUSHS "resultat = "
@@ -9,4 +11,3 @@
 	PUSHS "\n"
 	WRITES
 	STOP
-	

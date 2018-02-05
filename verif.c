@@ -677,13 +677,6 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 			}
 			break;
 			
-		case EXPR_RELOP:
-			if(0 == strcmp(veriFils[0].type.class->name,"Interger") && 0 == strcmp(veriFils[1].type.class->name,"Interger")){
-				result.type.class = veriFils[0].type.class;
-				return result;
-			}
-			break;
-			
 		case SUM:
 			if(0 == strcmp(veriFils[0].type.class->name,"Interger") && 0 == strcmp(veriFils[1].type.class->name,"Interger")){
 				result.type.class = veriFils[0].type.class;
