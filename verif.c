@@ -1138,7 +1138,7 @@ VarDeclP InitialisationSuperThisResultC(t_method* method, t_class* class, VarDec
 		super = NEW(1, VarDecl);
 		super->coeur = NEW(1, t_variable);
 		super->coeur->_type = class->superClass;
-		super->name = "result";
+		super->name = "super";
 	}
 	
 	if(super != NIL(VarDecl) && result != NIL(VarDecl)){
