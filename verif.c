@@ -545,7 +545,7 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList)
 					}
 				}else{/**		cas avec Object.ID ou (ExprRelop).ID		*/
 					
-					verifPorteeExpr(getChild(Expr, 0), listDecl, classObjList);
+					toReturn = toReturn && verifPorteeExpr(getChild(Expr, 0), listDecl, classObjList);
 					
 					if(getChild(Expr, 0)->op == _ID){
 						classBuffer = getChild(Expr, 0)->u.lvar->coeur->_type;
@@ -563,9 +563,15 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList)
 					}else if(getChild(Expr, 0)->op == _STR){
 						classBuffer = FindClass(classObjList->listClass, "String");
 						printf("%s(String)\n",getChild(Expr, 0)->u.str);
-					}else{
+					}else if(getChild(Expr, 0)->op == CST){
 						classBuffer = FindClass(classObjList->listClass, "Integer");
 						printf("%d(Integer)\n",getChild(Expr, 0)->u.val);
+					}else if(getChild(Expr, 0)->op == CAST){
+						classBuffer = getChild(getChild(Expr, 0), 0)->u.lvar->coeur->_type;
+						printf("CAST(%s)\n",classBuffer->name);
+					}else{
+						setError(OTHER_CONTEXTUAL_ERROR);
+						toReturn = FALSE;
 					}
 					
 					if(classBuffer == NIL(t_class) && objectBuffer == NIL(t_object)){
@@ -626,7 +632,7 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList)
 					
 				}else{/**		cas avec Object.ID() ou (ExprRelop).ID()		*/
 					
-					verifPorteeExpr(getChild(Expr, 0), listDecl, classObjList);
+					toReturn = toReturn && verifPorteeExpr(getChild(Expr, 0), listDecl, classObjList);
 					
 					if(getChild(Expr, 0)->op == _ID){
 						classBuffer = getChild(Expr, 0)->u.lvar->coeur->_type;
@@ -644,9 +650,15 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList)
 					}else if(getChild(Expr, 0)->op == _STR){
 						classBuffer = FindClass(classObjList->listClass, "String");
 						printf("%s(String)\n",getChild(Expr, 0)->u.str);
-					}else{
+					}else if(getChild(Expr, 0)->op == CST){
 						classBuffer = FindClass(classObjList->listClass, "Integer");
 						printf("%d(Integer)\n",getChild(Expr, 0)->u.val);
+					}else if(getChild(Expr, 0)->op == CAST){
+						classBuffer = getChild(getChild(Expr, 0), 0)->u.lvar->coeur->_type;
+						printf("CAST(%s)\n",classBuffer->name);
+					}else{
+						setError(OTHER_CONTEXTUAL_ERROR);
+						toReturn = FALSE;
 					}
 
 					if(classBuffer == NIL(t_class) && objectBuffer == NIL(t_object)){
@@ -684,6 +696,23 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList)
 				printf("appel_methode_fin\n");			
 				break;
 				
+			case CAST:
+				/* On vérifie l'expression qui se fait cast.*/
+				toReturn = toReturn && verifPorteeExpr(getChild(Expr, 1), listDecl, classObjList);
+				
+				/* On vérifie que le cast est bien une classe qui existe. */
+				classBuffer = FindClass(classObjList->listClass, getChild(Expr, 0)->u.lvar->name);
+				
+				/* Aucune classe n'a ete trouvee */
+				if(classBuffer == NIL(t_class)){
+					setError(CLASS_NOT_FOUND);
+					toReturn = FALSE;
+				}else{
+					getChild(Expr, 0)->u.lvar->coeur->_type = classBuffer;
+				}
+				break;
+				
+			
 			default:
 				printf("+ ou - ou * ou etc...\n");
 				/*bool toReturn = TRUE;*/

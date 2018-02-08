@@ -79,7 +79,19 @@ t_class* makeClass(TreeP TreeClass, t_class* firstClass){
 		}else{
 			myClass->methods = giveAllMethod(getChild(TreeClass, 4), firstClass);
 			myClass->attributes = giveAllAttributes(getChild(TreeClass, 4), firstClass);
-		}		
+		}
+		
+		/** Ici, on regarde tous les paramètres possèdant un mot clef VAR afin de les ajouter dans la liste des attributs */
+		VarDeclP tempo, VarBuffer = myClass->parametres;
+		while(VarBuffer != NIL(VarDecl)){
+			if(VarBuffer->coeur->res.i == 1){
+				tempo = makeVarDeclP(VarBuffer->name, VarBuffer->coeur->_type->name,VarBuffer->coeur->value, 0);
+				tempo->next = myClass->attributes;
+				myClass->attributes = tempo;
+			}
+			VarBuffer = VarBuffer->next;
+		}
+			
 		
 		return myClass;
 		

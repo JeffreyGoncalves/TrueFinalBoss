@@ -204,13 +204,14 @@ VarDeclP lastList(VarDeclP o){
 	return o;
 }
 
-VarDeclP makeVarDeclP(char *nom, char *type,TreeP sArbre){
+VarDeclP makeVarDeclP(char *nom, char *type,TreeP sArbre, int i){
 	VarDeclP param = NEW(1, VarDecl);
 	param->name = nom;
 	param->coeur = NEW(1,t_variable);
 	param->coeur->_type = NEW(1, t_class);
 	param->coeur->_type->name = type;
 	param->coeur->value = sArbre;
+	param->coeur->res.i = i;
 	return param;
 }
 

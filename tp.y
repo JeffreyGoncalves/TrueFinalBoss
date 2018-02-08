@@ -46,12 +46,12 @@ ClassObj : declClass					{ $$ = makeTree(CLAS, 1, $1); }
 ;
 
 declClass : CLASS ID_C '(' ListParamClause ')' extendsClause constructorClause IS classObjBlock 
-{ TreeP id = makeLeafLVar(_ID, makeVarDeclP($2, NULL, NIL(Tree)));
+{ TreeP id = makeLeafLVar(_ID, makeVarDeclP($2, NULL, NIL(Tree), 0));
   $$ = makeTree(_CLASS,5,id,$4,$6,$7,$9);
   }
 ;
 
-declObject : OBJECT ID_C IS classObjBlock { 	TreeP id = makeLeafLVar(_ID, makeVarDeclP($2, NULL, NIL(Tree)));
+declObject : OBJECT ID_C IS classObjBlock { 	TreeP id = makeLeafLVar(_ID, makeVarDeclP($2, NULL, NIL(Tree), 0));
 											$$ = makeTree(DECLA_OBJECT, 2, id, $4); }
 ;
 
@@ -71,7 +71,8 @@ ListParam : Param ',' ListParam 		{ TreeP list = $3;
 | Param 					{ $$ = makeLeafParam(LIST_PARAM, $1);}
 ;
 
-Param : Var ID':' ID_C Init			{ $$ = makeVarDeclP($2, $4, $5);}
+Param : Var ID':' ID_C Init			{ if ($1 == NIL(Tree)) $$ = makeVarDeclP($2, $4, $5, 0);
+										else $$ = makeVarDeclP($2, $4, $5, 1);}
 ;
 
 Var : VAR				{ $$ = makeLeafStr(_VAR, "var");}
@@ -84,7 +85,7 @@ Init : AFF ExprRelop	{ $$ = $2; }
 /////////////////////////
 
 // Mot cle EXTENDS //
-extendsClause : EXTENDS ID_C '(' ListArgClause ')'	{ TreeP id = makeLeafLVar(_ID, makeVarDeclP($2, NULL, NIL(Tree)));
+extendsClause : EXTENDS ID_C '(' ListArgClause ')'	{ TreeP id = makeLeafLVar(_ID, makeVarDeclP($2, NULL, NIL(Tree), 0));
 													  $$ = makeTree(_EXTENDS, 2, id, $4);}
 | 													{ $$ = NIL(Tree);}
 ;
@@ -115,10 +116,10 @@ VarDef : declMethod					{ $$ = makeTree(VAR_DEF_METH, 1,  $1);}
 ///////////////////////////////
 
 // Declaration d'une methode //
-declMethod : Override DEF ID'(' ListParamClause ')' ':' ID_C AFF ExprRelop { TreeP id1 = makeLeafLVar(_ID, makeVarDeclP($3, NULL, NIL(Tree)));
-																		   TreeP id2 = makeLeafLVar(_ID, makeVarDeclP($8, NULL, NIL(Tree)));
+declMethod : Override DEF ID'(' ListParamClause ')' ':' ID_C AFF ExprRelop { TreeP id1 = makeLeafLVar(_ID, makeVarDeclP($3, NULL, NIL(Tree), 0));
+																		   TreeP id2 = makeLeafLVar(_ID, makeVarDeclP($8, NULL, NIL(Tree), 0));
 																		   $$ = makeTree(DECL_METH_1,5,id1,id2,$1,$5,$10);}
-| Override DEF ID'(' ListParamClause ')' ClassClause IS block            { TreeP id = makeLeafLVar(_ID, makeVarDeclP($3, NULL, NIL(Tree)));
+| Override DEF ID'(' ListParamClause ')' ClassClause IS block            { TreeP id = makeLeafLVar(_ID, makeVarDeclP($3, NULL, NIL(Tree), 0));
 																		   $$ = makeTree(DECL_METH_2,5,id,$1,$5,$7,$9);}
 ;
 
@@ -126,24 +127,24 @@ Override : OVERRIDE		{ $$ = makeLeafStr(_OVERRIDE, "override");}
 | 						{ $$ = NIL(Tree);}
 ;
 
-ClassClause : ':' ID_C	{ $$ = makeLeafLVar(CLASS_NAME, makeVarDeclP($2, NULL, NIL(Tree)));}
+ClassClause : ':' ID_C	{ $$ = makeLeafLVar(CLASS_NAME, makeVarDeclP($2, NULL, NIL(Tree), 0));}
 | 						{ $$ = NIL(Tree);}					
 ;
 //////////////////////////////
 
 //Champ dans un objet
-Champ : VAR ID ':' ID_C Init ';' 	  { $$ = makeVarDeclP($2,$4,$5);}
+Champ : VAR ID ':' ID_C Init ';' 	  { $$ = makeVarDeclP($2, $4, $5, 1);}
 ;
 ////////////////////////////////
 
 //Appel d'une methode
 
-CallMethod : Object'.'ID'('ListArgClause')'	{ 	TreeP id = makeLeafLVar(_ID, makeVarDeclP($3, NULL, NIL(Tree)));;
+CallMethod : Object'.'ID'('ListArgClause')'	{ 	TreeP id = makeLeafLVar(_ID, makeVarDeclP($3, NULL, NIL(Tree), 0));;
 												$$ = makeTree(E_CALL_METHOD, 3,  $1, id, $5);}
-| '('ExprRelop')''.'ID'('ListArgClause')'	{ 	TreeP id = makeLeafLVar(_ID, makeVarDeclP($5, NULL, NIL(Tree)));;
+| '('ExprRelop')''.'ID'('ListArgClause')'	{ 	TreeP id = makeLeafLVar(_ID, makeVarDeclP($5, NULL, NIL(Tree), 0));;
 												$$ = makeTree(E_CALL_METHOD, 3,  $2, id, $7);}
-| ID_C'.'ID'('ListArgClause')'				{ TreeP id1 = makeLeafLVar(_ID, makeVarDeclP($3, NULL, NIL(Tree)));
-												TreeP id2 = makeLeafLVar(_ID, makeVarDeclP($1, NULL, NIL(Tree)));
+| ID_C'.'ID'('ListArgClause')'				{ TreeP id1 = makeLeafLVar(_ID, makeVarDeclP($3, NULL, NIL(Tree), 0));
+												TreeP id2 = makeLeafLVar(_ID, makeVarDeclP($1, NULL, NIL(Tree), 0));
 												$$ = makeTree(E_CALL_METHOD, 3, id2, id1, $5);	}
 ;
 
@@ -168,7 +169,7 @@ ListInst : Inst ListInst 	{ $$ = makeTree(LIST_INST, 2, $1, $2);}
 
 Inst : ITE 			{ $$ = $1;}
 | block 			{ $$ = $1;}
-| RETURN ';'		{ $$ = makeLeafLVar(I_RETURN, makeVarDeclP("result_tempo", NULL, NIL(Tree))); }
+| RETURN ';'		{ $$ = makeLeafLVar(I_RETURN, makeVarDeclP("result_tempo", NULL, NIL(Tree), 0)); }
 | cible ';'			{ $$ = $1;}
 | ExprRelop ';' 	{ $$ = makeTree(I_EXPRRELOP, 1, $1);}	
 ;
@@ -179,12 +180,12 @@ ITE : IF ExprRelop THEN Inst ELSE Inst { $$ = makeTree(I_ITE, 3, $2, $4, $6);}
 cible : Object AFF ExprRelop	{ $$ = makeTree(I_AFF, 2, $1, $3);}
 ;	
 
-Selection : Object'.'ID		{ TreeP id = makeLeafLVar(_ID, makeVarDeclP($3, NULL, NIL(Tree)));
+Selection : Object'.'ID		{ TreeP id = makeLeafLVar(_ID, makeVarDeclP($3, NULL, NIL(Tree), 0));
 							  $$ = makeTree(E_SELECT, 2, $1, id);	}
-| '('ExprRelop')''.'ID		{ TreeP id = makeLeafLVar(_ID, makeVarDeclP($5, NULL, NIL(Tree)));
+| '('ExprRelop')''.'ID		{ TreeP id = makeLeafLVar(_ID, makeVarDeclP($5, NULL, NIL(Tree), 0));
 							  $$ = makeTree(E_SELECT, 2, $2, id);	}
-| ID_C'.'ID 				{ TreeP id1 = makeLeafLVar(_ID, makeVarDeclP($3, NULL, NIL(Tree)));
-								TreeP id2 = makeLeafLVar(_ID, makeVarDeclP($1, NULL, NIL(Tree)));
+| ID_C'.'ID 				{ TreeP id1 = makeLeafLVar(_ID, makeVarDeclP($3, NULL, NIL(Tree), 0));
+								TreeP id2 = makeLeafLVar(_ID, makeVarDeclP($1, NULL, NIL(Tree), 0));
 							  $$ = makeTree(E_SELECT, 2, id2, id1);	}
 ;
 
@@ -192,7 +193,7 @@ Object : Selection		{ $$ = $1;}
 | CallMethod			{ $$ = $1;}
 | Instanciation			{ $$ = $1;}
 | CSTE					{ $$ = makeLeafInt(CST, $1);}
-| ID					{ $$ = makeLeafLVar(_ID, makeVarDeclP($1, NULL, NIL(Tree)));}
+| ID					{ $$ = makeLeafLVar(_ID, makeVarDeclP($1, NULL, NIL(Tree), 0));}
 | STR					{ $$ = makeLeafStr(_STR, $1);}
 | Cast					{ $$ = $1;}
 ;	
@@ -215,10 +216,10 @@ Expr : Expr ADD Expr		{ $$ = makeTree(SUM, 2, $1, $3);}
 | '(' ExprRelop ')'	 		{ $$ = $2;}
 ;
 
-Instanciation : NEWV ID_C '('ListArgClause')'		{ 	TreeP id = makeLeafLVar(_ID, makeVarDeclP($2, NULL, NIL(Tree)));;
+Instanciation : NEWV ID_C '('ListArgClause')'		{ 	TreeP id = makeLeafLVar(_ID, makeVarDeclP($2, NULL, NIL(Tree), 0));;
 													$$ = makeTree(INST, 2, id, $4);}
 ;
 
-Cast : '('ID_C Object')' 		{ TreeP id = makeLeafLVar(_ID, makeVarDeclP($2, NULL, NIL(Tree)));;
+Cast : '('ID_C Object')' 		{ TreeP id = makeLeafLVar(_ID, makeVarDeclP($2, NULL, NIL(Tree), 0));;
 							  $$ = makeTree(CAST, 2, id, $3);}
 ;
