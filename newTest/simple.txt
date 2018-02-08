@@ -1,6 +1,6 @@
 class Point(xc: Integer, yc: Integer) {
-     x:= xc; z := y; /* OK: valeur de y deja definie */
-     w2 := -25;
+     this.x:= xc; this.z := this.y; /* OK: valeur de y deja definie */
+     this.w2 := -25;
   } is {
   var x: Integer;
   /* var y := yc; */         /* erreur contextuelle: yc inconnu */

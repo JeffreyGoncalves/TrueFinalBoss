@@ -553,9 +553,15 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList)
 					}else if(getChild(Expr, 0)->op == E_SELECT){
 						classBuffer = getChild(getChild(Expr, 0), 1)->u.lvar->coeur->_type;
 						printf("%s(%s)\n",getChild(getChild(Expr, 0), 1)->u.lvar->name,classBuffer->name);
-					}else{
+					}else if(getChild(Expr, 0)->op == E_CALL_METHOD){
 						classBuffer = getReturn(getChild(getChild(Expr, 0), 1)->u.lvar->coeur->_type, getChild(getChild(Expr, 0), 1)->u.lvar->name);
 						printf("%s(%s)\n",getChild(getChild(Expr, 0), 1)->u.lvar->name,classBuffer->name);
+					}else if(getChild(Expr, 0)->op == _STR){
+						classBuffer = FindClass(classObjList->listClass, "String");
+						printf("%s(String)\n",getChild(Expr, 0)->u.str);
+					}else{
+						classBuffer = FindClass(classObjList->listClass, "Integer");
+						printf("%d(Integer)\n",getChild(Expr, 0)->u.val);
 					}
 					
 					if(classBuffer == NIL(t_class)){
@@ -622,9 +628,15 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList)
 					}else if(getChild(Expr, 0)->op == E_SELECT){
 						classBuffer = getChild(getChild(Expr, 0), 1)->u.lvar->coeur->_type;
 						printf("%s(%s)\n",getChild(getChild(Expr, 0), 1)->u.lvar->name,classBuffer->name);
-					}else{
+					}else if(getChild(Expr, 0)->op == E_CALL_METHOD){
 						classBuffer = getReturn(getChild(getChild(Expr, 0), 1)->u.lvar->coeur->_type, getChild(getChild(Expr, 0), 1)->u.lvar->name);
 						printf("%s(%s)\n",getChild(getChild(Expr, 0), 1)->u.lvar->name,classBuffer->name);
+					}else if(getChild(Expr, 0)->op == _STR){
+						classBuffer = FindClass(classObjList->listClass, "String");
+						printf("%s(String)\n",getChild(Expr, 0)->u.str);
+					}else{
+						classBuffer = FindClass(classObjList->listClass, "Integer");
+						printf("%d(Integer)\n",getChild(Expr, 0)->u.val);
 					}
 
 					if(classBuffer == NIL(t_class)){
