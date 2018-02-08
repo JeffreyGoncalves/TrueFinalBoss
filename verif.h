@@ -52,4 +52,6 @@ VarDeclP InitialisationSuperThisResultC(t_method* method, t_class* class, VarDec
 VarDeclP InitialisationSuperThisResultO(t_method* method, t_object* object, VarDeclP param);
 
 void afficheListVarDeclP(VarDeclP liste);
+
+t_class* getReturn(t_class* class, char* nom_methode);
 #endif
