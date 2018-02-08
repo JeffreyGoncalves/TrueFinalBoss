@@ -239,3 +239,30 @@ int getOffsetAttr(VarDeclP decl, char* nom) {
         printf("Attribut introuvable");
     return i;
 }
+
+void InitTV(list_ClassObj env, FILE* pFile){
+
+	char* label = malloc(3*sizeof(char));
+	label[0] = 'm';
+	int i = 0;
+	fprintf(pFile, "-- Initilisation des tables virtuelles\n");
+	fprintf(pFile, "init :");
+	while(env->listClass->next != NIL(t_class)){
+		fprintf(pFile, "\tALLOC %d\n",tailleAlloc(env->listClass->parametres));
+		fprintf(pFile, "\t\tDUPN %d\n",1);
+		while(env->listClass->methods->next != NIL(t_method)){
+			sprintf(label+1,"%d",i+1);
+			fprintf(pFile, "\t\tPUSHA %s\n",label);
+			fprintf(pFile, "\t\tSTORE %d\n",i);
+			if(env->listClass->methods->next != NIL(t_method)){
+				fprintf(pFile, "\t\tDUPN %d\n",1);
+			}
+			i++;
+			env->listClass->methods = env->listClass->methods->next;
+		}
+		i=0;
+		env->listClass = env->listClass->next;
+	}
+	fprintf(pFile, "-- Debut main\n");
+	fprintf(pFile, "\t\tJUMP %s\n","main");
+}
