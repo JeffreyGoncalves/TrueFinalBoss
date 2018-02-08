@@ -240,7 +240,7 @@ int getOffsetAttr(VarDeclP decl, char* nom) {
     return i;
 }
 
-void InitTV(list_ClassObj env, FILE* pFile){
+void InitTV(list_ClassObjP env, FILE* pFile){
 
 	char* label = malloc(3*sizeof(char));
 	label[0] = 'm';
