@@ -5,7 +5,7 @@ object CptPoint is           /* Compteur d'instances de Point */
 }
 
 class Point(var x: Integer, var y: Integer := 0, var name: String := "")
-      { CptPoint.incr(); } is
+      { /*CptPoint.incr();*/ } is
 { var hasClone : Integer := 0;   /* attributs supplementaires */
   /* la valeur du champ ci-dessous est indefinie si hasClone vaut 0.
    * Le probleme est qu'on n'a pas l'equivalent de NULL (du bon type)

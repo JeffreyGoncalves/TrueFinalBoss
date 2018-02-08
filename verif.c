@@ -511,8 +511,8 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList)
 	
 	else
 	{
-		t_class* classBuffer;
-		t_object* objectBuffer;
+		t_class* classBuffer = NIL(t_class);
+		t_object* objectBuffer = NIL(t_object);
 		bool estTrouver = FALSE;
 		
 		switch(Expr->op){
@@ -549,7 +549,11 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList)
 					
 					if(getChild(Expr, 0)->op == _ID){
 						classBuffer = getChild(Expr, 0)->u.lvar->coeur->_type;
-						printf("%s(%s)\n",getChild(Expr, 0)->u.lvar->name,classBuffer->name);
+						objectBuffer = getChild(Expr, 0)->u.lvar->coeur->_obj;
+						
+						if(classBuffer != NIL(t_class)) printf("%s(%s)\n",getChild(Expr, 0)->u.lvar->name,classBuffer->name);
+						else printf("%s(%s)\n",getChild(Expr, 0)->u.lvar->name,objectBuffer->name);
+						
 					}else if(getChild(Expr, 0)->op == E_SELECT){
 						classBuffer = getChild(getChild(Expr, 0), 1)->u.lvar->coeur->_type;
 						printf("%s(%s)\n",getChild(getChild(Expr, 0), 1)->u.lvar->name,classBuffer->name);
@@ -564,7 +568,8 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList)
 						printf("%d(Integer)\n",getChild(Expr, 0)->u.val);
 					}
 					
-					if(classBuffer == NIL(t_class)){
+					if(classBuffer == NIL(t_class) && objectBuffer == NIL(t_object)){
+						printf("OK\n");
 						setError(CLASS_NOT_FOUND);
 						toReturn = FALSE;
 					}
@@ -609,7 +614,7 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList)
 				printf("appel_methode\n");
 				/* On cherche le ID_C, s'il existe ou non.*/
 				if(getChild(Expr, 0)->op == _ID && getChild(Expr, 0)->u.lvar->name[0] <= 90){
-					objectBuffer = FindObject(classObjList->listObj, getChild(Expr, 1)->u.lvar->name);
+					objectBuffer = FindObject(classObjList->listObj, getChild(Expr, 0)->u.lvar->name);
 					
 					if(objectBuffer == NIL(t_object)){
 						setError(CLASS_NOT_FOUND);
@@ -618,13 +623,18 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList)
 					else{
 						getChild(Expr, 0)->u.lvar->coeur->_obj = objectBuffer;
 					}
+					
 				}else{/**		cas avec Object.ID() ou (ExprRelop).ID()		*/
 					
 					verifPorteeExpr(getChild(Expr, 0), listDecl, classObjList);
 					
 					if(getChild(Expr, 0)->op == _ID){
 						classBuffer = getChild(Expr, 0)->u.lvar->coeur->_type;
-						printf("%s(%s)\n",getChild(Expr, 0)->u.lvar->name,classBuffer->name);
+						objectBuffer = getChild(Expr, 0)->u.lvar->coeur->_obj;
+						
+						if(classBuffer != NIL(t_class)) printf("%s(%s)\n",getChild(Expr, 0)->u.lvar->name,classBuffer->name);
+						else printf("%s(%s)\n",getChild(Expr, 0)->u.lvar->name,objectBuffer->name);
+						
 					}else if(getChild(Expr, 0)->op == E_SELECT){
 						classBuffer = getChild(getChild(Expr, 0), 1)->u.lvar->coeur->_type;
 						printf("%s(%s)\n",getChild(getChild(Expr, 0), 1)->u.lvar->name,classBuffer->name);
@@ -639,7 +649,7 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList)
 						printf("%d(Integer)\n",getChild(Expr, 0)->u.val);
 					}
 
-					if(classBuffer == NIL(t_class)){
+					if(classBuffer == NIL(t_class) && objectBuffer == NIL(t_object)){
 						setError(CLASS_NOT_FOUND);
 						toReturn = FALSE;
 					}
@@ -1256,6 +1266,8 @@ VarDeclP InitialisationSuperThisResultO(t_method* method, t_object* object, VarD
 	if(result != NIL(VarDecl)){
 		this->next = result;
 		result->next = param;
+	}else{
+		this->next = param;
 	}
 	
 	return this;
@@ -1264,7 +1276,9 @@ VarDeclP InitialisationSuperThisResultO(t_method* method, t_object* object, VarD
 void afficheListVarDeclP(VarDeclP liste){
 	printf("Variables\n");
 	while(liste != NIL(VarDecl)){
-		printf("%s(%s)..",liste->name,liste->coeur->_type->name);
+		if(liste->coeur->_type != NIL(t_class)) printf("%s(%s)..",liste->name,liste->coeur->_type->name);
+		else printf("%s(%s)..",liste->name,liste->coeur->_obj->name);
+
 		liste = liste->next;
 	}
 	printf("\n");
