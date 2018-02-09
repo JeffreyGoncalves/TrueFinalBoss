@@ -72,8 +72,8 @@ class Point(var x: Integer, var y: Integer, var name: String)
     is
     result := 0;
     if b1 then { return; } else { }
-       b2 := p.y - this.y;
-       result := b2 = 0;
+    b2 := p.y - this.y;
+    result := b2 = 0;
   }
 }
 

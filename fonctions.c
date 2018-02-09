@@ -396,6 +396,9 @@ void compile(TreeP listClassObject, TreeP core){
 	
 	/** VERIFICATION CONTEXTUELLE */
 	printf("********	Debut de vérification contextuelle	********\n");
+	printf("********	Mise en place des liens SuperClass			********\n");
+	if(!verificationSuperClass(environnement))
+			abort();
 	printf("********			Portée			********\n");
 	/* Verification de portée */
 	verifPorteeProg(core, environnement);

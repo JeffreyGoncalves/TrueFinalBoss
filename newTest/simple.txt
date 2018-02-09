@@ -1,7 +1,16 @@
+class Point1()
+      extends PointColore() is {}
+class PointColore()
+      extends Point1() is {}
+
 class Point(var coul: Integer, coul1: Integer) {
-	( "= (" & this.x.toString() & ", " & this.x.toString() & ")" ).println();
+	/*( "= (" & this.x.toString() & ", " & this.x.toString() & ")" ).println();*/
+	
+	this := new Point(this.x, this.y, this.name & "'");
   } is {
   var x: Integer;
+  var y: Integer;
+  var name: Integer;
 }
 { 
   var p1: Point := new Point(1, 5);

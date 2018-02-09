@@ -29,7 +29,7 @@ int verificationTypageMethodeO(t_method* method, list_ClassObjP env);
 t_class* getReturnType(TreeP tree, list_ClassObjP env);
 
 bool verificationParametres(TreeP block);
-bool verificationBoucleHeritage(list_ClassObjP env, t_class* class);
+bool verificationBoucleHeritage(t_class* class);
 bool verificationNomClasse(list_ClassObjP env, char* name);
 bool verificationNomMethod(t_method* env, char* name);
 bool verificationNomVarDecl(VarDeclP env, char* name);
@@ -53,5 +53,7 @@ VarDeclP InitialisationSuperThisResultO(t_method* method, t_object* object, VarD
 
 void afficheListVarDeclP(VarDeclP liste);
 
-t_class* getReturn(t_class* class, char* nom_methode);
+t_class* getReturn(t_class* class, char* nom_methode, list_ClassObjP env);
+
+bool verificationSuperClass(list_ClassObjP classObjList);
 #endif
