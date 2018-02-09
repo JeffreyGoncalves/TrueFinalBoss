@@ -265,4 +265,55 @@ void InitTV(list_ClassObjP env, FILE* pFile){
 	}
 	fprintf(pFile, "-- Debut main\n");
 	fprintf(pFile, "\t\tJUMP %s\n","main");
+	free(label);
+}
+
+void CorpsMethod(list_ClassObjP env, FILE* pFile){
+
+	char* label = malloc(3*sizeof(char));
+	label[0] = 'm';
+	int i = 0;
+	fprintf(pFile, "\t\tJUMP %s\n","init");
+	fprintf(pFile, "-- Corps des methodes\n");
+	while(env->listClass->next != NIL(t_class)){
+		while(env->listClass->methods->next != NIL(t_method)){
+
+			sprintf(label+1,"%d\n",i+1);
+			fprintf(pFile, "%s :\t",label);
+			fprintf(pFile, "PUSHS %s\n",label);
+			fprintf(pFile, "\t\tWRITES\n");
+			fprintf(pFile, "\t\tRETURN\n");
+			i++;
+			env->listClass->methods = env->listClass->methods->next;
+		}
+		env->listClass = env->listClass->next;
+	}
+	free(label);
+}
+
+void CallMethod(list_ClassObjP env, FILE* pFile){
+
+	char* label = malloc(6*sizeof(char));
+	sprintf(label,"%s","call");
+	int i = 0;
+	fprintf(pFile, "-- Appel des methodes\n");
+	while(env->listClass->next != NIL(t_class)){
+		while(env->listClass->methods->next != NIL(t_method)){
+
+			sprintf(label+5,"%d\n",i+1);
+			fprintf(pFile, "%s :\t",label);
+			fprintf(pFile, "PUSHL %d\n",-1);
+			fprintf(pFile, "\t\tDUPN %d\n",1);
+			fprintf(pFile, "\t\tLOAD %d\n",0);
+			fprintf(pFile, "\t\tLOAD %d\n",0);
+			fprintf(pFile, "\t\tCALL\n");
+			fprintf(pFile, "\t\tRETRUN\n");
+			
+			i++;
+			env->listClass->methods = env->listClass->methods->next;
+		}
+		env->listClass = env->listClass->next;
+	}
+	free(label);
+
 }

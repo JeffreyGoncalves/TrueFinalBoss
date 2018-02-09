@@ -1265,7 +1265,7 @@ bool verificationNomClasse(list_ClassObjP env, char* name){
 	while(temp2 != NIL(t_object)){
 		if(strcmp(temp2->name,name) == 0){
 			if(DejaVu){
-				printf("%s : Nom classe deja existant\n", name);
+				printf("%s : Nom objet deja existant\n", name);
 				return FALSE;
 			}else{
 				DejaVu = 1;
