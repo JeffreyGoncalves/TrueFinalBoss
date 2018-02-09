@@ -43,11 +43,6 @@ void verifPorteeProg(TreeP tree, list_ClassObjP classObjList)
 	}
 }
 
-bool verifPorteeMeth(TreeP tree, t_class *class)
-{
-	return FALSE;
-}
-
 bool verifPorteeInst(TreeP inst, VarDeclP listDecl, list_ClassObjP classObjList)
 {
 	bool toReturn = TRUE;
@@ -1285,7 +1280,27 @@ bool verificationNomClasse(list_ClassObjP env, char* name){
 bool verificationNomVarDecl(VarDeclP env, char* name){
 	
 	int DejaVu = 0;
+	/* On verifie que l'on ne donne pas a sa decl les noms
+	* this, super ou result qui sont reserves */
+	if(strcmp(name, "this") == 0)
+	{
+		printf("Interdiction d'utiliser le nom this (reserve)\n");
+		return FALSE;
+	}
+	else if(strcmp(name, "super") == 0)
+	{
+		printf("Interdiction d'utiliser le nom super (reserve)\n");
+		return FALSE;
+	}
+	else if(strcmp(name, "result") == 0)
+	{
+		printf("Interdiction d'utiliser le nom result (reserve)\n");
+		return FALSE;
+	}
+	
 	while(env != NIL(VarDecl)){
+		
+		
 		if(strcmp(env->name,name) == 0){
 			if(DejaVu){
 				printf("%s : Nom attribut deja existant\n", name);
