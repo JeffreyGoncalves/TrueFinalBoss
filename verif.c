@@ -29,11 +29,14 @@ void verifPorteeProg(TreeP tree, list_ClassObjP classObjList)
 		  
 		/* Verification partie classe/objet puis
 		 * Verification du bloc principal (portee) */
-		bool isCorrect = verifPorteeClassObj(classObjList)
-		  /*&& verifPorteeBloc(tree, NULL, classObjList)*/;
+		bool isCorrect = verifPorteeClassObj(classObjList);
 		 
-		printf("[[[[[[[[[[[[[[[[[[[L'analyse de portée est donc %d]]]]]]]]]]]]]]]]]]]\n",isCorrect);
+		printf("[[[[[[[[[[[[[[[[[[[L'analyse de portée de l'environement est donc %d]]]]]]]]]]]]]]]]]]]\n",isCorrect);
 		
+		isCorrect = isCorrect && verifPorteeBloc(tree, NULL, classObjList);
+		
+		printf("[[[[[[[[[[[[[[[[[[[L'analyse de portée du corps est donc %d]]]]]]]]]]]]]]]]]]]\n",isCorrect);
+
 		/*A DISCUTER */ 
 		if(!isCorrect)
 			abort();
@@ -49,7 +52,7 @@ bool verifPorteeInst(TreeP inst, VarDeclP listDecl, list_ClassObjP classObjList)
 {
 	bool toReturn = TRUE;
 	/*afficheListVarDeclP(listDecl);*/
-	printf("Instruction # ");
+	printf("\nInstruction # ");
 		/* Bloc */
 		if(inst->op == I_BLOC) toReturn = verifPorteeBloc(inst, listDecl, classObjList);
 			
@@ -439,6 +442,8 @@ bool verifPorteeBloc(TreeP tree, VarDeclP listDecl, list_ClassObjP classObjList)
 		}
 		/*****************************************************************/
 		
+		afficheListVarDeclP(listDecl);
+		
 		/*** Verification des instructions (portee) ***/
 		if(listInst != NULL)
 		{
@@ -566,7 +571,11 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList)
 							break;
 							
 						case E_CALL_METHOD:
-							classBuffer = getReturn(getChild(getChild(Expr, 0), 1)->u.lvar->coeur->_type, getChild(getChild(Expr, 0), 1)->u.lvar->name, classObjList);
+							if(getChild(getChild(Expr, 0), 1)->u.lvar->coeur->_type != NIL(t_class)){
+								classBuffer = getReturnC(getChild(getChild(Expr, 0), 1)->u.lvar->coeur->_type, getChild(getChild(Expr, 0), 1)->u.lvar->name, classObjList);
+							}else{
+								classBuffer = getReturnO(getChild(getChild(Expr, 0), 1)->u.lvar->coeur->_obj, getChild(getChild(Expr, 0), 1)->u.lvar->name, classObjList);
+							}
 							printf("%s(%s)\n",getChild(getChild(Expr, 0), 1)->u.lvar->name,classBuffer->name);
 							break;
 						
@@ -656,7 +665,7 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList)
 				/* On cherche le ID_C, s'il existe ou non.*/
 				if(getChild(Expr, 0)->op == _ID && getChild(Expr, 0)->u.lvar->name[0] <= 90){
 					objectBuffer = FindObject(classObjList->listObj, getChild(Expr, 0)->u.lvar->name);
-					
+					printf("OBJECT\n");
 					if(objectBuffer == NIL(t_object)){
 						setError(CLASS_NOT_FOUND);
 						toReturn = FALSE;
@@ -684,7 +693,11 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList)
 							break;
 							
 						case E_CALL_METHOD:
-							classBuffer = getReturn(getChild(getChild(Expr, 0), 1)->u.lvar->coeur->_type, getChild(getChild(Expr, 0), 1)->u.lvar->name, classObjList);
+							if(getChild(getChild(Expr, 0), 1)->u.lvar->coeur->_type != NIL(t_class)){
+								classBuffer = getReturnC(getChild(getChild(Expr, 0), 1)->u.lvar->coeur->_type, getChild(getChild(Expr, 0), 1)->u.lvar->name, classObjList);
+							}else{
+								classBuffer = getReturnO(getChild(getChild(Expr, 0), 1)->u.lvar->coeur->_obj, getChild(getChild(Expr, 0), 1)->u.lvar->name, classObjList);
+							}
 							printf("%s(%s)\n",getChild(getChild(Expr, 0), 1)->u.lvar->name,classBuffer->name);
 							break;
 						
@@ -1386,8 +1399,17 @@ void afficheListVarDeclP(VarDeclP liste){
 	printf("\n");
 }
 
-t_class* getReturn(t_class* class, char* nom_methode, list_ClassObjP env){
+t_class* getReturnC(t_class* class, char* nom_methode, list_ClassObjP env){
 	t_method* i = class->methods;
+	while(i != NIL(t_method)){
+		if(!strcmp(i->name,nom_methode)) return FindClass(env->listClass, i->returnType->name);
+		i = i->next;
+	}
+	return NIL(t_class); /* normalement n'arrive jamais.*/
+}
+
+t_class* getReturnO(t_object* object, char* nom_methode, list_ClassObjP env){
+	t_method* i = object->methods;
 	while(i != NIL(t_method)){
 		if(!strcmp(i->name,nom_methode)) return FindClass(env->listClass, i->returnType->name);
 		i = i->next;

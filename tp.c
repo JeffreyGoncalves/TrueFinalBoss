@@ -104,6 +104,9 @@ void setError(int code) {
   else if(code == CLASS_NOT_FOUND){
 	printf("L'une des classes utilisee a cette ligne n'existe pas : ligne %d\n",yylineno);
   }
+  else{
+	  	printf("Il y a une erreur. : ligne %d\n",yylineno);
+	}
 }
 
 

@@ -53,7 +53,8 @@ VarDeclP InitialisationSuperThisResultO(t_method* method, t_object* object, VarD
 
 void afficheListVarDeclP(VarDeclP liste);
 
-t_class* getReturn(t_class* class, char* nom_methode, list_ClassObjP env);
+t_class* getReturnC(t_class* class, char* nom_methode, list_ClassObjP env);
+t_class* getReturnO(t_object* object, char* nom_methode, list_ClassObjP env);
 
 bool verificationSuperClass(list_ClassObjP classObjList);
 #endif
