@@ -377,6 +377,7 @@ void printOP(short op)
 			break;
 		case DECL_METH_1 : 
 			printf("DECL_METH_1");
+			break;
 		case DECL_METH_2 : 
 			printf("DECL_METH_2");
 			break;

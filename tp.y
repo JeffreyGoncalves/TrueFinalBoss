@@ -212,7 +212,7 @@ Expr : Expr ADD Expr		{ $$ = makeTree(SUM, 2, $1, $3);}
 | ADD CSTE %prec UNAIRE		{ TreeP cste = makeLeafInt(CST, $2);
 							  $$ = makeTree(SUM, 1, cste);	}
 | SUB CSTE %prec UNAIRE		{ TreeP cste = makeLeafInt(CST, $2);
-							  $$ = makeTree(SUM, 1, cste);	}
+							  $$ = makeTree(MIN, 1, cste);	}
 | '(' ExprRelop ')'	 		{ $$ = $2;}
 ;
 
