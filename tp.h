@@ -192,7 +192,7 @@ typedef union
 
 #define YYSTYPE YYSTYPE
 
-/* DECLARATION OF DOOM */
+
 TreeP makeNode(int nbChildren, short op);
 TreeP makeTree(short op, int nbChildren, ...);
 void setChild(TreeP tree, int rank, TreeP arg);

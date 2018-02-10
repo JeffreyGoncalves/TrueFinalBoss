@@ -242,78 +242,112 @@ int getOffsetAttr(VarDeclP decl, char* nom) {
 
 void InitTV(list_ClassObjP env, FILE* pFile){
 
-	char* label = malloc(3*sizeof(char));
-	label[0] = 'm';
-	int i = 0;
-	fprintf(pFile, "-- Initilisation des tables virtuelles\n");
-	fprintf(pFile, "init :");
-	while(env->listClass->next != NIL(t_class)){
-		fprintf(pFile, "\tALLOC %d\n",tailleAlloc(env->listClass->parametres));
-		fprintf(pFile, "\t\tDUPN %d\n",1);
-		while(env->listClass->methods->next != NIL(t_method)){
-			sprintf(label+1,"%d",i+1);
-			fprintf(pFile, "\t\tPUSHA %s\n",label);
-			fprintf(pFile, "\t\tSTORE %d\n",i);
-			if(env->listClass->methods->next != NIL(t_method)){
-				fprintf(pFile, "\t\tDUPN %d\n",1);
+	if(env != NIL(list_ClassObj))
+	{
+		char* label = malloc(10*sizeof(char));
+		int i = 0;
+		fprintf(pFile, "-- Initilisation des tables virtuelles\n");
+		fprintf(pFile, "init :");
+		while(env->listClass->next != NIL(t_class)){
+
+			fprintf(pFile, "\tALLOC %d\n",tailleAlloc(env->listClass->parametres));
+			fprintf(pFile, "\t\tDUPN %d\n",1);
+
+			while(env->listClass->methods->next != NIL(t_method)){
+
+				sprintf(label,"%s",env->listClass->methods->name);
+
+				fprintf(pFile, "\t\tPUSHA %s\n",label);
+				fprintf(pFile, "\t\tSTORE %d\n",i);
+
+				if(env->listClass->methods->next != NIL(t_method))
+				{
+					fprintf(pFile, "\t\tDUPN %d\n",1);
+				}
+
+				i++;
+				env->listClass->methods = env->listClass->methods->next;
 			}
-			i++;
-			env->listClass->methods = env->listClass->methods->next;
+
+			i=0;
+			env->listClass = env->listClass->next;
 		}
-		i=0;
-		env->listClass = env->listClass->next;
-	}
-	fprintf(pFile, "-- Debut main\n");
-	fprintf(pFile, "\t\tJUMP %s\n","main");
-	free(label);
+
+		fprintf(pFile, "-- Debut main\n");
+		fprintf(pFile, "\t\tJUMP %s\n","main");
+		free(label);
+	}		
 }
 
-void CorpsMethod(list_ClassObjP env, FILE* pFile){
+void InitMethod(list_ClassObjP env, FILE* pFile){
 
-	char* label = malloc(3*sizeof(char));
-	label[0] = 'm';
-	int i = 0;
-	fprintf(pFile, "\t\tJUMP %s\n","init");
-	fprintf(pFile, "-- Corps des methodes\n");
-	while(env->listClass->next != NIL(t_class)){
-		while(env->listClass->methods->next != NIL(t_method)){
+	if (env != NIL(list_ClassObj))
+	{
+		char* label = malloc(10*sizeof(char));
+		int i = 0;
+		fprintf(pFile, "\t\tJUMP %s\n","init");
+		fprintf(pFile, "-- Corps des methodes\n");
+		while(env->listClass->next != NIL(t_class)){
 
-			sprintf(label+1,"%d\n",i+1);
-			fprintf(pFile, "%s :\t",label);
-			fprintf(pFile, "PUSHS %s\n",label);
-			fprintf(pFile, "\t\tWRITES\n");
-			fprintf(pFile, "\t\tRETURN\n");
-			i++;
-			env->listClass->methods = env->listClass->methods->next;
+			while(env->listClass->methods->next != NIL(t_method)){
+
+				if(env->listClass->methods->isRedef)
+				{
+					sprintf(label,"%c",'R');
+					sprintf(label+1,"%d",i+1);
+					sprintf(label+2,"%s",env->listClass->methods->name);
+					i++;
+				}
+				else
+				{
+					sprintf(label,"%s",env->listClass->methods->name);
+				}
+				fprintf(pFile, "%s :\t",label);
+				fprintf(pFile, "PUSHS %s\n",env->listClass->methods->name);
+				fprintf(pFile, "\t\tWRITES\n");
+				fprintf(pFile, "\t\tRETURN\n");
+			
+				env->listClass->methods = env->listClass->methods->next;
+			}
+
+			env->listClass = env->listClass->next;
 		}
-		env->listClass = env->listClass->next;
+
+		free(label);	
 	}
-	free(label);
 }
 
 void CallMethod(list_ClassObjP env, FILE* pFile){
 
-	char* label = malloc(6*sizeof(char));
-	sprintf(label,"%s","call");
-	int i = 0;
-	fprintf(pFile, "-- Appel des methodes\n");
-	while(env->listClass->next != NIL(t_class)){
-		while(env->listClass->methods->next != NIL(t_method)){
+	if(env != NIL(list_ClassObj))
+	{
+		char* label = malloc(6*sizeof(char));
+		sprintf(label,"%s","call");
+		int i = 0;
+		fprintf(pFile, "-- Appel des methodes\n");
+		while(env->listClass->next != NIL(t_class)){
 
-			sprintf(label+5,"%d\n",i+1);
-			fprintf(pFile, "%s :\t",label);
-			fprintf(pFile, "PUSHL %d\n",-1);
-			fprintf(pFile, "\t\tDUPN %d\n",1);
-			fprintf(pFile, "\t\tLOAD %d\n",0);
-			fprintf(pFile, "\t\tLOAD %d\n",0);
-			fprintf(pFile, "\t\tCALL\n");
-			fprintf(pFile, "\t\tRETRUN\n");
-			
-			i++;
-			env->listClass->methods = env->listClass->methods->next;
+			while(env->listClass->methods->next != NIL(t_method)){
+
+				if(!env->listClass->methods->isRedef)
+				{
+					sprintf(label+5,"%d\n",i+1);
+					fprintf(pFile, "%s :\t",label);
+					fprintf(pFile, "PUSHL %d\n",-1);
+					fprintf(pFile, "\t\tDUPN %d\n",1);
+					fprintf(pFile, "\t\tLOAD %d\n",0);
+					fprintf(pFile, "\t\tLOAD %d\n",i);
+					fprintf(pFile, "\t\tCALL\n");
+					fprintf(pFile, "\t\tRETRUN\n");
+					
+					i++;
+				}
+				env->listClass->methods = env->listClass->methods->next;
+			}
+
+			env->listClass = env->listClass->next;
 		}
-		env->listClass = env->listClass->next;
-	}
-	free(label);
 
+		free(label);
+	}
 }
