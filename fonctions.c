@@ -405,8 +405,8 @@ void compile(TreeP listClassObject, TreeP core){
 	verifPorteeProg(core, environnement);
 	
 	printf("\n\n********			Typage			********\n");
-	/*if(!verificationTypage(environnement, core))
-		abort();*/
+	if(!verificationTypage(environnement, core))
+		abort();
 		
 	printf("\n\n********			Paramètre			********\n");
 

@@ -1,4 +1,5 @@
 #include "verif.h"
+#include "tp.h"
 
 extern char *strdup(const char*);
 
@@ -854,7 +855,14 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 	t_method* m;
 	result.succes = 1;
 	
-	if(noeud == NIL(Tree)) return result;
+	if(noeud == NIL(Tree)){
+		printf("NIL(Tree) ~ \n");
+		result.type.class = NIL(t_class);
+		return result;
+	}
+	
+	/*printOP(noeud->op);
+	printf(" # ");*/
 	
 	for(i=0 ; i<noeud->nbChildren ; i++){
 		veriFils[i] = verifcationTypageNoeud(getChild(noeud, i), env);
@@ -868,7 +876,6 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 		
 		case I_BLOC:
 			return result;
-			/*return verifTypageSuccesFils(noeud->nbChildren, noeud, env);*/
 		
 		case DECL:
 			return verifcationTypageListVarDecl(noeud->u.lvar, env);
@@ -878,7 +885,6 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 			
 		case LIST_INST:
 			return result;
-			/*return verifTypageSuccesFils(noeud->nbChildren, noeud, env);*/
 
 		case I_RETURN: /* PAS FINI ! */
 			printf("return\n");
@@ -887,7 +893,6 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 		case I_EXPRRELOP:
 			printf("relop\n");
 			return result;
-			/*return verifTypageSuccesFils(noeud->nbChildren, noeud, env);*/
 			
 		case I_ITE:
 			if(0 == strcmp(veriFils[0].type.class->name,"Integer")){
@@ -920,7 +925,8 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 		
 		case MULT:
 			printf("*\n");
-			if(0 == strcmp(veriFils[0].type.class->name,"Interger") && 0 == strcmp(veriFils[1].type.class->name,"Integer")){
+			printf("%s et %s\n",veriFils[0].type.class->name, veriFils[1].type.class->name);
+			if(0 == strcmp(veriFils[0].type.class->name,"Integer") && 0 == strcmp(veriFils[1].type.class->name,"Integer")){
 				result.type.class = veriFils[0].type.class;
 				return result;
 			}
@@ -928,7 +934,7 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 		
 		case DIVI:
 			printf("/\n");
-			if(0 == strcmp(veriFils[0].type.class->name,"Interger") && 0 == strcmp(veriFils[1].type.class->name,"Integer")){
+			if(0 == strcmp(veriFils[0].type.class->name,"Integer") && 0 == strcmp(veriFils[1].type.class->name,"Integer")){
 				result.type.class = veriFils[0].type.class;
 				return result;
 			}
@@ -969,7 +975,8 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 			break;
 			
 		case CAST: /* TODO */
-			printf("cast\n");
+			printf("cast %d\n", AEstSuperDeB(getChild(noeud, 0)->u.str, veriFils[1].type.class->name, env));
+			
 			if(AEstSuperDeB(getChild(noeud, 0)->u.str, veriFils[1].type.class->name, env)){
 				result.type.class = veriFils[0].type.class;
 				return result;
@@ -985,11 +992,8 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 		case E_CALL_METHOD: /*  */
 			printf("call_method\n");
 			m = veriFils[1].type.class->methods;
-			printf("JE %s         \n",veriFils[1].type.class->name);
 			while(m != NIL(t_method)){
-				printf("JE %s         \n",m->name);
 				if(0 == strcmp(m->name, getChild(noeud, 1)->u.lvar->name)){
-					printf("JE PASSE ICI\n");
 					result.type.class = m->returnType;
 				}
 				m = m->next;
@@ -1008,11 +1012,13 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 			break;
 		
 		default:
-			printf("ERRRRRRRRRRRRRROOOORRRRRRR	%d\n",noeud->op);
+			printf("etiquette NON RECONNUE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+			setError(CONTEXT_ERROR);
 			break;
 			
 	}
 	
+	printOP(noeud->op);
 	result.succes = 0;
 	return result;
 }
@@ -1038,11 +1044,22 @@ Vtypage verifcationTypageListVarDecl(VarDeclP liste, list_ClassObjP env){
 		
 		Vtypage expr = verifcationTypageNoeud(liste->coeur->value, env);
 		
-		if(!(expr.succes) || 0 != strcmp(expr.type.class->name, liste->coeur->_type->name)){
+		printf("	%s : ", liste->name);
+		
+		if(!(expr.succes)){
 			result.succes = 0;
+			printf("0\n");
 			return result;
+		}else if(expr.type.class != NIL(t_class)){
+			/*printf("\n%s VS %s = %d\n",expr.type.class->name, liste->coeur->_type->name, strcmp(expr.type.class->name, liste->coeur->_type->name));*/
+			if(strcmp(expr.type.class->name, liste->coeur->_type->name)){
+				result.succes = 0;
+				printf("0\n");
+				return result;
+			}
 		}
-			
+		
+		printf("1\n");
 		liste = liste->next;
 	}
 	result.succes = 1;
@@ -1062,17 +1079,41 @@ int AEstSuperDeB(char* A, char* B,list_ClassObjP env){
 	return 0;
 }
 
-int verificationTypageMethode(t_class* C, t_method* method, list_ClassObjP env){
+bool verificationTypageMethode(t_class* C, t_method* method, list_ClassObjP env){
+	bool toReturn;
+	
 	while(method != NIL(t_method)){
-		if (!(verifcationTypageListVarDecl(method->parametres, env).succes)) return 0;
-		if (!(verifcationTypageNoeud(method->bloc, env).succes)) return 0;
+		printf("\n\n	Typage de [%s]\n", method->name);
+		
+		toReturn = (verifcationTypageListVarDecl(method->parametres, env).succes);
+		printf("		Paramètres : %d\n", toReturn);
+		
+		toReturn = toReturn && (verifcationTypageNoeud(method->bloc, env).succes);
+		printf("		Corps : %d\n", toReturn);
 		
 		/* TYPE DE RETOUR OK ? */
-		Vtypage okko;
-		okko.type.class = getReturnType(method->bloc, env);
-		if(0 != strcmp(method->returnType->name, okko.type.class->name)) return 0;
+		t_class* classBuffer;
+		if(method->bloc->op != I_BLOC){
+			/** Cas 1 : la methode est de type 1 (sans bloc)*/
+			classBuffer = verifcationTypageNoeud(method->bloc, env).type.class;
+			if(classBuffer == NIL(t_class)) classBuffer = FindClass(env->listClass, "Void");
+		}else{
+			/** Cas 2 : la methode est de type 2 (avec bloc)*/
+			classBuffer = getReturnType(method->bloc, env);
+
+			if(!strcmp(classBuffer->name, "Void") && strcmp(method->returnType->name, "Void")){
+				/*printf("[%s] : %d\n", method->name, isDeclared(method->bloc, "result"));
+				*/if(isDeclared(method->bloc, "result")) classBuffer = method->returnType;
+			}
+		}
+		
+		printf("		On attend [%s], on obtient [%s]\n", method->returnType->name, classBuffer->name);
+		toReturn = toReturn && !strcmp(method->returnType->name, classBuffer->name);
+		printf("		Type de retour : %d\n", toReturn);
+
 		
 		/*****ON VERIFIE SI LA METHODE EST BIEN REDEFINIE*****/
+		printf("ELLE EST REDEF ? %d\n", method->isRedef);
 		if(method->isRedef){
 			
 			t_class* Ci = C->superClass;
@@ -1101,26 +1142,33 @@ int verificationTypageMethode(t_class* C, t_method* method, list_ClassObjP env){
 				}
 				Ci = Ci->superClass;
 			}
-			if(!valide) return 0;
+			toReturn = valide && toReturn;
 		}
-		
+		printf("		Redefinition : %d\n", toReturn);
+		method = method->next;
 	}
-	return 1;
+	
+	return toReturn;
 }
 
-int verificationTypageMethodeO(t_method* method, list_ClassObjP env){
+bool verificationTypageMethodeO(t_method* method, list_ClassObjP env){
+	bool toReturn;
+	
 	while(method != NIL(t_method)){
-		if (!(verifcationTypageListVarDecl(method->parametres, env).succes)) return 0;
-		if (!(verifcationTypageNoeud(method->bloc, env).succes)) return 0;
+		toReturn = (verifcationTypageListVarDecl(method->parametres, env).succes);
+		
+		toReturn = toReturn && (verifcationTypageNoeud(method->bloc, env).succes);
 		
 		/* TYPE DE RETOUR OK ? */
-		Vtypage okko;
-		okko.type.class = getReturnType(method->bloc, env);
-		if(0 != strcmp(method->returnType->name, okko.type.class->name)) return 0;
+		t_class* classBuffer = getReturnType(method->bloc, env);
+		toReturn = toReturn && strcmp(method->returnType->name, classBuffer->name);
 
-		if(method->isRedef) return 0;
+		if(method->isRedef){
+			/*setError();*/
+			toReturn = FALSE;
+		}
 	}
-	return 1;
+	return toReturn;
 }
 
 bool verificationTypageEnvironnement(list_ClassObjP env){
@@ -1131,19 +1179,24 @@ bool verificationTypageEnvironnement(list_ClassObjP env){
 	
 	while(i != NIL(t_class)){
 		printf("|||||||%s:\n",i->name);
-		
-		toReturn = !(verifcationTypageListVarDecl(i->parametres, env).succes);
-		printf("%d Parametres\n",toReturn);
-		
-		toReturn = toReturn && !(verifcationTypageListVarDecl(i->attributes, env).succes);
-		printf("%d Attributs\n",toReturn);
-		
-		toReturn = toReturn && !(verificationTypageMethode(i, i->methods, env));
-		printf("%d Methodes\n",toReturn);
-		
-		toReturn = toReturn && !(verificationTypageMethode(i, i->constructor, env));
-		printf("%d Constructor\n",toReturn);
-		
+		if(strcmp(i->name,"Void") && strcmp(i->name,"String") && strcmp(i->name,"Integer")){
+			toReturn = (verifcationTypageListVarDecl(i->parametres, env).succes);
+			printf("%d Parametres\n",toReturn);
+			
+			toReturn = toReturn && (verifcationTypageListVarDecl(i->attributes, env).succes);
+			printf("%d Attributs\n",toReturn);
+			
+			toReturn = toReturn && (verificationTypageMethode(i, i->methods, env));
+			printf("%d Methodes\n",toReturn);
+			
+			toReturn = toReturn && (verificationTypageMethode(i, i->constructor, env));
+			printf("%d Constructor\n",toReturn);
+		}else{
+			printf("%d Parametres\n",toReturn);
+			printf("%d Attributs\n",toReturn);
+			printf("%d Methodes\n",toReturn);
+			printf("%d Constructor\n",toReturn);
+		}
 		i = i->next;
 		printf("________________________________________\n");
 	}
@@ -1161,15 +1214,15 @@ bool verificationTypageEnvironnement(list_ClassObjP env){
 		printf("________________________________________\n");
 	}
 	
-	return 1;
+	return toReturn;
 }
 
 bool verificationTypage(list_ClassObjP env, TreeP core){
 	bool toReturn;
 	
-	printf("********			Portée environnement			********\n");
+	printf("********			Typage environnement			********\n");
 	toReturn = verificationTypageEnvironnement(env);
-	printf("[[[[[[[[[[[[[[[[[[[L'analyse de typage de l'environement est donc %d]]]]]]]]]]]]]]]]]]]\n",toReturn);
+	printf("[[[[[[[[[[[[[[[[[[[L'analyse de typage de l'environnement est donc %d]]]]]]]]]]]]]]]]]]]\n",toReturn);
 
 	
 	printf("********			Portée corps du programme			********\n");
@@ -1179,11 +1232,13 @@ bool verificationTypage(list_ClassObjP env, TreeP core){
 	return toReturn;
 }
 
-
 t_class* getReturnType(TreeP tree, list_ClassObjP env){
+
 	if(tree->op == I_RETURN){
+		printOP(tree->op);
 		return getChild(tree, 0)->u.lvar->coeur->_type;
 	}else if(tree->nbChildren != 0){
+		printOP(tree->op);
 		t_class* res = NIL(t_class);
 		
 		int i;
@@ -1202,6 +1257,7 @@ t_class* getReturnType(TreeP tree, list_ClassObjP env){
 		}
 		return res;
 	}else{
+		printOP(tree->op);
 		return FindClass(env->listClass, "Void");
 	}
 }
@@ -1532,4 +1588,34 @@ bool verificationSuperClass(list_ClassObjP classObjList){
 	
 	printf("[[[[[[[[[[[[[[[[[[[L'analyse de Super-Classe est donc %d]]]]]]]]]]]]]]]]]]]\n",toReturn);
 	return toReturn;	
+}
+
+bool isDeclared(TreeP tree, char* nameVar){
+	int i;
+	
+	switch(tree->op){
+		case I_BLOC:
+			return isDeclared(getChild(tree, 1), nameVar);
+		
+		case LIST_INST:		
+			for(i=0 ; tree->nbChildren ; i++){
+				if(isDeclared(getChild(tree, i), nameVar)) return TRUE;
+			}
+			break;
+			
+		case I_AFF:
+			if(getChild(tree, 0)->op == _ID){
+				if(!strcmp(getChild(tree, 0)->u.lvar->name,nameVar)) return TRUE;
+			}
+			break;
+			
+		case I_ITE:
+			return isDeclared(getChild(tree, 1), nameVar) && isDeclared(getChild(tree, 2), nameVar);
+			
+		default:
+			break;
+	}
+	
+	return FALSE;
+	
 }

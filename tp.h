@@ -206,5 +206,6 @@ VarDeclP makeVarDeclP(char *nom, char *type,TreeP sArbre, int i);
 void ajouteParam(TreeP list, VarDeclP p);
 TreeP getChild(TreeP tree, int rank);
 void affTree(TreeP tree, int stage);
+void printOP(short op);
 
 #endif

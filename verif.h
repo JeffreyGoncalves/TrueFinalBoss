@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "fonctions.h"
-
+#include "tp.h"
 
 typedef struct Vtypage{
 	union{
@@ -26,9 +26,10 @@ Vtypage verifcationTypageListVarDecl(VarDeclP liste, list_ClassObjP env);
 Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env);
 Vtypage verifTypageSuccesFils(short nbre, TreeP noeud, list_ClassObjP env);
 int AEstSuperDeB(char* A, char* B,list_ClassObjP env);
-int verificationTypageMethode(t_class* C, t_method* method, list_ClassObjP env);
-int verificationTypageMethodeO(t_method* method, list_ClassObjP env);
+bool verificationTypageMethode(t_class* C, t_method* method, list_ClassObjP env);
+bool verificationTypageMethodeO(t_method* method, list_ClassObjP env);
 t_class* getReturnType(TreeP tree, list_ClassObjP env);
+bool isDeclared(TreeP tree, char* nameVar);
 
 bool verificationParametres(TreeP block);
 bool verificationBoucleHeritage(t_class* class);
