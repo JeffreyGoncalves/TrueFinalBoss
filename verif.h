@@ -20,6 +20,8 @@ typedef struct Vtypage{
 	int succes;
 }Vtypage, *VtypageP;
 
+bool verificationTypage(list_ClassObjP env, TreeP core);
+bool verificationTypageEnvironnement(list_ClassObjP env);
 Vtypage verifcationTypageListVarDecl(VarDeclP liste, list_ClassObjP env);
 Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env);
 Vtypage verifTypageSuccesFils(short nbre, TreeP noeud, list_ClassObjP env);

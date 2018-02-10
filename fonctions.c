@@ -396,15 +396,20 @@ void compile(TreeP listClassObject, TreeP core){
 	
 	/** VERIFICATION CONTEXTUELLE */
 	printf("********	Debut de vérification contextuelle	********\n");
-	printf("********	Mise en place des liens SuperClass			********\n");
+	
+	printf("\n\n********	Mise en place des liens SuperClass			********\n");
 	if(!verificationSuperClass(environnement))
 			abort();
-	printf("********			Portée			********\n");
-	/* Verification de portée */
+			
+	printf("\n\n********			Portée			********\n");
 	verifPorteeProg(core, environnement);
-	/* Verification de typage */
-	/*int ok = verificationTypage(environnement, core);
-	printf("ok ? %d\n",ok);*/
+	
+	printf("\n\n********			Typage			********\n");
+	/*if(!verificationTypage(environnement, core))
+		abort();*/
+		
+	printf("\n\n********			Paramètre			********\n");
+
 }
 
 void creationClasseIntegerStringVoid(list_ClassObjP env){	

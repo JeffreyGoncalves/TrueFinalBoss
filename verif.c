@@ -192,13 +192,29 @@ bool verifPorteeObject(t_object* object, list_ClassObjP classObjList)
 bool verifPorteeListClass(list_ClassObjP classObjList)
 {
 	printf("********		Portée des classes		********\n");
+	/* Tout le bloc à partir d'ici */
 	bool toReturn = TRUE;
+	int nbreDeClasse = 0;
 	t_class* iterator = classObjList->listClass;
 	
-	while(iterator != NIL(t_class))
-	{
-		if(!verifPorteeClass(iterator, classObjList) && toReturn) toReturn = FALSE;
+	while(iterator != NIL(t_class)){
+		nbreDeClasse++;
 		iterator = iterator->next;
+	}
+	
+	nbreDeClasse--;
+	/* jusqu'à ici permet simplement de lire la liste de classe en sens inverse. Sinon nous rencontrons des problèmes
+	 * En effet, il y avait le risque que nous checkons une classe dépendante d'une autre. Or cette dernière n'a pas encore été initialisée
+	 * car la liste est inversée de base. */
+	
+	while(nbreDeClasse >= 0)
+	{
+		iterator = classObjList->listClass;
+		int i;
+		for(i=0 ; i<nbreDeClasse ; i++) iterator = iterator->next;
+				
+		if(!verifPorteeClass(iterator, classObjList) && toReturn) toReturn = FALSE;
+		nbreDeClasse--;
 	}
 	
 	return toReturn;
@@ -1107,32 +1123,62 @@ int verificationTypageMethodeO(t_method* method, list_ClassObjP env){
 	return 1;
 }
 
-int verificationTypageEnvironnement(list_ClassObjP env){
+bool verificationTypageEnvironnement(list_ClassObjP env){
+	
+	bool toReturn;
 	t_class* i = env->listClass;
 	t_object* j = env->listObj;
 	
 	while(i != NIL(t_class)){
-		if (!(verifcationTypageListVarDecl(i->parametres, env).succes)) return 0;
-		if (!(verifcationTypageListVarDecl(i->attributes, env).succes)) return 0;
-		if (!(verificationTypageMethode(i, i->methods, env))) return 0;
-		if (!(verificationTypageMethode(i, i->constructor, env))) return 0;
+		printf("|||||||%s:\n",i->name);
+		
+		toReturn = !(verifcationTypageListVarDecl(i->parametres, env).succes);
+		printf("%d Parametres\n",toReturn);
+		
+		toReturn = toReturn && !(verifcationTypageListVarDecl(i->attributes, env).succes);
+		printf("%d Attributs\n",toReturn);
+		
+		toReturn = toReturn && !(verificationTypageMethode(i, i->methods, env));
+		printf("%d Methodes\n",toReturn);
+		
+		toReturn = toReturn && !(verificationTypageMethode(i, i->constructor, env));
+		printf("%d Constructor\n",toReturn);
 		
 		i = i->next;
+		printf("________________________________________\n");
 	}
 	
 	while(j != NIL(t_object)){
-		if (!(verifcationTypageListVarDecl(j->attributes, env).succes)) return 0;
-		if (!(verificationTypageMethodeO(j->methods, env))) return 0;
+		printf("|||||||%s:\n",j->name);
+		
+		toReturn = toReturn && !(verifcationTypageListVarDecl(j->attributes, env).succes);
+		printf("%d Attributs\n",toReturn);
+		
+		toReturn = toReturn && (verificationTypageMethodeO(j->methods, env));
+		printf("%d Methods\n",toReturn);
 		
 		j = j->next;
+		printf("________________________________________\n");
 	}
 	
 	return 1;
 }
 
-int verificationTypage(list_ClassObjP env, TreeP core){
-	return (verifcationTypageNoeud(core, env).succes && verificationTypageEnvironnement(env));
+bool verificationTypage(list_ClassObjP env, TreeP core){
+	bool toReturn;
+	
+	printf("********			Portée environnement			********\n");
+	toReturn = verificationTypageEnvironnement(env);
+	printf("[[[[[[[[[[[[[[[[[[[L'analyse de typage de l'environement est donc %d]]]]]]]]]]]]]]]]]]]\n",toReturn);
+
+	
+	printf("********			Portée corps du programme			********\n");
+	toReturn = toReturn && verifcationTypageNoeud(core, env).succes;
+	printf("[[[[[[[[[[[[[[[[[[[L'analyse de typage du corps est donc %d]]]]]]]]]]]]]]]]]]]\n",toReturn);
+
+	return toReturn;
 }
+
 
 t_class* getReturnType(TreeP tree, list_ClassObjP env){
 	if(tree->op == I_RETURN){
@@ -1159,7 +1205,6 @@ t_class* getReturnType(TreeP tree, list_ClassObjP env){
 		return FindClass(env->listClass, "Void");
 	}
 }
-
 
 /*
 bool verificationParametres(TreeP block){
