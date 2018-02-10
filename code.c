@@ -255,7 +255,17 @@ void InitTV(list_ClassObjP env, FILE* pFile){
 
 			while(env->listClass->methods->next != NIL(t_method)){
 
-				sprintf(label,"%s",env->listClass->methods->name);
+				if(env->listClass->methods->isRedef)
+				{
+					sprintf(label,"%c",'R');
+					sprintf(label+1,"%d",i+1);
+					sprintf(label+2,"%s",env->listClass->methods->name);
+					i++;
+				}
+				else
+				{
+					sprintf(label,"%s",env->listClass->methods->name);
+				}
 
 				fprintf(pFile, "\t\tPUSHA %s\n",label);
 				fprintf(pFile, "\t\tSTORE %d\n",i);
@@ -264,12 +274,8 @@ void InitTV(list_ClassObjP env, FILE* pFile){
 				{
 					fprintf(pFile, "\t\tDUPN %d\n",1);
 				}
-
-				i++;
 				env->listClass->methods = env->listClass->methods->next;
 			}
-
-			i=0;
 			env->listClass = env->listClass->next;
 		}
 
