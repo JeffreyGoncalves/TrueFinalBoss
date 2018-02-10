@@ -1,0 +1,1946 @@
+Grammar
+
+    0 $accept: Prog $end
+
+    1 Prog: listClassObj block
+
+    2 listClassObj: listClassObj ClassObj
+    3             | %empty
+
+    4 ClassObj: declClass
+    5         | declObject
+
+    6 declClass: CLASS ID_C '(' ListParamClause ')' extendsClause constructorClause IS classObjBlock
+
+    7 declObject: OBJECT ID_C IS classObjBlock
+
+    8 constructorClause: block
+    9                  | %empty
+
+   10 ListParamClause: ListParam
+   11                | %empty
+
+   12 ListParam: Param ',' ListParam
+   13          | Param
+
+   14 Param: Var ID ':' ID_C Init
+
+   15 Var: VAR
+   16    | %empty
+
+   17 Init: AFF ExprRelop
+   18     | %empty
+
+   19 extendsClause: EXTENDS ID_C '(' ListArgClause ')'
+   20              | %empty
+
+   21 ListArgClause: ListArg
+   22              | %empty
+
+   23 ListArg: Arg ',' ListArg
+   24        | Arg
+
+   25 Arg: ExprRelop
+
+   26 classObjBlock: '{' ListVarDef '}'
+
+   27 ListVarDef: VarDef ListVarDef
+   28           | %empty
+
+   29 VarDef: declMethod
+   30       | Champ
+
+   31 declMethod: Override DEF ID '(' ListParamClause ')' ':' ID_C AFF ExprRelop
+   32           | Override DEF ID '(' ListParamClause ')' ClassClause IS block
+
+   33 Override: OVERRIDE
+   34         | %empty
+
+   35 ClassClause: ':' ID_C
+   36            | %empty
+
+   37 Champ: VAR ID ':' ID_C Init ';'
+
+   38 CallMethod: Object '.' ID '(' ListArgClause ')'
+   39           | '(' ExprRelop ')' '.' ID '(' ListArgClause ')'
+   40           | ID_C '.' ID '(' ListArgClause ')'
+
+   41 block: '{' ListInstClause '}'
+   42      | '{' ListChamp IS ListInst '}'
+
+   43 ListChamp: ListChamp Champ
+   44          | Champ
+
+   45 ListInstClause: ListInst
+   46               | %empty
+
+   47 ListInst: Inst ListInst
+   48         | Inst
+
+   49 Inst: ITE
+   50     | block
+   51     | RETURN ';'
+   52     | cible ';'
+   53     | ExprRelop ';'
+
+   54 ITE: IF ExprRelop THEN Inst ELSE Inst
+
+   55 cible: Object AFF ExprRelop
+
+   56 Selection: Object '.' ID
+   57          | '(' ExprRelop ')' '.' ID
+   58          | ID_C '.' ID
+
+   59 Object: Selection
+   60       | CallMethod
+   61       | Instanciation
+   62       | CSTE
+   63       | ID
+   64       | STR
+   65       | Cast
+
+   66 ExprRelop: Expr RELOP Expr
+   67          | Expr
+
+   68 Expr: Expr ADD Expr
+   69     | Expr SUB Expr
+   70     | Expr MUL Expr
+   71     | Expr DIV Expr
+   72     | Expr '&' Expr
+   73     | Object
+   74     | ADD CSTE
+   75     | SUB CSTE
+   76     | '(' ExprRelop ')'
+
+   77 Instanciation: NEWV ID_C '(' ListArgClause ')'
+
+   78 Cast: '(' ID_C Object ')'
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+'&' (38) 72
+'(' (40) 6 19 31 32 38 39 40 57 76 77 78
+')' (41) 6 19 31 32 38 39 40 57 76 77 78
+',' (44) 12 23
+'.' (46) 38 39 40 56 57 58
+':' (58) 14 31 35 37
+';' (59) 37 51 52 53
+'{' (123) 26 41 42
+'}' (125) 26 41 42
+error (256)
+IS (258) 6 7 32 42
+OBJECT (259) 7
+CLASS (260) 6
+VAR (261) 15 37
+EXTENDS (262) 19
+DEF (263) 31 32
+OVERRIDE (264) 33
+IF (265) 54
+THEN (266) 54
+ELSE (267) 54
+AFF (268) 17 31 55
+RETURN (269) 51
+NEWV (270) 77
+ADD (271) 68 74
+SUB (272) 69 75
+MUL (273) 70
+DIV (274) 71
+ID (275) 14 31 32 37 38 39 40 56 57 58 63
+STR (276) 64
+ID_C (277) 6 7 14 19 31 35 37 40 58 77 78
+CSTE (278) 62 74 75
+RELOP (279) 66
+UNAIRE (280)
+
+
+Nonterminals, with rules where they appear
+
+$accept (35)
+    on left: 0
+Prog (36)
+    on left: 1, on right: 0
+listClassObj (37)
+    on left: 2 3, on right: 1 2
+ClassObj (38)
+    on left: 4 5, on right: 2
+declClass (39)
+    on left: 6, on right: 4
+declObject (40)
+    on left: 7, on right: 5
+constructorClause (41)
+    on left: 8 9, on right: 6
+ListParamClause (42)
+    on left: 10 11, on right: 6 31 32
+ListParam (43)
+    on left: 12 13, on right: 10 12
+Param (44)
+    on left: 14, on right: 12 13
+Var (45)
+    on left: 15 16, on right: 14
+Init (46)
+    on left: 17 18, on right: 14 37
+extendsClause (47)
+    on left: 19 20, on right: 6
+ListArgClause (48)
+    on left: 21 22, on right: 19 38 39 40 77
+ListArg (49)
+    on left: 23 24, on right: 21 23
+Arg (50)
+    on left: 25, on right: 23 24
+classObjBlock (51)
+    on left: 26, on right: 6 7
+ListVarDef (52)
+    on left: 27 28, on right: 26 27
+VarDef (53)
+    on left: 29 30, on right: 27
+declMethod (54)
+    on left: 31 32, on right: 29
+Override (55)
+    on left: 33 34, on right: 31 32
+ClassClause (56)
+    on left: 35 36, on right: 32
+Champ (57)
+    on left: 37, on right: 30 43 44
+CallMethod (58)
+    on left: 38 39 40, on right: 60
+block (59)
+    on left: 41 42, on right: 1 8 32 50
+ListChamp (60)
+    on left: 43 44, on right: 42 43
+ListInstClause (61)
+    on left: 45 46, on right: 41
+ListInst (62)
+    on left: 47 48, on right: 42 45 47
+Inst (63)
+    on left: 49 50 51 52 53, on right: 47 48 54
+ITE (64)
+    on left: 54, on right: 49
+cible (65)
+    on left: 55, on right: 52
+Selection (66)
+    on left: 56 57 58, on right: 59
+Object (67)
+    on left: 59 60 61 62 63 64 65, on right: 38 55 56 73 78
+ExprRelop (68)
+    on left: 66 67, on right: 17 25 31 39 53 54 55 57 76
+Expr (69)
+    on left: 68 69 70 71 72 73 74 75 76, on right: 66 67 68 69 70 71
+    72
+Instanciation (70)
+    on left: 77, on right: 61
+Cast (71)
+    on left: 78, on right: 65
+
+
+State 0
+
+    0 $accept: . Prog $end
+
+    $default  reduce using rule 3 (listClassObj)
+
+    Prog          go to state 1
+    listClassObj  go to state 2
+
+
+State 1
+
+    0 $accept: Prog . $end
+
+    $end  shift, and go to state 3
+
+
+State 2
+
+    1 Prog: listClassObj . block
+    2 listClassObj: listClassObj . ClassObj
+
+    OBJECT  shift, and go to state 4
+    CLASS   shift, and go to state 5
+    '{'     shift, and go to state 6
+
+    ClassObj    go to state 7
+    declClass   go to state 8
+    declObject  go to state 9
+    block       go to state 10
+
+
+State 3
+
+    0 $accept: Prog $end .
+
+    $default  accept
+
+
+State 4
+
+    7 declObject: OBJECT . ID_C IS classObjBlock
+
+    ID_C  shift, and go to state 11
+
+
+State 5
+
+    6 declClass: CLASS . ID_C '(' ListParamClause ')' extendsClause constructorClause IS classObjBlock
+
+    ID_C  shift, and go to state 12
+
+
+State 6
+
+   41 block: '{' . ListInstClause '}'
+   42      | '{' . ListChamp IS ListInst '}'
+
+    VAR     shift, and go to state 13
+    IF      shift, and go to state 14
+    RETURN  shift, and go to state 15
+    NEWV    shift, and go to state 16
+    '('     shift, and go to state 17
+    '{'     shift, and go to state 6
+    ADD     shift, and go to state 18
+    SUB     shift, and go to state 19
+    ID      shift, and go to state 20
+    STR     shift, and go to state 21
+    ID_C    shift, and go to state 22
+    CSTE    shift, and go to state 23
+
+    $default  reduce using rule 46 (ListInstClause)
+
+    Champ           go to state 24
+    CallMethod      go to state 25
+    block           go to state 26
+    ListChamp       go to state 27
+    ListInstClause  go to state 28
+    ListInst        go to state 29
+    Inst            go to state 30
+    ITE             go to state 31
+    cible           go to state 32
+    Selection       go to state 33
+    Object          go to state 34
+    ExprRelop       go to state 35
+    Expr            go to state 36
+    Instanciation   go to state 37
+    Cast            go to state 38
+
+
+State 7
+
+    2 listClassObj: listClassObj ClassObj .
+
+    $default  reduce using rule 2 (listClassObj)
+
+
+State 8
+
+    4 ClassObj: declClass .
+
+    $default  reduce using rule 4 (ClassObj)
+
+
+State 9
+
+    5 ClassObj: declObject .
+
+    $default  reduce using rule 5 (ClassObj)
+
+
+State 10
+
+    1 Prog: listClassObj block .
+
+    $default  reduce using rule 1 (Prog)
+
+
+State 11
+
+    7 declObject: OBJECT ID_C . IS classObjBlock
+
+    IS  shift, and go to state 39
+
+
+State 12
+
+    6 declClass: CLASS ID_C . '(' ListParamClause ')' extendsClause constructorClause IS classObjBlock
+
+    '('  shift, and go to state 40
+
+
+State 13
+
+   37 Champ: VAR . ID ':' ID_C Init ';'
+
+    ID  shift, and go to state 41
+
+
+State 14
+
+   54 ITE: IF . ExprRelop THEN Inst ELSE Inst
+
+    NEWV  shift, and go to state 16
+    '('   shift, and go to state 17
+    ADD   shift, and go to state 18
+    SUB   shift, and go to state 19
+    ID    shift, and go to state 20
+    STR   shift, and go to state 21
+    ID_C  shift, and go to state 22
+    CSTE  shift, and go to state 23
+
+    CallMethod     go to state 25
+    Selection      go to state 33
+    Object         go to state 42
+    ExprRelop      go to state 43
+    Expr           go to state 36
+    Instanciation  go to state 37
+    Cast           go to state 38
+
+
+State 15
+
+   51 Inst: RETURN . ';'
+
+    ';'  shift, and go to state 44
+
+
+State 16
+
+   77 Instanciation: NEWV . ID_C '(' ListArgClause ')'
+
+    ID_C  shift, and go to state 45
+
+
+State 17
+
+   39 CallMethod: '(' . ExprRelop ')' '.' ID '(' ListArgClause ')'
+   57 Selection: '(' . ExprRelop ')' '.' ID
+   76 Expr: '(' . ExprRelop ')'
+   78 Cast: '(' . ID_C Object ')'
+
+    NEWV  shift, and go to state 16
+    '('   shift, and go to state 17
+    ADD   shift, and go to state 18
+    SUB   shift, and go to state 19
+    ID    shift, and go to state 20
+    STR   shift, and go to state 21
+    ID_C  shift, and go to state 46
+    CSTE  shift, and go to state 23
+
+    CallMethod     go to state 25
+    Selection      go to state 33
+    Object         go to state 42
+    ExprRelop      go to state 47
+    Expr           go to state 36
+    Instanciation  go to state 37
+    Cast           go to state 38
+
+
+State 18
+
+   74 Expr: ADD . CSTE
+
+    CSTE  shift, and go to state 48
+
+
+State 19
+
+   75 Expr: SUB . CSTE
+
+    CSTE  shift, and go to state 49
+
+
+State 20
+
+   63 Object: ID .
+
+    $default  reduce using rule 63 (Object)
+
+
+State 21
+
+   64 Object: STR .
+
+    $default  reduce using rule 64 (Object)
+
+
+State 22
+
+   40 CallMethod: ID_C . '.' ID '(' ListArgClause ')'
+   58 Selection: ID_C . '.' ID
+
+    '.'  shift, and go to state 50
+
+
+State 23
+
+   62 Object: CSTE .
+
+    $default  reduce using rule 62 (Object)
+
+
+State 24
+
+   44 ListChamp: Champ .
+
+    $default  reduce using rule 44 (ListChamp)
+
+
+State 25
+
+   60 Object: CallMethod .
+
+    $default  reduce using rule 60 (Object)
+
+
+State 26
+
+   50 Inst: block .
+
+    $default  reduce using rule 50 (Inst)
+
+
+State 27
+
+   42 block: '{' ListChamp . IS ListInst '}'
+   43 ListChamp: ListChamp . Champ
+
+    IS   shift, and go to state 51
+    VAR  shift, and go to state 13
+
+    Champ  go to state 52
+
+
+State 28
+
+   41 block: '{' ListInstClause . '}'
+
+    '}'  shift, and go to state 53
+
+
+State 29
+
+   45 ListInstClause: ListInst .
+
+    $default  reduce using rule 45 (ListInstClause)
+
+
+State 30
+
+   47 ListInst: Inst . ListInst
+   48         | Inst .
+
+    IF      shift, and go to state 14
+    RETURN  shift, and go to state 15
+    NEWV    shift, and go to state 16
+    '('     shift, and go to state 17
+    '{'     shift, and go to state 6
+    ADD     shift, and go to state 18
+    SUB     shift, and go to state 19
+    ID      shift, and go to state 20
+    STR     shift, and go to state 21
+    ID_C    shift, and go to state 22
+    CSTE    shift, and go to state 23
+
+    $default  reduce using rule 48 (ListInst)
+
+    CallMethod     go to state 25
+    block          go to state 26
+    ListInst       go to state 54
+    Inst           go to state 30
+    ITE            go to state 31
+    cible          go to state 32
+    Selection      go to state 33
+    Object         go to state 34
+    ExprRelop      go to state 35
+    Expr           go to state 36
+    Instanciation  go to state 37
+    Cast           go to state 38
+
+
+State 31
+
+   49 Inst: ITE .
+
+    $default  reduce using rule 49 (Inst)
+
+
+State 32
+
+   52 Inst: cible . ';'
+
+    ';'  shift, and go to state 55
+
+
+State 33
+
+   59 Object: Selection .
+
+    $default  reduce using rule 59 (Object)
+
+
+State 34
+
+   38 CallMethod: Object . '.' ID '(' ListArgClause ')'
+   55 cible: Object . AFF ExprRelop
+   56 Selection: Object . '.' ID
+   73 Expr: Object .
+
+    AFF  shift, and go to state 56
+    '.'  shift, and go to state 57
+
+    $default  reduce using rule 73 (Expr)
+
+
+State 35
+
+   53 Inst: ExprRelop . ';'
+
+    ';'  shift, and go to state 58
+
+
+State 36
+
+   66 ExprRelop: Expr . RELOP Expr
+   67          | Expr .
+   68 Expr: Expr . ADD Expr
+   69     | Expr . SUB Expr
+   70     | Expr . MUL Expr
+   71     | Expr . DIV Expr
+   72     | Expr . '&' Expr
+
+    '&'    shift, and go to state 59
+    ADD    shift, and go to state 60
+    SUB    shift, and go to state 61
+    MUL    shift, and go to state 62
+    DIV    shift, and go to state 63
+    RELOP  shift, and go to state 64
+
+    $default  reduce using rule 67 (ExprRelop)
+
+
+State 37
+
+   61 Object: Instanciation .
+
+    $default  reduce using rule 61 (Object)
+
+
+State 38
+
+   65 Object: Cast .
+
+    $default  reduce using rule 65 (Object)
+
+
+State 39
+
+    7 declObject: OBJECT ID_C IS . classObjBlock
+
+    '{'  shift, and go to state 65
+
+    classObjBlock  go to state 66
+
+
+State 40
+
+    6 declClass: CLASS ID_C '(' . ListParamClause ')' extendsClause constructorClause IS classObjBlock
+
+    VAR  shift, and go to state 67
+
+    ID        reduce using rule 16 (Var)
+    $default  reduce using rule 11 (ListParamClause)
+
+    ListParamClause  go to state 68
+    ListParam        go to state 69
+    Param            go to state 70
+    Var              go to state 71
+
+
+State 41
+
+   37 Champ: VAR ID . ':' ID_C Init ';'
+
+    ':'  shift, and go to state 72
+
+
+State 42
+
+   38 CallMethod: Object . '.' ID '(' ListArgClause ')'
+   56 Selection: Object . '.' ID
+   73 Expr: Object .
+
+    '.'  shift, and go to state 57
+
+    $default  reduce using rule 73 (Expr)
+
+
+State 43
+
+   54 ITE: IF ExprRelop . THEN Inst ELSE Inst
+
+    THEN  shift, and go to state 73
+
+
+State 44
+
+   51 Inst: RETURN ';' .
+
+    $default  reduce using rule 51 (Inst)
+
+
+State 45
+
+   77 Instanciation: NEWV ID_C . '(' ListArgClause ')'
+
+    '('  shift, and go to state 74
+
+
+State 46
+
+   40 CallMethod: ID_C . '.' ID '(' ListArgClause ')'
+   58 Selection: ID_C . '.' ID
+   78 Cast: '(' ID_C . Object ')'
+
+    NEWV  shift, and go to state 16
+    '('   shift, and go to state 75
+    '.'   shift, and go to state 50
+    ID    shift, and go to state 20
+    STR   shift, and go to state 21
+    ID_C  shift, and go to state 22
+    CSTE  shift, and go to state 23
+
+    CallMethod     go to state 25
+    Selection      go to state 33
+    Object         go to state 76
+    Instanciation  go to state 37
+    Cast           go to state 38
+
+
+State 47
+
+   39 CallMethod: '(' ExprRelop . ')' '.' ID '(' ListArgClause ')'
+   57 Selection: '(' ExprRelop . ')' '.' ID
+   76 Expr: '(' ExprRelop . ')'
+
+    ')'  shift, and go to state 77
+
+
+State 48
+
+   74 Expr: ADD CSTE .
+
+    $default  reduce using rule 74 (Expr)
+
+
+State 49
+
+   75 Expr: SUB CSTE .
+
+    $default  reduce using rule 75 (Expr)
+
+
+State 50
+
+   40 CallMethod: ID_C '.' . ID '(' ListArgClause ')'
+   58 Selection: ID_C '.' . ID
+
+    ID  shift, and go to state 78
+
+
+State 51
+
+   42 block: '{' ListChamp IS . ListInst '}'
+
+    IF      shift, and go to state 14
+    RETURN  shift, and go to state 15
+    NEWV    shift, and go to state 16
+    '('     shift, and go to state 17
+    '{'     shift, and go to state 6
+    ADD     shift, and go to state 18
+    SUB     shift, and go to state 19
+    ID      shift, and go to state 20
+    STR     shift, and go to state 21
+    ID_C    shift, and go to state 22
+    CSTE    shift, and go to state 23
+
+    CallMethod     go to state 25
+    block          go to state 26
+    ListInst       go to state 79
+    Inst           go to state 30
+    ITE            go to state 31
+    cible          go to state 32
+    Selection      go to state 33
+    Object         go to state 34
+    ExprRelop      go to state 35
+    Expr           go to state 36
+    Instanciation  go to state 37
+    Cast           go to state 38
+
+
+State 52
+
+   43 ListChamp: ListChamp Champ .
+
+    $default  reduce using rule 43 (ListChamp)
+
+
+State 53
+
+   41 block: '{' ListInstClause '}' .
+
+    $default  reduce using rule 41 (block)
+
+
+State 54
+
+   47 ListInst: Inst ListInst .
+
+    $default  reduce using rule 47 (ListInst)
+
+
+State 55
+
+   52 Inst: cible ';' .
+
+    $default  reduce using rule 52 (Inst)
+
+
+State 56
+
+   55 cible: Object AFF . ExprRelop
+
+    NEWV  shift, and go to state 16
+    '('   shift, and go to state 17
+    ADD   shift, and go to state 18
+    SUB   shift, and go to state 19
+    ID    shift, and go to state 20
+    STR   shift, and go to state 21
+    ID_C  shift, and go to state 22
+    CSTE  shift, and go to state 23
+
+    CallMethod     go to state 25
+    Selection      go to state 33
+    Object         go to state 42
+    ExprRelop      go to state 80
+    Expr           go to state 36
+    Instanciation  go to state 37
+    Cast           go to state 38
+
+
+State 57
+
+   38 CallMethod: Object '.' . ID '(' ListArgClause ')'
+   56 Selection: Object '.' . ID
+
+    ID  shift, and go to state 81
+
+
+State 58
+
+   53 Inst: ExprRelop ';' .
+
+    $default  reduce using rule 53 (Inst)
+
+
+State 59
+
+   72 Expr: Expr '&' . Expr
+
+    NEWV  shift, and go to state 16
+    '('   shift, and go to state 17
+    ADD   shift, and go to state 18
+    SUB   shift, and go to state 19
+    ID    shift, and go to state 20
+    STR   shift, and go to state 21
+    ID_C  shift, and go to state 22
+    CSTE  shift, and go to state 23
+
+    CallMethod     go to state 25
+    Selection      go to state 33
+    Object         go to state 42
+    Expr           go to state 82
+    Instanciation  go to state 37
+    Cast           go to state 38
+
+
+State 60
+
+   68 Expr: Expr ADD . Expr
+
+    NEWV  shift, and go to state 16
+    '('   shift, and go to state 17
+    ADD   shift, and go to state 18
+    SUB   shift, and go to state 19
+    ID    shift, and go to state 20
+    STR   shift, and go to state 21
+    ID_C  shift, and go to state 22
+    CSTE  shift, and go to state 23
+
+    CallMethod     go to state 25
+    Selection      go to state 33
+    Object         go to state 42
+    Expr           go to state 83
+    Instanciation  go to state 37
+    Cast           go to state 38
+
+
+State 61
+
+   69 Expr: Expr SUB . Expr
+
+    NEWV  shift, and go to state 16
+    '('   shift, and go to state 17
+    ADD   shift, and go to state 18
+    SUB   shift, and go to state 19
+    ID    shift, and go to state 20
+    STR   shift, and go to state 21
+    ID_C  shift, and go to state 22
+    CSTE  shift, and go to state 23
+
+    CallMethod     go to state 25
+    Selection      go to state 33
+    Object         go to state 42
+    Expr           go to state 84
+    Instanciation  go to state 37
+    Cast           go to state 38
+
+
+State 62
+
+   70 Expr: Expr MUL . Expr
+
+    NEWV  shift, and go to state 16
+    '('   shift, and go to state 17
+    ADD   shift, and go to state 18
+    SUB   shift, and go to state 19
+    ID    shift, and go to state 20
+    STR   shift, and go to state 21
+    ID_C  shift, and go to state 22
+    CSTE  shift, and go to state 23
+
+    CallMethod     go to state 25
+    Selection      go to state 33
+    Object         go to state 42
+    Expr           go to state 85
+    Instanciation  go to state 37
+    Cast           go to state 38
+
+
+State 63
+
+   71 Expr: Expr DIV . Expr
+
+    NEWV  shift, and go to state 16
+    '('   shift, and go to state 17
+    ADD   shift, and go to state 18
+    SUB   shift, and go to state 19
+    ID    shift, and go to state 20
+    STR   shift, and go to state 21
+    ID_C  shift, and go to state 22
+    CSTE  shift, and go to state 23
+
+    CallMethod     go to state 25
+    Selection      go to state 33
+    Object         go to state 42
+    Expr           go to state 86
+    Instanciation  go to state 37
+    Cast           go to state 38
+
+
+State 64
+
+   66 ExprRelop: Expr RELOP . Expr
+
+    NEWV  shift, and go to state 16
+    '('   shift, and go to state 17
+    ADD   shift, and go to state 18
+    SUB   shift, and go to state 19
+    ID    shift, and go to state 20
+    STR   shift, and go to state 21
+    ID_C  shift, and go to state 22
+    CSTE  shift, and go to state 23
+
+    CallMethod     go to state 25
+    Selection      go to state 33
+    Object         go to state 42
+    Expr           go to state 87
+    Instanciation  go to state 37
+    Cast           go to state 38
+
+
+State 65
+
+   26 classObjBlock: '{' . ListVarDef '}'
+
+    VAR       shift, and go to state 13
+    OVERRIDE  shift, and go to state 88
+
+    DEF       reduce using rule 34 (Override)
+    $default  reduce using rule 28 (ListVarDef)
+
+    ListVarDef  go to state 89
+    VarDef      go to state 90
+    declMethod  go to state 91
+    Override    go to state 92
+    Champ       go to state 93
+
+
+State 66
+
+    7 declObject: OBJECT ID_C IS classObjBlock .
+
+    $default  reduce using rule 7 (declObject)
+
+
+State 67
+
+   15 Var: VAR .
+
+    $default  reduce using rule 15 (Var)
+
+
+State 68
+
+    6 declClass: CLASS ID_C '(' ListParamClause . ')' extendsClause constructorClause IS classObjBlock
+
+    ')'  shift, and go to state 94
+
+
+State 69
+
+   10 ListParamClause: ListParam .
+
+    $default  reduce using rule 10 (ListParamClause)
+
+
+State 70
+
+   12 ListParam: Param . ',' ListParam
+   13          | Param .
+
+    ','  shift, and go to state 95
+
+    $default  reduce using rule 13 (ListParam)
+
+
+State 71
+
+   14 Param: Var . ID ':' ID_C Init
+
+    ID  shift, and go to state 96
+
+
+State 72
+
+   37 Champ: VAR ID ':' . ID_C Init ';'
+
+    ID_C  shift, and go to state 97
+
+
+State 73
+
+   54 ITE: IF ExprRelop THEN . Inst ELSE Inst
+
+    IF      shift, and go to state 14
+    RETURN  shift, and go to state 15
+    NEWV    shift, and go to state 16
+    '('     shift, and go to state 17
+    '{'     shift, and go to state 6
+    ADD     shift, and go to state 18
+    SUB     shift, and go to state 19
+    ID      shift, and go to state 20
+    STR     shift, and go to state 21
+    ID_C    shift, and go to state 22
+    CSTE    shift, and go to state 23
+
+    CallMethod     go to state 25
+    block          go to state 26
+    Inst           go to state 98
+    ITE            go to state 31
+    cible          go to state 32
+    Selection      go to state 33
+    Object         go to state 34
+    ExprRelop      go to state 35
+    Expr           go to state 36
+    Instanciation  go to state 37
+    Cast           go to state 38
+
+
+State 74
+
+   77 Instanciation: NEWV ID_C '(' . ListArgClause ')'
+
+    NEWV  shift, and go to state 16
+    '('   shift, and go to state 17
+    ADD   shift, and go to state 18
+    SUB   shift, and go to state 19
+    ID    shift, and go to state 20
+    STR   shift, and go to state 21
+    ID_C  shift, and go to state 22
+    CSTE  shift, and go to state 23
+
+    $default  reduce using rule 22 (ListArgClause)
+
+    ListArgClause  go to state 99
+    ListArg        go to state 100
+    Arg            go to state 101
+    CallMethod     go to state 25
+    Selection      go to state 33
+    Object         go to state 42
+    ExprRelop      go to state 102
+    Expr           go to state 36
+    Instanciation  go to state 37
+    Cast           go to state 38
+
+
+State 75
+
+   39 CallMethod: '(' . ExprRelop ')' '.' ID '(' ListArgClause ')'
+   57 Selection: '(' . ExprRelop ')' '.' ID
+   78 Cast: '(' . ID_C Object ')'
+
+    NEWV  shift, and go to state 16
+    '('   shift, and go to state 17
+    ADD   shift, and go to state 18
+    SUB   shift, and go to state 19
+    ID    shift, and go to state 20
+    STR   shift, and go to state 21
+    ID_C  shift, and go to state 46
+    CSTE  shift, and go to state 23
+
+    CallMethod     go to state 25
+    Selection      go to state 33
+    Object         go to state 42
+    ExprRelop      go to state 103
+    Expr           go to state 36
+    Instanciation  go to state 37
+    Cast           go to state 38
+
+
+State 76
+
+   38 CallMethod: Object . '.' ID '(' ListArgClause ')'
+   56 Selection: Object . '.' ID
+   78 Cast: '(' ID_C Object . ')'
+
+    ')'  shift, and go to state 104
+    '.'  shift, and go to state 57
+
+
+State 77
+
+   39 CallMethod: '(' ExprRelop ')' . '.' ID '(' ListArgClause ')'
+   57 Selection: '(' ExprRelop ')' . '.' ID
+   76 Expr: '(' ExprRelop ')' .
+
+    '.'  shift, and go to state 105
+
+    $default  reduce using rule 76 (Expr)
+
+
+State 78
+
+   40 CallMethod: ID_C '.' ID . '(' ListArgClause ')'
+   58 Selection: ID_C '.' ID .
+
+    '('  shift, and go to state 106
+
+    $default  reduce using rule 58 (Selection)
+
+
+State 79
+
+   42 block: '{' ListChamp IS ListInst . '}'
+
+    '}'  shift, and go to state 107
+
+
+State 80
+
+   55 cible: Object AFF ExprRelop .
+
+    $default  reduce using rule 55 (cible)
+
+
+State 81
+
+   38 CallMethod: Object '.' ID . '(' ListArgClause ')'
+   56 Selection: Object '.' ID .
+
+    '('  shift, and go to state 108
+
+    $default  reduce using rule 56 (Selection)
+
+
+State 82
+
+   68 Expr: Expr . ADD Expr
+   69     | Expr . SUB Expr
+   70     | Expr . MUL Expr
+   71     | Expr . DIV Expr
+   72     | Expr . '&' Expr
+   72     | Expr '&' Expr .
+
+    ADD  shift, and go to state 60
+    SUB  shift, and go to state 61
+    MUL  shift, and go to state 62
+    DIV  shift, and go to state 63
+
+    $default  reduce using rule 72 (Expr)
+
+
+State 83
+
+   68 Expr: Expr . ADD Expr
+   68     | Expr ADD Expr .
+   69     | Expr . SUB Expr
+   70     | Expr . MUL Expr
+   71     | Expr . DIV Expr
+   72     | Expr . '&' Expr
+
+    MUL  shift, and go to state 62
+    DIV  shift, and go to state 63
+
+    $default  reduce using rule 68 (Expr)
+
+
+State 84
+
+   68 Expr: Expr . ADD Expr
+   69     | Expr . SUB Expr
+   69     | Expr SUB Expr .
+   70     | Expr . MUL Expr
+   71     | Expr . DIV Expr
+   72     | Expr . '&' Expr
+
+    MUL  shift, and go to state 62
+    DIV  shift, and go to state 63
+
+    $default  reduce using rule 69 (Expr)
+
+
+State 85
+
+   68 Expr: Expr . ADD Expr
+   69     | Expr . SUB Expr
+   70     | Expr . MUL Expr
+   70     | Expr MUL Expr .
+   71     | Expr . DIV Expr
+   72     | Expr . '&' Expr
+
+    $default  reduce using rule 70 (Expr)
+
+
+State 86
+
+   68 Expr: Expr . ADD Expr
+   69     | Expr . SUB Expr
+   70     | Expr . MUL Expr
+   71     | Expr . DIV Expr
+   71     | Expr DIV Expr .
+   72     | Expr . '&' Expr
+
+    $default  reduce using rule 71 (Expr)
+
+
+State 87
+
+   66 ExprRelop: Expr RELOP Expr .
+   68 Expr: Expr . ADD Expr
+   69     | Expr . SUB Expr
+   70     | Expr . MUL Expr
+   71     | Expr . DIV Expr
+   72     | Expr . '&' Expr
+
+    '&'  shift, and go to state 59
+    ADD  shift, and go to state 60
+    SUB  shift, and go to state 61
+    MUL  shift, and go to state 62
+    DIV  shift, and go to state 63
+
+    $default  reduce using rule 66 (ExprRelop)
+
+
+State 88
+
+   33 Override: OVERRIDE .
+
+    $default  reduce using rule 33 (Override)
+
+
+State 89
+
+   26 classObjBlock: '{' ListVarDef . '}'
+
+    '}'  shift, and go to state 109
+
+
+State 90
+
+   27 ListVarDef: VarDef . ListVarDef
+
+    VAR       shift, and go to state 13
+    OVERRIDE  shift, and go to state 88
+
+    DEF       reduce using rule 34 (Override)
+    $default  reduce using rule 28 (ListVarDef)
+
+    ListVarDef  go to state 110
+    VarDef      go to state 90
+    declMethod  go to state 91
+    Override    go to state 92
+    Champ       go to state 93
+
+
+State 91
+
+   29 VarDef: declMethod .
+
+    $default  reduce using rule 29 (VarDef)
+
+
+State 92
+
+   31 declMethod: Override . DEF ID '(' ListParamClause ')' ':' ID_C AFF ExprRelop
+   32           | Override . DEF ID '(' ListParamClause ')' ClassClause IS block
+
+    DEF  shift, and go to state 111
+
+
+State 93
+
+   30 VarDef: Champ .
+
+    $default  reduce using rule 30 (VarDef)
+
+
+State 94
+
+    6 declClass: CLASS ID_C '(' ListParamClause ')' . extendsClause constructorClause IS classObjBlock
+
+    EXTENDS  shift, and go to state 112
+
+    $default  reduce using rule 20 (extendsClause)
+
+    extendsClause  go to state 113
+
+
+State 95
+
+   12 ListParam: Param ',' . ListParam
+
+    VAR  shift, and go to state 67
+
+    $default  reduce using rule 16 (Var)
+
+    ListParam  go to state 114
+    Param      go to state 70
+    Var        go to state 71
+
+
+State 96
+
+   14 Param: Var ID . ':' ID_C Init
+
+    ':'  shift, and go to state 115
+
+
+State 97
+
+   37 Champ: VAR ID ':' ID_C . Init ';'
+
+    AFF  shift, and go to state 116
+
+    $default  reduce using rule 18 (Init)
+
+    Init  go to state 117
+
+
+State 98
+
+   54 ITE: IF ExprRelop THEN Inst . ELSE Inst
+
+    ELSE  shift, and go to state 118
+
+
+State 99
+
+   77 Instanciation: NEWV ID_C '(' ListArgClause . ')'
+
+    ')'  shift, and go to state 119
+
+
+State 100
+
+   21 ListArgClause: ListArg .
+
+    $default  reduce using rule 21 (ListArgClause)
+
+
+State 101
+
+   23 ListArg: Arg . ',' ListArg
+   24        | Arg .
+
+    ','  shift, and go to state 120
+
+    $default  reduce using rule 24 (ListArg)
+
+
+State 102
+
+   25 Arg: ExprRelop .
+
+    $default  reduce using rule 25 (Arg)
+
+
+State 103
+
+   39 CallMethod: '(' ExprRelop . ')' '.' ID '(' ListArgClause ')'
+   57 Selection: '(' ExprRelop . ')' '.' ID
+
+    ')'  shift, and go to state 121
+
+
+State 104
+
+   78 Cast: '(' ID_C Object ')' .
+
+    $default  reduce using rule 78 (Cast)
+
+
+State 105
+
+   39 CallMethod: '(' ExprRelop ')' '.' . ID '(' ListArgClause ')'
+   57 Selection: '(' ExprRelop ')' '.' . ID
+
+    ID  shift, and go to state 122
+
+
+State 106
+
+   40 CallMethod: ID_C '.' ID '(' . ListArgClause ')'
+
+    NEWV  shift, and go to state 16
+    '('   shift, and go to state 17
+    ADD   shift, and go to state 18
+    SUB   shift, and go to state 19
+    ID    shift, and go to state 20
+    STR   shift, and go to state 21
+    ID_C  shift, and go to state 22
+    CSTE  shift, and go to state 23
+
+    $default  reduce using rule 22 (ListArgClause)
+
+    ListArgClause  go to state 123
+    ListArg        go to state 100
+    Arg            go to state 101
+    CallMethod     go to state 25
+    Selection      go to state 33
+    Object         go to state 42
+    ExprRelop      go to state 102
+    Expr           go to state 36
+    Instanciation  go to state 37
+    Cast           go to state 38
+
+
+State 107
+
+   42 block: '{' ListChamp IS ListInst '}' .
+
+    $default  reduce using rule 42 (block)
+
+
+State 108
+
+   38 CallMethod: Object '.' ID '(' . ListArgClause ')'
+
+    NEWV  shift, and go to state 16
+    '('   shift, and go to state 17
+    ADD   shift, and go to state 18
+    SUB   shift, and go to state 19
+    ID    shift, and go to state 20
+    STR   shift, and go to state 21
+    ID_C  shift, and go to state 22
+    CSTE  shift, and go to state 23
+
+    $default  reduce using rule 22 (ListArgClause)
+
+    ListArgClause  go to state 124
+    ListArg        go to state 100
+    Arg            go to state 101
+    CallMethod     go to state 25
+    Selection      go to state 33
+    Object         go to state 42
+    ExprRelop      go to state 102
+    Expr           go to state 36
+    Instanciation  go to state 37
+    Cast           go to state 38
+
+
+State 109
+
+   26 classObjBlock: '{' ListVarDef '}' .
+
+    $default  reduce using rule 26 (classObjBlock)
+
+
+State 110
+
+   27 ListVarDef: VarDef ListVarDef .
+
+    $default  reduce using rule 27 (ListVarDef)
+
+
+State 111
+
+   31 declMethod: Override DEF . ID '(' ListParamClause ')' ':' ID_C AFF ExprRelop
+   32           | Override DEF . ID '(' ListParamClause ')' ClassClause IS block
+
+    ID  shift, and go to state 125
+
+
+State 112
+
+   19 extendsClause: EXTENDS . ID_C '(' ListArgClause ')'
+
+    ID_C  shift, and go to state 126
+
+
+State 113
+
+    6 declClass: CLASS ID_C '(' ListParamClause ')' extendsClause . constructorClause IS classObjBlock
+
+    '{'  shift, and go to state 6
+
+    $default  reduce using rule 9 (constructorClause)
+
+    constructorClause  go to state 127
+    block              go to state 128
+
+
+State 114
+
+   12 ListParam: Param ',' ListParam .
+
+    $default  reduce using rule 12 (ListParam)
+
+
+State 115
+
+   14 Param: Var ID ':' . ID_C Init
+
+    ID_C  shift, and go to state 129
+
+
+State 116
+
+   17 Init: AFF . ExprRelop
+
+    NEWV  shift, and go to state 16
+    '('   shift, and go to state 17
+    ADD   shift, and go to state 18
+    SUB   shift, and go to state 19
+    ID    shift, and go to state 20
+    STR   shift, and go to state 21
+    ID_C  shift, and go to state 22
+    CSTE  shift, and go to state 23
+
+    CallMethod     go to state 25
+    Selection      go to state 33
+    Object         go to state 42
+    ExprRelop      go to state 130
+    Expr           go to state 36
+    Instanciation  go to state 37
+    Cast           go to state 38
+
+
+State 117
+
+   37 Champ: VAR ID ':' ID_C Init . ';'
+
+    ';'  shift, and go to state 131
+
+
+State 118
+
+   54 ITE: IF ExprRelop THEN Inst ELSE . Inst
+
+    IF      shift, and go to state 14
+    RETURN  shift, and go to state 15
+    NEWV    shift, and go to state 16
+    '('     shift, and go to state 17
+    '{'     shift, and go to state 6
+    ADD     shift, and go to state 18
+    SUB     shift, and go to state 19
+    ID      shift, and go to state 20
+    STR     shift, and go to state 21
+    ID_C    shift, and go to state 22
+    CSTE    shift, and go to state 23
+
+    CallMethod     go to state 25
+    block          go to state 26
+    Inst           go to state 132
+    ITE            go to state 31
+    cible          go to state 32
+    Selection      go to state 33
+    Object         go to state 34
+    ExprRelop      go to state 35
+    Expr           go to state 36
+    Instanciation  go to state 37
+    Cast           go to state 38
+
+
+State 119
+
+   77 Instanciation: NEWV ID_C '(' ListArgClause ')' .
+
+    $default  reduce using rule 77 (Instanciation)
+
+
+State 120
+
+   23 ListArg: Arg ',' . ListArg
+
+    NEWV  shift, and go to state 16
+    '('   shift, and go to state 17
+    ADD   shift, and go to state 18
+    SUB   shift, and go to state 19
+    ID    shift, and go to state 20
+    STR   shift, and go to state 21
+    ID_C  shift, and go to state 22
+    CSTE  shift, and go to state 23
+
+    ListArg        go to state 133
+    Arg            go to state 101
+    CallMethod     go to state 25
+    Selection      go to state 33
+    Object         go to state 42
+    ExprRelop      go to state 102
+    Expr           go to state 36
+    Instanciation  go to state 37
+    Cast           go to state 38
+
+
+State 121
+
+   39 CallMethod: '(' ExprRelop ')' . '.' ID '(' ListArgClause ')'
+   57 Selection: '(' ExprRelop ')' . '.' ID
+
+    '.'  shift, and go to state 105
+
+
+State 122
+
+   39 CallMethod: '(' ExprRelop ')' '.' ID . '(' ListArgClause ')'
+   57 Selection: '(' ExprRelop ')' '.' ID .
+
+    '('  shift, and go to state 134
+
+    $default  reduce using rule 57 (Selection)
+
+
+State 123
+
+   40 CallMethod: ID_C '.' ID '(' ListArgClause . ')'
+
+    ')'  shift, and go to state 135
+
+
+State 124
+
+   38 CallMethod: Object '.' ID '(' ListArgClause . ')'
+
+    ')'  shift, and go to state 136
+
+
+State 125
+
+   31 declMethod: Override DEF ID . '(' ListParamClause ')' ':' ID_C AFF ExprRelop
+   32           | Override DEF ID . '(' ListParamClause ')' ClassClause IS block
+
+    '('  shift, and go to state 137
+
+
+State 126
+
+   19 extendsClause: EXTENDS ID_C . '(' ListArgClause ')'
+
+    '('  shift, and go to state 138
+
+
+State 127
+
+    6 declClass: CLASS ID_C '(' ListParamClause ')' extendsClause constructorClause . IS classObjBlock
+
+    IS  shift, and go to state 139
+
+
+State 128
+
+    8 constructorClause: block .
+
+    $default  reduce using rule 8 (constructorClause)
+
+
+State 129
+
+   14 Param: Var ID ':' ID_C . Init
+
+    AFF  shift, and go to state 116
+
+    $default  reduce using rule 18 (Init)
+
+    Init  go to state 140
+
+
+State 130
+
+   17 Init: AFF ExprRelop .
+
+    $default  reduce using rule 17 (Init)
+
+
+State 131
+
+   37 Champ: VAR ID ':' ID_C Init ';' .
+
+    $default  reduce using rule 37 (Champ)
+
+
+State 132
+
+   54 ITE: IF ExprRelop THEN Inst ELSE Inst .
+
+    $default  reduce using rule 54 (ITE)
+
+
+State 133
+
+   23 ListArg: Arg ',' ListArg .
+
+    $default  reduce using rule 23 (ListArg)
+
+
+State 134
+
+   39 CallMethod: '(' ExprRelop ')' '.' ID '(' . ListArgClause ')'
+
+    NEWV  shift, and go to state 16
+    '('   shift, and go to state 17
+    ADD   shift, and go to state 18
+    SUB   shift, and go to state 19
+    ID    shift, and go to state 20
+    STR   shift, and go to state 21
+    ID_C  shift, and go to state 22
+    CSTE  shift, and go to state 23
+
+    $default  reduce using rule 22 (ListArgClause)
+
+    ListArgClause  go to state 141
+    ListArg        go to state 100
+    Arg            go to state 101
+    CallMethod     go to state 25
+    Selection      go to state 33
+    Object         go to state 42
+    ExprRelop      go to state 102
+    Expr           go to state 36
+    Instanciation  go to state 37
+    Cast           go to state 38
+
+
+State 135
+
+   40 CallMethod: ID_C '.' ID '(' ListArgClause ')' .
+
+    $default  reduce using rule 40 (CallMethod)
+
+
+State 136
+
+   38 CallMethod: Object '.' ID '(' ListArgClause ')' .
+
+    $default  reduce using rule 38 (CallMethod)
+
+
+State 137
+
+   31 declMethod: Override DEF ID '(' . ListParamClause ')' ':' ID_C AFF ExprRelop
+   32           | Override DEF ID '(' . ListParamClause ')' ClassClause IS block
+
+    VAR  shift, and go to state 67
+
+    ID        reduce using rule 16 (Var)
+    $default  reduce using rule 11 (ListParamClause)
+
+    ListParamClause  go to state 142
+    ListParam        go to state 69
+    Param            go to state 70
+    Var              go to state 71
+
+
+State 138
+
+   19 extendsClause: EXTENDS ID_C '(' . ListArgClause ')'
+
+    NEWV  shift, and go to state 16
+    '('   shift, and go to state 17
+    ADD   shift, and go to state 18
+    SUB   shift, and go to state 19
+    ID    shift, and go to state 20
+    STR   shift, and go to state 21
+    ID_C  shift, and go to state 22
+    CSTE  shift, and go to state 23
+
+    $default  reduce using rule 22 (ListArgClause)
+
+    ListArgClause  go to state 143
+    ListArg        go to state 100
+    Arg            go to state 101
+    CallMethod     go to state 25
+    Selection      go to state 33
+    Object         go to state 42
+    ExprRelop      go to state 102
+    Expr           go to state 36
+    Instanciation  go to state 37
+    Cast           go to state 38
+
+
+State 139
+
+    6 declClass: CLASS ID_C '(' ListParamClause ')' extendsClause constructorClause IS . classObjBlock
+
+    '{'  shift, and go to state 65
+
+    classObjBlock  go to state 144
+
+
+State 140
+
+   14 Param: Var ID ':' ID_C Init .
+
+    $default  reduce using rule 14 (Param)
+
+
+State 141
+
+   39 CallMethod: '(' ExprRelop ')' '.' ID '(' ListArgClause . ')'
+
+    ')'  shift, and go to state 145
+
+
+State 142
+
+   31 declMethod: Override DEF ID '(' ListParamClause . ')' ':' ID_C AFF ExprRelop
+   32           | Override DEF ID '(' ListParamClause . ')' ClassClause IS block
+
+    ')'  shift, and go to state 146
+
+
+State 143
+
+   19 extendsClause: EXTENDS ID_C '(' ListArgClause . ')'
+
+    ')'  shift, and go to state 147
+
+
+State 144
+
+    6 declClass: CLASS ID_C '(' ListParamClause ')' extendsClause constructorClause IS classObjBlock .
+
+    $default  reduce using rule 6 (declClass)
+
+
+State 145
+
+   39 CallMethod: '(' ExprRelop ')' '.' ID '(' ListArgClause ')' .
+
+    $default  reduce using rule 39 (CallMethod)
+
+
+State 146
+
+   31 declMethod: Override DEF ID '(' ListParamClause ')' . ':' ID_C AFF ExprRelop
+   32           | Override DEF ID '(' ListParamClause ')' . ClassClause IS block
+
+    ':'  shift, and go to state 148
+
+    $default  reduce using rule 36 (ClassClause)
+
+    ClassClause  go to state 149
+
+
+State 147
+
+   19 extendsClause: EXTENDS ID_C '(' ListArgClause ')' .
+
+    $default  reduce using rule 19 (extendsClause)
+
+
+State 148
+
+   31 declMethod: Override DEF ID '(' ListParamClause ')' ':' . ID_C AFF ExprRelop
+   35 ClassClause: ':' . ID_C
+
+    ID_C  shift, and go to state 150
+
+
+State 149
+
+   32 declMethod: Override DEF ID '(' ListParamClause ')' ClassClause . IS block
+
+    IS  shift, and go to state 151
+
+
+State 150
+
+   31 declMethod: Override DEF ID '(' ListParamClause ')' ':' ID_C . AFF ExprRelop
+   35 ClassClause: ':' ID_C .
+
+    AFF  shift, and go to state 152
+
+    $default  reduce using rule 35 (ClassClause)
+
+
+State 151
+
+   32 declMethod: Override DEF ID '(' ListParamClause ')' ClassClause IS . block
+
+    '{'  shift, and go to state 6
+
+    block  go to state 153
+
+
+State 152
+
+   31 declMethod: Override DEF ID '(' ListParamClause ')' ':' ID_C AFF . ExprRelop
+
+    NEWV  shift, and go to state 16
+    '('   shift, and go to state 17
+    ADD   shift, and go to state 18
+    SUB   shift, and go to state 19
+    ID    shift, and go to state 20
+    STR   shift, and go to state 21
+    ID_C  shift, and go to state 22
+    CSTE  shift, and go to state 23
+
+    CallMethod     go to state 25
+    Selection      go to state 33
+    Object         go to state 42
+    ExprRelop      go to state 154
+    Expr           go to state 36
+    Instanciation  go to state 37
+    Cast           go to state 38
+
+
+State 153
+
+   32 declMethod: Override DEF ID '(' ListParamClause ')' ClassClause IS block .
+
+    $default  reduce using rule 32 (declMethod)
+
+
+State 154
+
+   31 declMethod: Override DEF ID '(' ListParamClause ')' ':' ID_C AFF ExprRelop .
+
+    $default  reduce using rule 31 (declMethod)

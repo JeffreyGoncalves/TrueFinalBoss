@@ -10,6 +10,6 @@ int tailleAlloc(VarDeclP decl);
 int getOffsetObj(t_object* obj, char* nom);
 int getOffsetAttr(VarDeclP decl, char* nom);
 void InitTV(list_ClassObjP env, FILE* pFile);
-void CorpsMethod(list_ClassObjP env, FILE* pFile);
+t_method* InitMethod(list_ClassObjP env, FILE* pFile);
 void CallMethod(list_ClassObjP env, FILE* pFile);
-
+int getOffsetMeth(t_method* meth, char* nom);

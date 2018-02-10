@@ -4,8 +4,8 @@ extern char* strdup(const char *);
 
 int nbObjets;
 t_object* obj;
-/*
-int main(int argc, char **argv) {
+
+/*int main(int argc, char **argv) {
 
 	printf("Construction de l'arbre de test\n");
 
@@ -17,8 +17,9 @@ int main(int argc, char **argv) {
 
     t_object* obj = NEW(1, t_object);
     VarDeclP declA = NEW (1, VarDecl);
-    declA = makeVarDeclP("A", "Integer", NULL);
+    declA = makeVarDeclP("A", "Integer", NULL,0);
     obj->attributes = declA;
+	
 
 	FILE* pFile;
 	pFile = fopen ("myfile.txt","w");
@@ -195,7 +196,11 @@ void makeCode(TreeP tree, FILE* pFile) {
         break;
         case I_BLOC :
             fprintf(pFile, "Il y a un bloc d'instructions\n");
-            /*plusieurs instructions a lire*/
+            int i;
+            for(i=0;i<tree->nbChildren;i++){
+
+            	makeCode(getChild(tree,i),pFile);
+            }
         break;
         case I_RETURN :
         /*pas sûr sûr du truc*/
@@ -224,7 +229,7 @@ int getOffsetObj(t_object* obj, char* nom) {
         obj = obj->next;
     }
     if (obj == NULL)
-        printf("Attribut introuvable");
+        printf("Objet introuvable\n");
     return i;
 }
 
@@ -236,11 +241,22 @@ int getOffsetAttr(VarDeclP decl, char* nom) {
         decl = decl->next;
     }
     if (decl == NULL)
-        printf("Attribut introuvable");
+        printf("Attribut introuvable\n");
     return i;
 }
 
-void InitTV(list_ClassObjP env, FILE* pFile){
+int getOffsetMeth(t_method* meth, char* nom){
+	int i = 0;
+	while (meth != NULL && strcmp(meth->name, nom)){
+		i++;
+		meth = meth->next;
+	}
+	if(meth == NULL)
+		printf("Methode introuvable\n");
+	return i;
+}
+
+void InitTV(list_ClassObjP env, FILE* pFile,t_method* list){
 
 	if(env != NIL(list_ClassObj))
 	{
@@ -268,7 +284,7 @@ void InitTV(list_ClassObjP env, FILE* pFile){
 				}
 
 				fprintf(pFile, "\t\tPUSHA %s\n",label);
-				fprintf(pFile, "\t\tSTORE %d\n",i);
+				fprintf(pFile, "\t\tSTORE %d\n",getOffsetMeth(list,env->listClass->methods->name));
 
 				if(env->listClass->methods->next != NIL(t_method))
 				{
@@ -285,8 +301,9 @@ void InitTV(list_ClassObjP env, FILE* pFile){
 	}		
 }
 
-void InitMethod(list_ClassObjP env, FILE* pFile){
+t_method* InitMethod(list_ClassObjP env, FILE* pFile){
 
+	t_method* list = NEW(10,t_method);
 	if (env != NIL(list_ClassObj))
 	{
 		char* label = malloc(10*sizeof(char));
@@ -307,6 +324,8 @@ void InitMethod(list_ClassObjP env, FILE* pFile){
 				else
 				{
 					sprintf(label,"%s",env->listClass->methods->name);
+					list->next = list;
+					list = env->listClass->methods;
 				}
 				fprintf(pFile, "%s :\t",label);
 				fprintf(pFile, "PUSHS %s\n",env->listClass->methods->name);
@@ -319,17 +338,18 @@ void InitMethod(list_ClassObjP env, FILE* pFile){
 			env->listClass = env->listClass->next;
 		}
 
-		free(label);	
+		free(label);
+		return list;	
 	}
+	return NULL;
 }
 
-void CallMethod(list_ClassObjP env, FILE* pFile){
+void CallMethod(list_ClassObjP env, FILE* pFile, t_method* list){
 
 	if(env != NIL(list_ClassObj))
 	{
 		char* label = malloc(6*sizeof(char));
 		sprintf(label,"%s","call");
-		int i = 0;
 		fprintf(pFile, "-- Appel des methodes\n");
 		while(env->listClass->next != NIL(t_class)){
 
@@ -337,16 +357,14 @@ void CallMethod(list_ClassObjP env, FILE* pFile){
 
 				if(!env->listClass->methods->isRedef)
 				{
-					sprintf(label+5,"%d\n",i+1);
+					sprintf(label+5,"%d\n",getOffsetMeth(list,env->listClass->methods->name));
 					fprintf(pFile, "%s :\t",label);
 					fprintf(pFile, "PUSHL %d\n",-1);
 					fprintf(pFile, "\t\tDUPN %d\n",1);
 					fprintf(pFile, "\t\tLOAD %d\n",0);
-					fprintf(pFile, "\t\tLOAD %d\n",i);
+					fprintf(pFile, "\t\tLOAD %d\n",getOffsetMeth(list,env->listClass->methods->name));
 					fprintf(pFile, "\t\tCALL\n");
 					fprintf(pFile, "\t\tRETRUN\n");
-					
-					i++;
 				}
 				env->listClass->methods = env->listClass->methods->next;
 			}
