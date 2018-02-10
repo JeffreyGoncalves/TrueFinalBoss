@@ -1,0 +1,539 @@
+
+
+-> PROG
+|   
+|   
+----> LIST_CLASS
+|   |   
+|   |   
+|   ----> null
+|   |   
+|   |   
+|   ----> CLAS
+|   |   |   
+|   |   |   
+|   |   ----> _CLASS
+|   |   |   |   
+|   |   |   |   
+|   |   |   ----> _ID
+|   |   |   |   
+|   |   |   |   
+|   |   |   ----> LIST_PARAM
+|   |   |   |   
+|   |   |   |   
+|   |   |   ----> null
+|   |   |   |   
+|   |   |   |   
+|   |   |   ----> I_BLOC
+|   |   |   |   |   
+|   |   |   |   |   
+|   |   |   |   ----> DECL
+|   |   |   |   |   
+|   |   |   |   |   
+|   |   |   |   ----> LIST_INST
+|   |   |   |   |   |   
+|   |   |   |   |   |   
+|   |   |   |   |   ----> I_AFF
+|   |   |   |   |   |   |   
+|   |   |   |   |   |   |   
+|   |   |   |   |   |   ----> E_SELECT
+|   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   ----> _ID
+|   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   ----> _ID
+|   |   |   |   |   |   |   
+|   |   |   |   |   |   |   
+|   |   |   |   |   |   ----> _ID
+|   |   |   |   |   |   
+|   |   |   |   |   |   
+|   |   |   |   |   ----> LIST_INST
+|   |   |   |   |   |   |   
+|   |   |   |   |   |   |   
+|   |   |   |   |   |   ----> I_AFF
+|   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   ----> E_SELECT
+|   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   ----> _ID
+|   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   ----> _ID
+|   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   ----> _ID
+|   |   |   |   
+|   |   |   |   
+|   |   |   ----> LIST_VAR_DEF
+|   |   |   |   |   
+|   |   |   |   |   
+|   |   |   |   ----> VAR_DEF_CHAMP
+|   |   |   |   |   
+|   |   |   |   |   
+|   |   |   |   ----> LIST_VAR_DEF
+|   |   |   |   |   |   
+|   |   |   |   |   |   
+|   |   |   |   |   ----> VAR_DEF_CHAMP
+|   |   |   |   |   |   
+|   |   |   |   |   |   
+|   |   |   |   |   ----> LIST_VAR_DEF
+|   |   |   |   |   |   |   
+|   |   |   |   |   |   |   
+|   |   |   |   |   |   ----> VAR_DEF_CHAMP
+|   |   |   |   |   |   |   
+|   |   |   |   |   |   |   
+|   |   |   |   |   |   ----> LIST_VAR_DEF
+|   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   ----> VAR_DEF_CHAMP
+|   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   ----> LIST_VAR_DEF
+|   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   ----> VAR_DEF_METH
+|   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   ----> DECL_METH_2
+|   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   ----> _ID
+|   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   ----> null
+|   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   ----> LIST_PARAM
+|   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   ----> CLASS_NAME
+|   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   ----> I_BLOC
+|   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   ----> DECL
+|   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   ----> LIST_INST
+|   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   ----> I_AFF
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   ----> E_SELECT
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   ----> _ID
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   ----> _ID
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   ----> _ID
+|   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   ----> LIST_INST
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   ----> I_AFF
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   ----> _ID
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   ----> _ID
+|   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   ----> LIST_VAR_DEF
+|   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   ----> VAR_DEF_METH
+|   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   ----> DECL_METH_2
+|   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   ----> _ID
+|   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   ----> null
+|   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   ----> null
+|   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   ----> null
+|   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   ----> I_BLOC
+|   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   ----> DECL
+|   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   ----> LIST_INST
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   ----> I_EXPRRELOP
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   ----> E_CALL_METHOD
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   ----> E_SELECT
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   ----> _ID
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   ----> _ID
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   ----> _ID
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   ----> null
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   ----> LIST_INST
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   ----> I_AFF
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   ----> _ID
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   ----> E_SELECT
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   ----> _ID
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   ----> _ID
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   ----> LIST_INST
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   ----> I_AFF
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   ----> E_SELECT
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   ----> _ID
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   ----> _ID
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   ----> E_SELECT
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   ----> _ID
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   ----> _ID
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   ----> LIST_INST
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   ----> I_AFF
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   ----> _ID
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   ----> _ID
+|   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   ----> null
+|   
+|   
+----> I_BLOC
+|   |   
+|   |   
+|   ----> LIST_PARAM
+|   |   
+|   |   
+|   ----> LIST_INST
+|   |   |   
+|   |   |   
+|   |   ----> I_AFF
+|   |   |   |   
+|   |   |   |   
+|   |   |   ----> _ID
+|   |   |   |   
+|   |   |   |   
+|   |   |   ----> _ID
+|   |   |   
+|   |   |   
+|   |   ----> LIST_INST
+|   |   |   |   
+|   |   |   |   
+|   |   |   ----> I_AFF
+|   |   |   |   |   
+|   |   |   |   |   
+|   |   |   |   ----> _ID
+|   |   |   |   |   
+|   |   |   |   |   
+|   |   |   |   ----> _ID
+|   |   |   |   
+|   |   |   |   
+|   |   |   ----> LIST_INST
+|   |   |   |   |   
+|   |   |   |   |   
+|   |   |   |   ----> I_EXPRRELOP
+|   |   |   |   |   |   
+|   |   |   |   |   |   
+|   |   |   |   |   ----> E_CALL_METHOD
+|   |   |   |   |   |   |   
+|   |   |   |   |   |   |   
+|   |   |   |   |   |   ----> _ID
+|   |   |   |   |   |   |   
+|   |   |   |   |   |   |   
+|   |   |   |   |   |   ----> _ID
+|   |   |   |   |   |   |   
+|   |   |   |   |   |   |   
+|   |   |   |   |   |   ----> LIST_ARG
+|   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   ----> _STR
+|   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   ----> null
+|   |   |   |   |   
+|   |   |   |   |   
+|   |   |   |   ----> LIST_INST
+|   |   |   |   |   |   
+|   |   |   |   |   |   
+|   |   |   |   |   ----> I_EXPRRELOP
+|   |   |   |   |   |   |   
+|   |   |   |   |   |   |   
+|   |   |   |   |   |   ----> E_CALL_METHOD
+|   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   ----> _ID
+|   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   ----> _ID
+|   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   ----> null
+|   |   |   |   |   |   
+|   |   |   |   |   |   
+|   |   |   |   |   ----> LIST_INST
+|   |   |   |   |   |   |   
+|   |   |   |   |   |   |   
+|   |   |   |   |   |   ----> I_EXPRRELOP
+|   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   ----> E_CALL_METHOD
+|   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   ----> _ID
+|   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   ----> _ID
+|   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   |   
+|   |   |   |   |   |   |   |   ----> null
+*****************************	LISTE DES CLASSES	*****************************
+
+***	NAME : Point
+***	PARAMETRES : yc : Integer, xc : Integer, 
+***	SUPER-CLASSE : 
+***	CONSTRUCTEUR : 1
+***	ATTRIBUTS : x : Integer, y : Integer, name : String, super : Integer, 
+***	METHODES :
+   setName(s : String, )	return Point
+   print()	return Void
+
+-------------------------
+***	NAME : Integer
+***	PARAMETRES : 
+***	SUPER-CLASSE : 
+***	CONSTRUCTEUR : 1
+***	ATTRIBUTS : 
+***	METHODES :
+   toString()	return String
+
+-------------------------
+***	NAME : String
+***	PARAMETRES : 
+***	SUPER-CLASSE : 
+***	CONSTRUCTEUR : 1
+***	ATTRIBUTS : 
+***	METHODES :
+   print()	return Void
+   println()	return Void
+
+-------------------------
+***	NAME : Void
+***	PARAMETRES : 
+***	SUPER-CLASSE : 
+***	CONSTRUCTEUR : 0
+***	ATTRIBUTS : 
+***	METHODES :
+
+-------------------------
+*****************************	LISTE DES OBJETS	*****************************
+
+********	Debut de vérification contextuelle	********
+********	Mise en place des liens SuperClass			********
+|||||||Point:
+1 Super-classe
+______________________________
+|||||||Integer:
+1 Super-classe
+______________________________
+|||||||String:
+1 Super-classe
+______________________________
+|||||||Void:
+1 Super-classe
+______________________________
+[[[[[[[[[[[[[[[[[[[L'analyse de Super-Classe est donc 1]]]]]]]]]]]]]]]]]]]
+********			Portée			********
+********		Portée des classes		********
+|||||||Point:
+1 Nom
+1 Parametres
+Interdiction d'utiliser le nom super (reserve)
+0 Attributs
+0 Attributs
+0 Attributs
+	Portée de [setName]:
+		0 nom
+		1 paramètres
+		1 type du return
+Variables
+this(Point)..result(Point)..s(String)..
+Instruction # aff
+Expression # selection
+Expression # id # this
+fin_id
+this(Point)
+selection_fin
+Expression # id # s
+fin_id
+fin_aff
+Instruction # aff
+Expression # id # super
+fin_id
+fin_aff
+		0 bloc ok
+	Portée de [print]:
+		0 nom
+		1 paramètres
+		1 type du return
+Variables
+this(Point)..
+Instruction # relop
+Expression # appel_methode
+Expression # selection
+Expression # id # this
+fin_id
+this(Point)
+selection_fin
+name(String)
+appel_methode_fin
+relop_fin
+Instruction # aff
+Expression # id # this
+fin_id
+Expression # selection
+Expression # id # this
+fin_id
+this(Point)
+selection_fin
+fin_aff
+Instruction # aff
+Expression # selection
+Expression # id # this
+fin_id
+this(Point)
+selection_fin
+Expression # selection
+Expression # id # super
+fin_id
+super((null))
+selection_fin
+fin_aff
+		0 bloc ok
+0 Methodes
+	Portée de [Point]:
+		1 paramètres
+Variables
+this(Point)..result(Point)..yc(Integer)..xc(Integer)..
+Instruction # aff
+Expression # selection
+Expression # id # this
+fin_id
+this(Point)
+selection_fin
+Expression # id # xc
+fin_id
+fin_aff
+Instruction # aff
+Expression # selection
+Expression # id # this
+fin_id
+this(Point)
+selection_fin
+Expression # id # yc
+fin_id
+fin_aff
+		1 bloc ok
+0 Constructeurs
+________________________________________
+|||||||Integer:
+1 Nom
+1 Parametres
+1 Attributs
+1 Attributs
+	Portée de [toString]:
+		1 nom
+		1 paramètres
+		1 type du return
+		1 bloc ok
+1 Methodes
+	Portée de [Integer]:
+		1 paramètres
+		1 bloc ok
+1 Constructeurs
+________________________________________
+|||||||String:
+1 Nom
+1 Parametres
+1 Attributs
+1 Attributs
+1 Attributs
+	Portée de [print]:
+		1 nom
+		1 paramètres
+		1 type du return
+		1 bloc ok
+	Portée de [println]:
+		1 nom
+		1 paramètres
+		1 type du return
+		1 bloc ok
+1 Methodes
+	Portée de [String]:
+		1 paramètres
+		1 bloc ok
+1 Constructeurs
+________________________________________
+|||||||Void:
+1 Nom
+1 Parametres
+1 Attributs
+1 Methodes
+________________________________________
+[[[[[[[[[[[[[[[[[[[L'analyse de portée est donc 0]]]]]]]]]]]]]]]]]]]

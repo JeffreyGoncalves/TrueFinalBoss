@@ -367,7 +367,7 @@ void afficheObj(t_object* liste){
 void afficheParam(VarDeclP liste){
 
 	while(liste != NIL(VarDecl)){
-		printf("%s : %s, ", liste->name, liste->coeur->_type->name);
+		printf("%s : %s (isInit : %d), ", liste->name, liste->coeur->_type->name, liste->isInit);
 		liste = liste->next;
 	}
 	
@@ -405,8 +405,8 @@ void compile(TreeP listClassObject, TreeP core){
 	verifPorteeProg(core, environnement);
 	
 	printf("\n\n********			Typage			********\n");
-	if(!verificationTypage(environnement, core))
-		abort();
+	/*if(!verificationTypage(environnement, core))
+		abort();*/
 		
 	printf("\n\n********			Paramètre			********\n");
 

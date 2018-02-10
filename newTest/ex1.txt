@@ -20,7 +20,7 @@ class Point(var x: Integer, var y: Integer := 0, var name: String := "")
 
   def gety() : Integer := this.y
 
-  def cloned() : Integer := hasClone <> 0
+  def cloned() : Integer := this.hasClone <> 0
 
   def move(dx: Integer, dy: Integer, verbose: Integer := 0) : Point is {
       x := x + dx; y := y + dy;

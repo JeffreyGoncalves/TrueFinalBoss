@@ -44,6 +44,49 @@ void verifPorteeProg(TreeP tree, list_ClassObjP classObjList)
 	}
 }
 
+void setInitTrue(TreeP exprTree)
+{
+	printf("Set de l'init : OK\n");
+	/* Cas Id */
+	if(exprTree->op == _ID)
+	{
+		exprTree->u.lvar->isInit = TRUE;
+	}
+	
+	/* Cas E_SELECT */
+	else if(exprTree->op == E_SELECT) 
+	{
+		VarDeclP var = getChild(exprTree, 1)->u.lvar;
+		var->isInit = TRUE;
+	}
+	
+	/* Note : il n'est pas possible d'avoir un ID_C car impossible d'initialiser un Objet en declaration */
+}
+
+bool verifInit(TreeP exprTree)
+{
+	bool toReturn = TRUE;
+	printf("Verification de l'init : ");
+	
+	/* Cas Id */
+	if(exprTree->op == _ID)
+	{
+		if(!exprTree->u.lvar->isInit && strcmp(exprTree->u.lvar->name, "this") && strcmp(exprTree->u.lvar->name, "super"))
+			toReturn = FALSE;
+	}
+	
+	/* Cas Selection */
+	else if(exprTree->op == E_SELECT)
+	{
+		VarDeclP var = getChild(exprTree, 1)->u.lvar;
+		if(!var->isInit)
+			toReturn = FALSE;
+	}
+	
+	printf("%d\n", toReturn);
+	return toReturn;
+}
+
 bool verifPorteeInst(TreeP inst, VarDeclP listDecl, list_ClassObjP classObjList)
 {
 	bool toReturn = TRUE;
@@ -101,6 +144,16 @@ bool verifPorteeInst(TreeP inst, VarDeclP listDecl, list_ClassObjP classObjList)
 				  Expr = getChild(inst, 1);
 			toReturn = verifPorteeExpr(Obj, listDecl, classObjList)
 					&& verifPorteeExpr(Expr, listDecl, classObjList);
+			/* Affectation effectuee si valide au dessus */
+			if(toReturn){
+				if(!verifInit(Expr))
+				{
+					setError(INIT_ERROR);
+					toReturn = FALSE;
+				}
+				else setInitTrue(Obj);
+				
+			}
 			/*printf("%d et %d\n",verifPorteeExpr(Obj, listDecl, classObjList),verifPorteeExpr(Expr, listDecl, classObjList));
 			*/printf("fin_aff\n");
 		}

@@ -96,6 +96,7 @@ typedef unsigned char bool;
 #define EVAL_ERROR	50	/* dubious when writing a compiler ! */
 #define OVERRIDE_ERROR 51 /* Override forbidden for methods of object */
 #define VAR_NOT_FOUND 52 /* Variable not found */
+#define INIT_ERROR 53 /* Variable used but not initialised */
 #define CLASS_NOT_FOUND 404 /* Class is not found :) */
 #define UNEXPECTED	10O
 
@@ -104,6 +105,7 @@ typedef unsigned char bool;
 typedef struct _varDecl {
 	char *name;
 	struct t_variable* coeur;
+	bool isInit;
 	struct _varDecl *next;
 } VarDecl, *VarDeclP;
 

@@ -68,7 +68,8 @@ ListParamClause : ListParam			{ $$ = $1;
 ListParam : Param ',' ListParam 		{ TreeP list = $3;
 										  ajouteParam(list, $1);
 							              $$ = list;}
-| Param 					{ $$ = makeLeafParam(LIST_PARAM, $1);}
+| Param 					{ $$ = makeLeafParam(LIST_PARAM, $1);
+							  $$->u.lvar->isInit = TRUE;		}
 ;
 
 Param : Var ID':' ID_C Init			{ if ($1 == NIL(Tree)) $$ = makeVarDeclP($2, $4, $5, 0);
@@ -133,7 +134,11 @@ ClassClause : ':' ID_C	{ $$ = makeLeafLVar(CLASS_NAME, makeVarDeclP($2, NULL, NI
 //////////////////////////////
 
 //Champ dans un objet
-Champ : VAR ID ':' ID_C Init ';' 	  { $$ = makeVarDeclP($2, $4, $5, 1);}
+Champ : VAR ID ':' ID_C Init ';' 	  { $$ = makeVarDeclP($2, $4, $5, 1);
+										if($5 != NIL(Tree)){
+											$$->isInit = TRUE;
+										}
+									  }
 ;
 ////////////////////////////////
 
