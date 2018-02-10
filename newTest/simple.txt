@@ -3,8 +3,8 @@ class Point(xc: Integer, yc: Integer) {
      this.w2 := -25;
   } is {
   var x: Integer;
-  /* var y := yc; */         /* erreur contextuelle: yc inconnu */
-  /* var y: Integer := this.x; */ /* valeur de x encore indefinie */
+  /*var y : Integer := yc;*/         /* erreur contextuelle: yc inconnu */
+  /* var y: Integer := x; */ /* valeur de x encore indefinie */
   var y : Integer := 5;
   var z: Integer;
   var w: Integer := this.y + 1;  /* OK : valeur de y deja definie */

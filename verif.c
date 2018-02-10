@@ -163,6 +163,11 @@ bool verifPorteeObject(t_object* object, list_ClassObjP classObjList)
 		free(VarDeclBuffer->coeur->_type); /** C'était une classe temporaire.*/
 		VarDeclBuffer->coeur->_type = ClassBuffer;
 		
+		/**		On regarde si l'expression est correcte	*/
+		printf("	%s\n",VarDeclBuffer->name);
+		toReturn = toReturn && verifPorteeExpr(VarDeclBuffer->coeur->value, InitialisationSuperThisResultO(NIL(t_method), object, NIL(VarDecl)), classObjList);
+
+		
 		VarDeclBuffer = VarDeclBuffer->next;
 	}
 	printf("%d Attributs\n",toReturn);
@@ -225,6 +230,7 @@ bool verifPorteeClass(t_class* class, list_ClassObjP classObjList){
 		VarDeclBuffer = VarDeclBuffer->next;
 	}
 	printf("%d Parametres\n",toReturn);
+	
 	/* Verification attributs */
 	VarDeclBuffer = class->attributes;
 	while(VarDeclBuffer != NIL(VarDecl)){
@@ -239,13 +245,17 @@ bool verifPorteeClass(t_class* class, list_ClassObjP classObjList){
 		free(VarDeclBuffer->coeur->_type); /** C'était une classe temporaire.*/
 		VarDeclBuffer->coeur->_type = ClassBuffer;
 		
+		/**		On regarde si l'expression est correcte	*/
+		printf("	%s\n",VarDeclBuffer->name);
+		toReturn = toReturn && verifPorteeExpr(VarDeclBuffer->coeur->value, InitialisationSuperThisResultC(NIL(t_method), class, NIL(VarDecl)), classObjList);
+
 		VarDeclBuffer = VarDeclBuffer->next;
 	}
 	printf("%d Attributs\n",toReturn);
+	
 	/* Verification methodes */
 	t_method* methodBuffer = class->methods;
 					while(methodBuffer != NIL(t_method)){
-						printf("%d Attributs\n",toReturn);
 						methodBuffer = methodBuffer->next;
 					}
 					methodBuffer = class->methods;
@@ -395,7 +405,7 @@ bool verifPorteeBloc(TreeP tree, VarDeclP listDecl, list_ClassObjP classObjList)
 	if(tree->op == I_BLOC){
 		
 		bool toReturn = TRUE;
-		VarDeclP listVarDecl = getChild(tree, 0)->u.lvar;
+		VarDeclP listVarDecl = getChild(tree, 0)->u.lvar, tempo = NIL(VarDecl);
 		TreeP listInst = getChild(tree,1);
 		
 		/**** Verification de la liste de declaration ****/
@@ -420,7 +430,20 @@ bool verifPorteeBloc(TreeP tree, VarDeclP listDecl, list_ClassObjP classObjList)
 			free(iterator->coeur->_type); /** C'était une classe temporaire.*/
 			iterator->coeur->_type = ClassBuffer;
 			
+			
+			/** ICI on regarde l'expression d'initialisation de variable. **/
+			if(tempo != NIL(VarDecl)){
+				/*afficheListVarDeclP(listVarDecl);*/
+				tempo->next = listDecl;
+				/*afficheListVarDeclP(listVarDecl);*/
+				toReturn = toReturn && verifPorteeExpr(iterator->coeur->value, listVarDecl, classObjList);
+				tempo->next = iterator;
+			}else{
+				toReturn = toReturn && verifPorteeExpr(iterator->coeur->value, listDecl, classObjList);
+			}
+			tempo = iterator;
 			iterator = iterator->next;
+			/*afficheListVarDeclP(listVarDecl);*/
 		}
 		/*************************************************/
 		
@@ -1341,12 +1364,13 @@ VarDeclP InitialisationSuperThisResultC(t_method* method, t_class* class, VarDec
 	
 	/**		CREATION DE result	*/
 	VarDeclP result = NIL(VarDecl);
-	if(0 != strcmp(method->returnType->name,"Void")){
-		result = NEW(1, VarDecl);
-		result->coeur = NEW(1, t_variable);
-		result->coeur->_type = method->returnType;
-		result->name = "result";
-		
+	if(method != NIL(t_method)){ /* On a method == NIL pour l'expression des attributs d'une classe/objet. */
+		if(0 != strcmp(method->returnType->name,"Void")){
+			result = NEW(1, VarDecl);
+			result->coeur = NEW(1, t_variable);
+			result->coeur->_type = method->returnType;
+			result->name = "result";
+		}
 	}
 	
 	/**		CREATION DE super	*/
@@ -1385,12 +1409,13 @@ VarDeclP InitialisationSuperThisResultO(t_method* method, t_object* object, VarD
 	
 	/**		CREATION DE result	*/
 	VarDeclP result = NIL(VarDecl);
-	if(0 != strcmp(method->returnType->name,"Void")){
-		result = NEW(1, VarDecl);
-		result->coeur = NEW(1, t_variable);
-		result->coeur->_type = method->returnType;
-		result->name = "result";
-		
+	if(method != NIL(t_method)){
+		if(0 != strcmp(method->returnType->name,"Void")){
+			result = NEW(1, VarDecl);
+			result->coeur = NEW(1, t_variable);
+			result->coeur->_type = method->returnType;
+			result->name = "result";
+		}
 	}
 
 	if(result != NIL(VarDecl)){
