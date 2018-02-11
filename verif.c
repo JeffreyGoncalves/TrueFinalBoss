@@ -912,7 +912,7 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 		return result;
 	}
 	
-	/**		On verifie que le typage est bon pour les fils. Grace a cela on peut connaitre le type d'une expression entiere.	*/
+	/*		On verifie que le typage est bon pour les fils. Grace a cela on peut connaitre le type d'une expression entiere.	*/
 	for(i=0 ; i<noeud->nbChildren ; i++){
 		veriFils[i] = verifcationTypageNoeud(getChild(noeud, i), env);
 		if(!(veriFils[i].succes)){

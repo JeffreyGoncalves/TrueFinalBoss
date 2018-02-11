@@ -118,7 +118,7 @@ void setError(int code) {
 	printf("{ERROR} Il y a une erreur de type.\n");
   }
   else{
-	  	printf("{ERROR} Il y a une erreur.\n");
+	  	printf("{ERROR} Il y a une erreur (code %d).\n", code);
 	}
 }
 
