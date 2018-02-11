@@ -1162,10 +1162,11 @@ bool verificationTypageMethode(t_class* C, t_method* method, list_ClassObjP env)
 
 		
 		/*****ON VERIFIE SI LA METHODE EST BIEN REDEFINIE*****/
+		int valide;
 		if(method->isRedef){
 			
 			t_class* Ci = C->superClass;
-			int valide = 0;
+			valide = 0;
 			
 			while(Ci != NIL(t_class)){
 				t_method* i = Ci->methods;
@@ -1178,12 +1179,18 @@ bool verificationTypageMethode(t_class* C, t_method* method, list_ClassObjP env)
 							VarDeclP j = i->parametres;
 							VarDeclP h = method->parametres;
 							
-							while(j != NIL(VarDecl)){
-								if(0 == strcmp(j->name, h->name) && 0 == strcmp(j->coeur->_type->name, h->coeur->_type->name)){
-										valide = 1;
-									}
-								j = j->next;
-								h = h->next;
+							if(i->nbParametres == method->nbParametres){
+								/**		Ne marche pas si nbParametres = 0	*/
+								while(j != NIL(VarDecl)){
+									if(0 == strcmp(j->name, h->name) && 0 == strcmp(j->coeur->_type->name, h->coeur->_type->name)){
+											valide = 1;
+										}
+									j = j->next;
+									h = h->next;
+								}
+								
+								/**		Utilisee si nbParametres = 0	*/
+								if(i->nbParametres == 0) valide = 1;
 							}
 					}
 					i = i->next;
@@ -1191,7 +1198,9 @@ bool verificationTypageMethode(t_class* C, t_method* method, list_ClassObjP env)
 				Ci = Ci->superClass;
 			}
 			toReturn = valide && toReturn;
+			if(!valide) setError(OVERRIDE_ERROR);
 		}
+		
 		printf("		Redefinition : %d\n", toReturn);
 		method = method->next;
 	}
