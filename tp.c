@@ -89,26 +89,58 @@ void setError(int code) {
      */
     /*  abort(); */
   }
-  if(code == NO_EXISTING_METHOD){
-    printf("Cette methode n'existe pas (cf ligne %d)\n",yylineno);
-  } 
 
-  else if(code == PARAM_ERROR_1){
-  	printf("Une methode/Un constructeur ne possede pas le bon nombre de parametres : ligne %d\n",yylineno);
+
+  if(code == PARAM_ERROR_1){
+  	printf("{ERROR} Une methode/Un constructeur ne possede pas le bon nombre de parametres : ligne %d\n",yylineno);
   }
 
   else if(code == PARAM_ERROR_2){
-  	printf("Un parametre ou plusieurs parametres n'ont pas le bon type : ligne %d\n",yylineno);
+  	printf("{ERROR} Un parametre ou plusieurs parametres n'ont pas le bon type : ligne %d\n",yylineno);
   }
   
   else if(code == CLASS_NOT_FOUND){
-	printf("L'une des classes utilisee a cette ligne n'existe pas : ligne %d\n",yylineno);
+	printf("{ERROR} L'une des classes utilisee est inconnue.\n");
+  }
+  else if(code == VAR_NOT_FOUND){
+	printf("{ERROR} L'une des variables utilisee est inconnue\n");
+  }
+  else if(code == RETURN_ERROR){
+	printf("{ERROR} La variable \"result\" n'est pas initialisee ou il y a une erreur sur le type de retour.\n");
+  }
+  else if(code == NO_EXISTING_METHOD){
+	printf("{ERROR} L'une des methodes utilisee est inconnue\n");
+  }
+  else if(code == OVERRIDE_ERROR){
+	printf("{ERROR} Il y a un overrides interdit ou incorrecte.\n");
+  }
+  else if(code == TYPE_ERROR){
+	printf("{ERROR} Il y a une erreur de type.\n");
   }
   else{
-	  	printf("Il y a une erreur. : ligne %d\n",yylineno);
+	  	printf("{ERROR} Il y a une erreur.\n");
 	}
 }
 
+#define NO_ERROR	0
+#define USAGE_ERROR	1
+#define LEXICAL_ERROR	2
+#define SYNTAX_ERROR    3
+#define CONTEXT_ERROR	40	/* default value for this stage */
+#define DECL_ERROR	41	/* scope problem */
+#define TYPE_ERROR	42	/* type checking problem */
+#define OTHER_CONTEXTUAL_ERROR	43 /* replace by something more precise */
+#define REDECL_ERROR 44 /* Redeclaration problem */
+#define RESERV_DECL_ERROR 45 /* Forbidden use of a reserved ID (this, super, result) */
+#define RETURN_ERROR 46 /* Forbidden use of return */
+#define NO_EXISTING_METHOD 47 /*This method does not exist in its class*/
+#define PARAM_ERROR_1 48 /*Wrong number of parameters*/
+#define PARAM_ERROR_2 49 /*A parameter or several parameters do not have the right type*/
+#define EVAL_ERROR	50	/* dubious when writing a compiler ! */
+#define OVERRIDE_ERROR 51 /* Override forbidden for methods of object */
+#define VAR_NOT_FOUND 52 /* Variable not found */
+#define INIT_ERROR 53 /* Variable used but not initialised */
+#define CLASS_NOT_FOUND 404 /* Class is not found :) */
 
 /* yyerror:  fonction importee par Bison et a fournir explicitement. Elle
  * est appelee quand Bison detecte une erreur syntaxique.

@@ -87,10 +87,13 @@ bool verifInit(TreeP exprTree)
 	return toReturn;
 }
 
+/* Verification contextuelle : Portee
+ * 		Instantiation
+ * */
 bool verifPorteeInst(TreeP inst, VarDeclP listDecl, list_ClassObjP classObjList)
 {
 	bool toReturn = TRUE;
-	/*afficheListVarDeclP(listDecl);*/
+
 	printf("\nInstruction # ");
 		/* Bloc */
 		if(inst->op == I_BLOC) toReturn = verifPorteeBloc(inst, listDecl, classObjList);
@@ -116,22 +119,18 @@ bool verifPorteeInst(TreeP inst, VarDeclP listDecl, list_ClassObjP classObjList)
 			printf("fin_return\n");
 		}
 		
-		/* ITE */
+		/* If Then Else */
 		else if(inst->op == I_ITE)
 		{
 			printf("ite\n");
+			
 			TreeP Expr = getChild(inst, 0),
 				  Inst1 = getChild(inst, 1),
 				  Inst2 = getChild(inst, 2);
-			/*toReturn = verifPorteeExpr(Expr, listDecl, classObjList)
-					&& verifPorteeInst(Inst1, listDecl, classObjList) 
-					&& verifPorteeInst(Inst2, listDecl, classObjList);*/
+
 			toReturn = verifPorteeExpr(Expr, listDecl, classObjList);
-			/*printf("condition [%d]\n", toReturn);*/
 			toReturn = toReturn && verifPorteeInst(Inst1, listDecl, classObjList);
-			/*printf("then [%d]\n", toReturn);*/
 			toReturn = toReturn && verifPorteeInst(Inst2, listDecl, classObjList);
-			/*printf("else [%d]\n", toReturn);*/
 			
 			printf("fin_ite\n");
 		}
@@ -140,55 +139,77 @@ bool verifPorteeInst(TreeP inst, VarDeclP listDecl, list_ClassObjP classObjList)
 		else if(inst->op == I_AFF)
 		{
 			printf("aff\n");
+			
 			TreeP Obj = getChild(inst, 0),
 				  Expr = getChild(inst, 1);
+
 			toReturn = verifPorteeExpr(Obj, listDecl, classObjList)
 					&& verifPorteeExpr(Expr, listDecl, classObjList);
-			/*printf("%d et %d\n",verifPorteeExpr(Obj, listDecl, classObjList),verifPorteeExpr(Expr, listDecl, classObjList));
-			*/printf("fin_aff\n");
+					
+			printf("fin_aff\n");
 		}
 		
 		/* Expression */
 		else if(inst->op == I_EXPRRELOP)
 		{
 			printf("relop\n");
+			
 			toReturn = verifPorteeExpr(getChild(inst, 0), listDecl, classObjList);
+			
 			printf("relop_fin\n");
 		}  
 		
 		else
 		{
-			printf("rien\n");
+			setError(CONTEXT_ERROR);
 			toReturn = FALSE;
-			/* CAS NE DEVANT JAMAIS ARRIVER */
+			/* Ce cas ne doit arriver */
 		}
 
 	return toReturn;
 }
 
+/* Verification contextuelle : Portee
+ * 		Parcours classes & objets
+ * */
 bool verifPorteeClassObj(list_ClassObjP classObjList)
-{	
+{
+	/**		On verifie les classes puis les objets.	*/
+	
 	return verifPorteeListClass(classObjList)
 		&& verifPorteeListObject(classObjList);
 }
 
+/* Verification contextuelle : Portee
+ * 		Parcours objets
+ * */
 bool verifPorteeListObject(list_ClassObjP classObjList)
 {
+	/**		On parcours simplement les objets	*/
+	
 	printf("********		Portée des objets		********\n");
+	
 	bool toReturn = TRUE;
 	t_object* objectBuffer = classObjList->listObj;
+	
 	while(objectBuffer != NIL(t_object)){
 		if(!verifPorteeObject(objectBuffer, classObjList) && toReturn) toReturn = FALSE;
 		objectBuffer = objectBuffer->next;
 	}
+	
 	printf("*****************************************\n");
 	return toReturn;
 }
 
+/* Verification contextuelle : Portee
+ * 		Objet isole
+ * */
 bool verifPorteeObject(t_object* object, list_ClassObjP classObjList)
 {
 	bool toReturn = TRUE;
+	
 	printf("|||||||%s:\n",object->name);
+	
 	/*	On vérifie que le nom n'existe pas deja */
 	toReturn = toReturn && verificationNomClasse(classObjList, object->name);
 	printf("%d Nom\n",toReturn);
@@ -210,7 +231,6 @@ bool verifPorteeObject(t_object* object, list_ClassObjP classObjList)
 		/**		On regarde si l'expression est correcte	*/
 		printf("	%s\n",VarDeclBuffer->name);
 		toReturn = toReturn && verifPorteeExpr(VarDeclBuffer->coeur->value, InitialisationSuperThisResultO(NIL(t_method), object, NIL(VarDecl)), classObjList);
-
 		
 		VarDeclBuffer = VarDeclBuffer->next;
 	}
@@ -233,6 +253,9 @@ bool verifPorteeObject(t_object* object, list_ClassObjP classObjList)
 	return toReturn;
 }
 
+/* Verification contextuelle : Portee
+ * 		Parcours classes
+ * */
 bool verifPorteeListClass(list_ClassObjP classObjList)
 {
 	printf("********		Portée des classes		********\n");
@@ -251,6 +274,7 @@ bool verifPorteeListClass(list_ClassObjP classObjList)
 	 * En effet, il y avait le risque que nous checkons une classe dépendante d'une autre. Or cette dernière n'a pas encore été initialisée
 	 * car la liste est inversée de base. */
 	
+	/* On parcourt....*/
 	while(nbreDeClasse >= 0)
 	{
 		iterator = classObjList->listClass;
@@ -264,6 +288,9 @@ bool verifPorteeListClass(list_ClassObjP classObjList)
 	return toReturn;
 }
 
+/* Verification contextuelle : Portee
+ * 		Classe
+ * */
 bool verifPorteeClass(t_class* class, list_ClassObjP classObjList){
 	
 	bool toReturn = TRUE;
@@ -271,6 +298,7 @@ bool verifPorteeClass(t_class* class, list_ClassObjP classObjList){
 	
 	
 	printf("|||||||%s:\n",class->name);
+	
 	/*	On vérifie que le nom n'existe pas deja */
 	if(!verificationNomClasse(classObjList, class->name) && toReturn) toReturn = FALSE;
 	printf("%d Nom\n",toReturn);
@@ -340,6 +368,9 @@ bool verifPorteeClass(t_class* class, list_ClassObjP classObjList){
 	return toReturn;
 }
 
+/* Verification contextuelle : Portee
+ * 		Methodes des classes
+ * */
 bool verifPorteeMethodC(t_method* method, t_class* class, list_ClassObjP classObjList)
 {
 	bool toReturn = TRUE;
@@ -371,7 +402,7 @@ bool verifPorteeMethodC(t_method* method, t_class* class, list_ClassObjP classOb
 		setError(CLASS_NOT_FOUND);
 		toReturn = FALSE;
 	}
-	/*free(method->returnType); *//** C'était une classe temporaire.*/
+	
 	method->returnType = ClassBuffer;
 	printf("		%d type du return\n",toReturn);
 	
@@ -383,6 +414,9 @@ bool verifPorteeMethodC(t_method* method, t_class* class, list_ClassObjP classOb
 	return toReturn;
 }
 
+/* Verification contextuelle : Portee
+ * 		Methodes des objets
+ * */
 bool verifPorteeMethodO(t_method* method, t_object* object, list_ClassObjP classObjList){
 	bool toReturn = TRUE;
 	t_class* ClassBuffer;
@@ -422,6 +456,9 @@ bool verifPorteeMethodO(t_method* method, t_object* object, list_ClassObjP class
 	return toReturn;
 }
 
+/* Verification contextuelle : Portee
+ * 		Constructeurs des classes
+ * */
 bool verifPorteeConstructor(t_method* method, t_class* class, list_ClassObjP classObjList){
 	
 	printf("	Portée de [%s]:\n",method->name);
@@ -440,7 +477,7 @@ bool verifPorteeConstructor(t_method* method, t_class* class, list_ClassObjP cla
 			setError(CLASS_NOT_FOUND);
 			toReturn = FALSE;
 		}
-		/*free(VarDeclBuffer->coeur->_type);*//** C'était une classe temporaire.*/
+
 		VarDeclBuffer->coeur->_type = ClassBuffer;
 		
 		VarDeclBuffer = VarDeclBuffer->next;
@@ -451,6 +488,7 @@ bool verifPorteeConstructor(t_method* method, t_class* class, list_ClassObjP cla
 	
 	/*  Idem pour le nom. */
 	
+	/**		Les classes predefinies sont creees par nos soins, elles sont forcement justes.	*/
 	if(strcmp(class->name, "String") && strcmp(class->name, "Integer") && strcmp(class->name, "Void")){
 		if(!verifPorteeBloc(method->bloc, InitialisationSuperThisResultC(method, class, method->parametres), classObjList)) toReturn = FALSE;
 	}
@@ -459,6 +497,9 @@ bool verifPorteeConstructor(t_method* method, t_class* class, list_ClassObjP cla
 	return toReturn;
 }
 
+/* Verification contextuelle : Portee
+ * 		Bloc
+ * */
 bool verifPorteeBloc(TreeP tree, VarDeclP listDecl, list_ClassObjP classObjList)
 {	
 	afficheListVarDeclP(listDecl);
@@ -493,9 +534,8 @@ bool verifPorteeBloc(TreeP tree, VarDeclP listDecl, list_ClassObjP classObjList)
 			
 			/** ICI on regarde l'expression d'initialisation de variable. **/
 			if(tempo != NIL(VarDecl)){
-				/*afficheListVarDeclP(listVarDecl);*/
 				tempo->next = listDecl;
-				/*afficheListVarDeclP(listVarDecl);*/
+
 				toReturn = toReturn && verifPorteeExpr(iterator->coeur->value, listVarDecl, classObjList);
 				tempo->next = iterator;
 			}else{
@@ -503,7 +543,7 @@ bool verifPorteeBloc(TreeP tree, VarDeclP listDecl, list_ClassObjP classObjList)
 			}
 			tempo = iterator;
 			iterator = iterator->next;
-			/*afficheListVarDeclP(listVarDecl);*/
+
 		}
 		/*************************************************/
 		
@@ -539,7 +579,9 @@ bool verifPorteeBloc(TreeP tree, VarDeclP listDecl, list_ClassObjP classObjList)
 	else return verifPorteeExpr(tree, listDecl, classObjList);
 }
 
-/* A TRAVAILLER */
+/* Verification contextuelle : Portee
+ * 		Expression
+ * */
 bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList)
 {
 	printf("Expression # ");
@@ -633,7 +675,7 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList)
 					else{
 						getChild(Expr, 0)->u.lvar->coeur->_obj = objectBuffer;
 					}
-				}else{/**		cas avec Object.ID ou (ExprRelop).ID		*/
+				}else{/*		cas avec Object.ID ou (ExprRelop).ID		*/
 					
 					toReturn = toReturn && verifPorteeExpr(getChild(Expr, 0), listDecl, classObjList);
 					
@@ -746,7 +788,6 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList)
 				/* On cherche le ID_C, s'il existe ou non.*/
 				if(getChild(Expr, 0)->op == _ID && getChild(Expr, 0)->u.lvar->name[0] <= 90){
 					objectBuffer = FindObject(classObjList->listObj, getChild(Expr, 0)->u.lvar->name);
-					printf("OBJECT\n");
 					if(objectBuffer == NIL(t_object)){
 						setError(CLASS_NOT_FOUND);
 						toReturn = FALSE;
@@ -883,8 +924,8 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList)
 				break;
 			
 			default:
+				/**		Repressente tous les autres cas inutile a traiter.	*/
 				printf("+ ou - ou * ou etc..."); printOP(Expr->op);
-				/*bool toReturn = TRUE;*/
 				for(i=0;i<Expr->nbChildren;i++)
 					toReturn = toReturn && verifPorteeExpr(getChild(Expr, i), listDecl, classObjList);
 				printf("+ ou - ou * ou etc... _fin\n");
@@ -896,7 +937,11 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList)
 }
 /******************************************************************************************/
 
+/* Verification contextuelle : Typage
+ * 		Noeud de l'arbre
+ * */
 Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
+	
 	printf("Typage # ");
 	
 	Vtypage result;
@@ -905,6 +950,7 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 	t_method* m = NIL(t_method);
 	result.succes = 1;
 	
+	/*		Si le noeud est NIL, il est forcement juste car il n'y a pas de conflit de type.	*/
 	if(noeud == NIL(Tree)){
 		printf("NIL(Tree) ~ \n");
 		result.type.class = NIL(t_class);
@@ -913,7 +959,7 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 	
 	printOP(noeud->op);
 	
-	
+	/**		On verifie que le typage est bon pour les fils. Grace a cela on peut connaitre le type d'une expression entiere.	*/
 	for(i=0 ; i<noeud->nbChildren ; i++){
 		veriFils[i] = verifcationTypageNoeud(getChild(noeud, i), env);
 		if(!(veriFils[i].succes)){
@@ -922,6 +968,7 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 		}
 	}
 	
+	/*		On traite les differents cas.	*/
 	switch(noeud->op){
 		
 		case I_BLOC:
@@ -936,7 +983,7 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 		case LIST_INST:
 			return result;
 
-		case I_RETURN: /* PAS FINI ! */
+		case I_RETURN:
 			printf("return\n");
 			return result;
 		
@@ -1000,7 +1047,7 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 		
 		case _ID:
 			printf("id (%s) de type ", noeud->u.lvar->name);
-			/*printf("%s   %c \n",noeud->u.lvar->name, noeud->u.lvar->name[0]);*/
+			
 			if(noeud->u.lvar->name[0] <= 91){
 				result.type.class = FindClass(env->listClass, noeud->u.lvar->name);
 				if(result.type.class == NIL(t_class)){
@@ -1027,7 +1074,7 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 			return result;
 			break;
 			
-		case CAST: /* TODO */
+		case CAST:
 			printf("cast %d\n", AEstSuperDeB(getChild(noeud, 0)->u.lvar->name, veriFils[1].type.class->name, env));
 			
 			if(AEstSuperDeB(getChild(noeud, 0)->u.lvar->name, veriFils[1].type.class->name, env)){
@@ -1042,7 +1089,7 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 			return result;
 			break;
 		
-		case E_CALL_METHOD: /*  */
+		case E_CALL_METHOD:
 			printf("call_method\n");
 			
 			if(getChild(noeud, 0)->op == _ID){
@@ -1075,18 +1122,20 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 		
 		default:
 			printOP(noeud->op);
-			printf("  etiquette NON RECONNUE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
 			setError(CONTEXT_ERROR);
 			break;
 			
 	}
 	
 	printOP(noeud->op);
-	/*setErro();*/
+	setErro(CONTEXT_ERROR);
 	result.succes = 0;
 	return result;
 }
 
+/* Verification contextuelle : Typage
+ * 		Parcours des fils d'un noeud.
+ * */
 Vtypage verifTypageSuccesFils(short nbre, TreeP noeud, list_ClassObjP env){
 	Vtypage res;
 	res.succes = 0;
@@ -1100,22 +1149,26 @@ Vtypage verifTypageSuccesFils(short nbre, TreeP noeud, list_ClassObjP env){
 	return res;
 }
 
+/* Verification contextuelle : Typage
+ * 		Liste de VarDeclP chainés
+ * */
 Vtypage verifcationTypageListVarDecl(VarDeclP liste, list_ClassObjP env){
 	
 	Vtypage result;
 	
 	while(liste != NIL(VarDecl)){
 		
+		/**		On verifie son expression	*/
 		Vtypage expr = verifcationTypageNoeud(liste->coeur->value, env);
 		
 		printf("	%s : ", liste->name);
 		
+		/**		On verifie que cela correspond bien avec son type.	*/
 		if(!(expr.succes)){
 			result.succes = 0;
 			printf("0\n");
 			return result;
 		}else if(expr.type.class != NIL(t_class)){
-			/*printf("\n%s VS %s = %d\n",expr.type.class->name, liste->coeur->_type->name, strcmp(expr.type.class->name, liste->coeur->_type->name));*/
 			if(strcmp(expr.type.class->name, liste->coeur->_type->name)){
 				result.succes = 0;
 				printf("0\n");
@@ -1144,6 +1197,9 @@ int AEstSuperDeB(char* A, char* B,list_ClassObjP env){
 	return 0;
 }
 
+/* Verification contextuelle : Typage
+ * 		Methodes de classes
+ * */
 bool verificationTypageMethode(t_class* C, t_method* method, list_ClassObjP env){
 	bool toReturn;
 	
@@ -1217,6 +1273,9 @@ bool verificationTypageMethode(t_class* C, t_method* method, list_ClassObjP env)
 	return toReturn;
 }
 
+/* Verification contextuelle : Typage
+ * 		Methodes d'objets
+ * */
 bool verificationTypageMethodeO(t_method* method, list_ClassObjP env){
 	bool toReturn;
 	
@@ -1239,7 +1298,6 @@ bool verificationTypageMethodeO(t_method* method, list_ClassObjP env){
 		
 		}else{
 			/** Cas 2 : la methode est de type 2 (avec bloc)*/
-			printf("ndfsdfukgsdufhfdhfhdsfh\n");
 			classBuffer = getReturnType(method->bloc, env);
 			if(!strcmp(classBuffer->name, "Void") && strcmp(method->returnType->name, "Void")){
 				if(isDeclared(method->bloc, "result")) classBuffer = method->returnType;
@@ -1252,7 +1310,7 @@ bool verificationTypageMethodeO(t_method* method, list_ClassObjP env){
 
 
 		if(method->isRedef){
-			/*setError();*/
+			setError(OVERRIDE_ERROR);
 			toReturn = FALSE;
 		}
 		
@@ -1261,6 +1319,9 @@ bool verificationTypageMethodeO(t_method* method, list_ClassObjP env){
 	return toReturn;
 }
 
+/* Verification contextuelle : Typage
+ * 		Constructeurs de classes
+ * */
 bool verificationTypageConstructeur(t_class* C, t_method* method, list_ClassObjP env){
 	bool toReturn;
 	
@@ -1280,6 +1341,9 @@ bool verificationTypageConstructeur(t_class* C, t_method* method, list_ClassObjP
 	return toReturn;
 }
 
+/* Verification contextuelle : Typage
+ * 		Ensemble des classes & des objets
+ * */
 bool verificationTypageEnvironnement(list_ClassObjP env){
 	
 	bool toReturn = TRUE;
@@ -1288,6 +1352,7 @@ bool verificationTypageEnvironnement(list_ClassObjP env){
 	
 	while(i != NIL(t_class)){
 		printf("|||||||%s:\n",i->name);
+		
 		if(strcmp(i->name,"Void") && strcmp(i->name,"String") && strcmp(i->name,"Integer")){
 			toReturn = (verifcationTypageListVarDecl(i->parametres, env).succes);
 			printf("%d Parametres\n",toReturn);
@@ -1326,6 +1391,9 @@ bool verificationTypageEnvironnement(list_ClassObjP env){
 	return toReturn;
 }
 
+/* Verification contextuelle : Typage
+ * 		Environnement puis programme coeur
+ * */
 bool verificationTypage(list_ClassObjP env, TreeP core){
 	bool toReturn;
 	
@@ -1341,16 +1409,12 @@ bool verificationTypage(list_ClassObjP env, TreeP core){
 	return toReturn;
 }
 
+/* Verification contextuelle : Typage
+ * 		Vérification du type de retour.
+ * */
 t_class* getReturnType(TreeP tree, list_ClassObjP env){
 	
-	
-	
-	/*if(tree->op == I_RETURN){
-		printf("ndfsdfukgsdufhfdhfhdsfh		%s\n",tree->u.lvar->coeur->_type->name);
-		printOP(tree->op);
-		return tree->u.lvar->coeur->_type;
-		
-	}else */if(tree->nbChildren != 0){
+	if(tree->nbChildren != 0){
 		printOP(tree->op);
 		t_class* res = NIL(t_class);
 		
@@ -1464,6 +1528,9 @@ bool verificationParametres(TreeP block){
 		return toReturn;
 }*/
 
+/* Verification contextuelle : Super
+ * 		Verification des boucles d'heritage
+ * */
 bool verificationBoucleHeritage(t_class* class){
 
 	char* nameDepart = class->name;
@@ -1483,6 +1550,9 @@ bool verificationBoucleHeritage(t_class* class){
 	return TRUE;
 }
 
+/* Verification contextuelle : Typage
+ * 		On verifie que le nom n'existe pas 2 fois ou plus
+ * */
 bool verificationNomClasse(list_ClassObjP env, char* name){
 	
 	int DejaVu = 0;
@@ -1516,6 +1586,9 @@ bool verificationNomClasse(list_ClassObjP env, char* name){
 	return TRUE;
 }
 
+/* Verification contextuelle : Typage
+ * 		On verifie que le nom n'existe pas 2 fois ou plus
+ * */
 bool verificationNomVarDecl(VarDeclP env, char* name){
 	
 	int DejaVu = 0;
@@ -1553,6 +1626,9 @@ bool verificationNomVarDecl(VarDeclP env, char* name){
 	return TRUE;
 }
 
+/* Verification contextuelle : Typage
+ * 		On verifie que le nom n'existe pas 2 fois ou plus (dans une meme classe/objet)
+ * */
 bool verificationNomMethod(t_method* env, char* name){
 	
 	int DejaVu = 0;
@@ -1570,6 +1646,9 @@ bool verificationNomMethod(t_method* env, char* name){
 	return TRUE;
 }
 
+/* Verification contextuelle : Portee
+ * 		On ajoute this, result et super a la liste des variables visibles. (ou pas cela depend des cas) pour les CLASSES
+ * */
 VarDeclP InitialisationSuperThisResultC(t_method* method, t_class* class, VarDeclP param){
 	
 	/**		CREATION DE this	*/
@@ -1615,6 +1694,9 @@ VarDeclP InitialisationSuperThisResultC(t_method* method, t_class* class, VarDec
 	return this;
 }
 
+/* Verification contextuelle : Portee
+ * 		On ajoute this, result et super a la liste des variables visibles. (ou pas cela depend des cas) pour les OBJETS
+ * */
 VarDeclP InitialisationSuperThisResultO(t_method* method, t_object* object, VarDeclP param){
 	
 	/**		CREATION DE this	*/
@@ -1644,6 +1726,9 @@ VarDeclP InitialisationSuperThisResultO(t_method* method, t_object* object, VarD
 	return this;
 }
 
+/* Utilitaire.
+ * 		On affche une liste de VarDeclP.
+ * */
 void afficheListVarDeclP(VarDeclP liste){
 	printf("Variables\n");
 	while(liste != NIL(VarDecl)){
@@ -1655,6 +1740,9 @@ void afficheListVarDeclP(VarDeclP liste){
 	printf("\n");
 }
 
+/* Verification contextuelle : Typage
+ * 		On va chercher le type de retour d'une methode en fonction de la classe ou elle est, et son nom. Pour les CLASSES
+ * */
 t_class* getReturnC(t_class* class, char* nom_methode, list_ClassObjP env){
 	t_method* i = class->methods;
 	while(i != NIL(t_method)){
@@ -1664,6 +1752,9 @@ t_class* getReturnC(t_class* class, char* nom_methode, list_ClassObjP env){
 	return NIL(t_class); /* normalement n'arrive jamais.*/
 }
 
+/* Verification contextuelle : Typage
+ * 		On va chercher le type de retour d'une methode en fonction de la classe ou elle est, et son nom. Pour les OBJETS
+ * */
 t_class* getReturnO(t_object* object, char* nom_methode, list_ClassObjP env){
 	t_method* i = object->methods;
 	while(i != NIL(t_method)){
@@ -1673,6 +1764,9 @@ t_class* getReturnO(t_object* object, char* nom_methode, list_ClassObjP env){
 	return NIL(t_class); /* normalement n'arrive jamais.*/
 }
 
+/* Verification contextuelle : Portee
+ * 		On verifie que la super-classe d'une classe cible existe bel et bien.
+ * */
 bool verificationSuperClass(list_ClassObjP classObjList){
 	bool toReturn = TRUE;
 	t_class* classBuffer = classObjList->listClass;
@@ -1705,6 +1799,9 @@ bool verificationSuperClass(list_ClassObjP classObjList){
 	return toReturn;	
 }
 
+/* Verification contextuelle : Typage
+ * 		On verifie qu'une variable a bien ete initialisee. Utilisee pour "result".
+ * */
 bool isDeclared(TreeP tree, char* nameVar){
 	int i;
 	
