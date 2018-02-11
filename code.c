@@ -9,25 +9,52 @@ t_object* obj;
 
 	printf("Construction de l'arbre de test\n");
 
-    TreeP tree = makeNode(2, SUM);
-    setChild(tree, 0, makeLeafInt(CST, 2));
-    setChild(tree, 1, makeNode(2, MULT));
-    setChild(getChild(tree, 1), 0, makeLeafInt(CST, 3));
-    setChild(getChild(tree, 1), 1, makeLeafInt(CST, 4));
+//    TreeP tree = makeNode(2, SUM);
+//    setChild(tree, 0, makeLeafInt(CST, 2));
+//    setChild(tree, 1, makeNode(2, MULT));
+//    setChild(getChild(tree, 1), 0, makeLeafInt(CST, 3));
+//    setChild(getChild(tree, 1), 1, makeNode(2, E_SELECT));
+//    TreeP selectTr = getChild(getChild(tree, 1), 1);
+//    setChild(selectTr, 0, makeLeafStr(_ID, "obj"));
+//    setChild(selectTr, 1, makeLeafStr(_ID, "attr"));
 
-    t_object* obj = NEW(1, t_object);
+    TreeP aff1 = makeNode(2, I_AFF);
+    setChild(aff1, 0, makeNode(2, E_SELECT));
+    setChild(getChild(aff1, 0), 0, makeLeafStr(_ID, "obj1"));
+    setChild(getChild(aff1, 0), 1, makeLeafStr(_ID, "attr"));
+    setChild(aff1, 1, makeLeafInt(CST, 7));
+    TreeP aff2 = makeNode(2, I_AFF);
+    setChild(aff2, 0, makeNode(2, E_SELECT));
+    setChild(getChild(aff2, 0), 0, makeLeafStr(_ID, "obj2"));
+    setChild(getChild(aff2, 0), 1, makeLeafStr(_ID, "attr"));
+    setChild(aff2, 1, makeLeafInt(CST, 5));
+    TreeP tree = makeNode(2, LIST_INST);
+    setChild(tree, 0, aff1);
+    setChild(tree, 1, makeNode(2, LIST_INST));
+    setChild(getChild(tree, 1), 0, aff2);
+    setChild(getChild(tree, 1), 1, NULL);
+
     VarDeclP declA = NEW (1, VarDecl);
-    declA = makeVarDeclP("A", "Integer", NULL,0);
+    declA = makeVarDeclP("attr", "Integer", NULL);
+    obj = NEW(1, t_object);
     obj->attributes = declA;
-	
+    obj->name = "obj1";
+    VarDeclP declA2 = NEW (1, VarDecl);
+    declA2 = makeVarDeclP("attr", "Integer", NULL);
+    t_object* obj2 = NEW(1, t_object);
+    obj2->attributes = declA2;
+    obj2->name = "obj2";
+    obj->next = obj2;
 
 	FILE* pFile;
-	pFile = fopen ("myfile.txt","w");
+	pFile = fopen("myfile.txt", "w");
 	if (pFile==NULL) {
         printf("erreur fichier\n");
         return 0;
 	}
 	printf("Ecriture du code\n");
+
+	makeCodeObjet(obj, pFile);
 
     fprintf(pFile, "START\n");
 	makeCode(tree, pFile);
@@ -40,8 +67,7 @@ t_object* obj;
 
     fclose (pFile);
 	return 0;
-}
-*/
+}*/
 void makeCodeClasse(t_class* class, FILE* pFile) {
     ;
 }
@@ -175,16 +201,29 @@ void makeCode(TreeP tree, FILE* pFile) {
             fprintf (pFile, "PUSHI %d\n", tree->u.val);
 		break;
 		case E_SELECT :
+            fprintf (pFile, "-- Il y a une selection (R)\n");
             makeCode(getChild(tree, 0), pFile);/* On ecrit le code donnant l'offset de l'expression */
-            fprintf(pFile, "LOAD %d", getOffsetAttr(obj->attributes, getChild(tree, 1)->u.str));
+            char* strAttr = getChild(tree, 1)->u.str;
+            VarDeclP attrs = getChild(tree, 0)->u.lvar->coeur->_obj->attributes;
+            fprintf(pFile, "LOAD %d\n", getOffsetAttr(attrs, strAttr));
+            fprintf (pFile, "-- Fin de la selection (R)\n");
         break;
         case _ID :
-            /* on empile l'offset de l'instance de classe ou de l'objet independant ayant cet identifiant */
-            fprintf(pFile, "PUSHG %d", getOffsetObj(obj, tree->u.str));
+            /* on empile l'offset de la variable ou de l'objet independant ayant cet identifiant */
+            fprintf(pFile, "PUSHG %d\n", getOffsetObj(obj, tree->u.str));
+        break;
+        case I_AFF :
+            fprintf (pFile, "-- Il y a une affectation\n");
+            makeCodeAffect(getChild(tree, 0), getChild(tree, 1), pFile);
+            fprintf (pFile, "-- Fin de l'affectation\n");
+        break;
+        case LIST_INST :
+            makeCode(getChild(tree, 0), pFile);
+            makeCode(getChild(tree, 1), pFile);
         break;
         case CAST :
             fprintf(pFile, "-- Il y a un cast\n" );
-            /*je vois pas comment faire celui-l√†*/
+            /*je vois pas comment faire celui-l‡*/
         break;
         case E_CALL_METHOD :
             fprintf(pFile, "Il y a un appel de methode\n");
@@ -192,32 +231,44 @@ void makeCode(TreeP tree, FILE* pFile) {
         break;
         case I_ITE :
             fprintf(pFile, "Il y a un bloc If Then Else\n");
-            /*√ßa c'est comme les tds/dm/exams ez*/
+            /*Áa c'est comme les tds/dm/exams ez*/
         break;
         case I_BLOC :
             fprintf(pFile, "Il y a un bloc d'instructions\n");
-            int i;
-            for(i=0;i<tree->nbChildren;i++){
-
-            	makeCode(getChild(tree,i),pFile);
-            }
+            /*plusieurs instructions a lire*/
         break;
         case I_RETURN :
-        /*pas s√ªr s√ªr du truc*/
-        break;
-        case I_AFF :
-            fprintf(pFile, "Il y a une affectation\n");
-            /*dupliquer la valeur dans la pile uniquement ?*/
+        /*pas s˚r s˚r du truc*/
         break;
         case CLASS_NAME :
             /*dunno how to do dis Oo*/
         break;
         case _OVERRIDE :
-            /*pas s√ªr s√ªr*/
+            /*pas s˚r s˚r*/
         break;
 		default :
             fprintf (pFile, "-- Il y a quelque chose\n");
 		break;
+	}
+
+}
+
+void makeCodeAffect(TreeP exprG, TreeP exprD, FILE* pFile) {
+
+	switch(exprG->op) {
+	    case E_SELECT :
+            makeCode(getChild(exprG, 0), pFile);/* On ecrit le code donnant l'offset de l'expression */
+            char* strAttr = getChild(exprG, 1)->u.str;
+            VarDeclP attrs = getChild(exprG, 0)->u.lvar->coeur->_obj->attributes;
+            makeCode(exprD, pFile);
+            fprintf(pFile, "STORE %d\n", getOffsetAttr(attrs, strAttr));
+        break;
+        case _ID :
+            ;
+        break;
+        default :
+            fprintf (pFile, "-- On veut faire une affectation a autre chose qu'une variable ou un champ \n");
+        break;
 	}
 
 }
@@ -229,7 +280,7 @@ int getOffsetObj(t_object* obj, char* nom) {
         obj = obj->next;
     }
     if (obj == NULL)
-        printf("Objet introuvable\n");
+        printf("Attribut introuvable");
     return i;
 }
 
@@ -241,7 +292,7 @@ int getOffsetAttr(VarDeclP decl, char* nom) {
         decl = decl->next;
     }
     if (decl == NULL)
-        printf("Attribut introuvable\n");
+        printf("Attribut introuvable");
     return i;
 }
 
@@ -256,7 +307,7 @@ int getOffsetMeth(t_method* meth, char* nom){
 	return i;
 }
 
-void InitTV(list_ClassObjP env, FILE* pFile,t_method* list){
+void InitTV(list_ClassObjP env, FILE* pFile){
 
 	if(env != NIL(list_ClassObj))
 	{
@@ -271,39 +322,32 @@ void InitTV(list_ClassObjP env, FILE* pFile,t_method* list){
 
 			while(env->listClass->methods->next != NIL(t_method)){
 
-				if(env->listClass->methods->isRedef)
-				{
-					sprintf(label,"%c",'R');
-					sprintf(label+1,"%d",i+1);
-					sprintf(label+2,"%s",env->listClass->methods->name);
-					i++;
-				}
-				else
-				{
-					sprintf(label,"%s",env->listClass->methods->name);
-				}
+				sprintf(label,"%s",env->listClass->methods->name);
 
 				fprintf(pFile, "\t\tPUSHA %s\n",label);
-				fprintf(pFile, "\t\tSTORE %d\n",getOffsetMeth(list,env->listClass->methods->name));
+				fprintf(pFile, "\t\tSTORE %d\n",i);
 
 				if(env->listClass->methods->next != NIL(t_method))
 				{
 					fprintf(pFile, "\t\tDUPN %d\n",1);
 				}
+
+				i++;
 				env->listClass->methods = env->listClass->methods->next;
 			}
+
+			i=0;
 			env->listClass = env->listClass->next;
 		}
 
 		fprintf(pFile, "-- Debut main\n");
 		fprintf(pFile, "\t\tJUMP %s\n","main");
 		free(label);
-	}		
+	}
 }
 
-t_method* InitMethod(list_ClassObjP env, FILE* pFile){
+void InitMethod(list_ClassObjP env, FILE* pFile){
 
-	t_method* list = NEW(10,t_method);
 	if (env != NIL(list_ClassObj))
 	{
 		char* label = malloc(10*sizeof(char));
@@ -324,14 +368,12 @@ t_method* InitMethod(list_ClassObjP env, FILE* pFile){
 				else
 				{
 					sprintf(label,"%s",env->listClass->methods->name);
-					list->next = list;
-					list = env->listClass->methods;
 				}
 				fprintf(pFile, "%s :\t",label);
 				fprintf(pFile, "PUSHS %s\n",env->listClass->methods->name);
 				fprintf(pFile, "\t\tWRITES\n");
 				fprintf(pFile, "\t\tRETURN\n");
-			
+
 				env->listClass->methods = env->listClass->methods->next;
 			}
 
@@ -339,17 +381,16 @@ t_method* InitMethod(list_ClassObjP env, FILE* pFile){
 		}
 
 		free(label);
-		return list;	
 	}
-	return NULL;
 }
 
-void CallMethod(list_ClassObjP env, FILE* pFile, t_method* list){
+void CallMethod(list_ClassObjP env, FILE* pFile){
 
 	if(env != NIL(list_ClassObj))
 	{
 		char* label = malloc(6*sizeof(char));
 		sprintf(label,"%s","call");
+		int i = 0;
 		fprintf(pFile, "-- Appel des methodes\n");
 		while(env->listClass->next != NIL(t_class)){
 
@@ -357,14 +398,16 @@ void CallMethod(list_ClassObjP env, FILE* pFile, t_method* list){
 
 				if(!env->listClass->methods->isRedef)
 				{
-					sprintf(label+5,"%d\n",getOffsetMeth(list,env->listClass->methods->name));
+					sprintf(label+5,"%d\n",i+1);
 					fprintf(pFile, "%s :\t",label);
 					fprintf(pFile, "PUSHL %d\n",-1);
 					fprintf(pFile, "\t\tDUPN %d\n",1);
 					fprintf(pFile, "\t\tLOAD %d\n",0);
-					fprintf(pFile, "\t\tLOAD %d\n",getOffsetMeth(list,env->listClass->methods->name));
+					fprintf(pFile, "\t\tLOAD %d\n",i);
 					fprintf(pFile, "\t\tCALL\n");
 					fprintf(pFile, "\t\tRETRUN\n");
+
+					i++;
 				}
 				env->listClass->methods = env->listClass->methods->next;
 			}
