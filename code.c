@@ -223,7 +223,7 @@ void makeCode(TreeP tree, FILE* pFile) {
         break;
         case CAST :
             fprintf(pFile, "-- Il y a un cast\n" );
-            /*je vois pas comment faire celui-l?/
+            /*je vois pas comment faire celui-l?*/
         break;
         case E_CALL_METHOD :
             fprintf(pFile, "Il y a un appel de methode\n");
@@ -301,7 +301,7 @@ int getOffsetAttr(VarDeclP decl, char* nom) {
     return i;
 }
 
-nt getOffsetMeth(t_method* meth, char* nom){
+int getOffsetMeth(t_method* meth, char* nom){
 	int i = 0;
 	while (meth != NULL && strcmp(meth->name, nom)){
 		i++;
