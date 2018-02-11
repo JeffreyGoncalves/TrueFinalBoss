@@ -94,14 +94,12 @@ bool verifPorteeInst(TreeP inst, VarDeclP listDecl, list_ClassObjP classObjList)
 {
 	bool toReturn = TRUE;
 
-	printf("\nInstruction # ");
 		/* Bloc */
 		if(inst->op == I_BLOC) toReturn = verifPorteeBloc(inst, listDecl, classObjList);
 			
 		/* Return, non autorise ici s'il n'existe pas de VarDecl avec le nom "result" dans la liste. */
 		else if(inst->op == I_RETURN)
 		{
-			printf("return\n");
 			VarDeclP varSel = listDecl;
 			while(varSel != NULL)
 			{
@@ -116,13 +114,11 @@ bool verifPorteeInst(TreeP inst, VarDeclP listDecl, list_ClassObjP classObjList)
 				setError(RETURN_ERROR);
 				toReturn = FALSE;
 			}
-			printf("fin_return\n");
 		}
 		
 		/* If Then Else */
 		else if(inst->op == I_ITE)
 		{
-			printf("ite\n");
 			
 			TreeP Expr = getChild(inst, 0),
 				  Inst1 = getChild(inst, 1),
@@ -132,13 +128,11 @@ bool verifPorteeInst(TreeP inst, VarDeclP listDecl, list_ClassObjP classObjList)
 			toReturn = toReturn && verifPorteeInst(Inst1, listDecl, classObjList);
 			toReturn = toReturn && verifPorteeInst(Inst2, listDecl, classObjList);
 			
-			printf("fin_ite\n");
 		}
 		
 		/* Affectation */
 		else if(inst->op == I_AFF)
 		{
-			printf("aff\n");
 			
 			TreeP Obj = getChild(inst, 0),
 				  Expr = getChild(inst, 1);
@@ -146,17 +140,14 @@ bool verifPorteeInst(TreeP inst, VarDeclP listDecl, list_ClassObjP classObjList)
 			toReturn = verifPorteeExpr(Obj, listDecl, classObjList)
 					&& verifPorteeExpr(Expr, listDecl, classObjList);
 					
-			printf("fin_aff\n");
 		}
 		
 		/* Expression */
 		else if(inst->op == I_EXPRRELOP)
 		{
-			printf("relop\n");
 			
 			toReturn = verifPorteeExpr(getChild(inst, 0), listDecl, classObjList);
-			
-			printf("relop_fin\n");
+
 		}  
 		
 		else
@@ -502,7 +493,9 @@ bool verifPorteeConstructor(t_method* method, t_class* class, list_ClassObjP cla
  * */
 bool verifPorteeBloc(TreeP tree, VarDeclP listDecl, list_ClassObjP classObjList)
 {	
-	afficheListVarDeclP(listDecl);
+	/* Enlever les commentaires pour faire apparaitre la liste des variables visibles à l'entree des blocs.*/
+	/*afficheListVarDeclP(listDecl);*/
+	
 	if(tree->op == I_BLOC){
 		
 		bool toReturn = TRUE;
@@ -560,8 +553,6 @@ bool verifPorteeBloc(TreeP tree, VarDeclP listDecl, list_ClassObjP classObjList)
 		}
 		/*****************************************************************/
 		
-		afficheListVarDeclP(listDecl);
-		
 		/*** Verification des instructions (portee) ***/
 		if(listInst != NULL)
 		{
@@ -584,14 +575,12 @@ bool verifPorteeBloc(TreeP tree, VarDeclP listDecl, list_ClassObjP classObjList)
  * */
 bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList)
 {
-	printf("Expression # ");
 	
 	bool toReturn = TRUE;
 	int i; /* Sert de variable de parcours */
 	
 	/* Si c'est un noeud NIL */
 	if(Expr == NIL(Tree)){
-		printf("noeud NIL---------------------------------------\n");
 		return toReturn;
 	}
 	
@@ -601,7 +590,6 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList)
 		/*ID (les variables crees plus recemment sont prioritaires) */
 		if(Expr->op == _ID)
 		{
-			printf("id # %s\n",Expr->u.lvar->name);
 			/* Variables Crees dans le bloc */
 			VarDeclP varSel = listDecl;
 			while(varSel != NULL)
@@ -610,7 +598,6 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList)
 				{
 					free(Expr->u.lvar);
 					Expr->u.lvar = varSel;
-					printf("fin_id\n");
 					return TRUE;
 				}
 				varSel = varSel->next;
@@ -623,19 +610,17 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList)
 				if(!strcmp(objSel->name, Expr->u.lvar->name))
 				{
 					Expr->u.lvar->coeur->_obj = objSel;
-					printf("fin_id\n");
 					return TRUE;
 				}
 				objSel = objSel->next;
 			}
 			
 			/* Aucun objet n'a ete trouve */
-			printf("fin_id\n");
+
 			setError(VAR_NOT_FOUND);
 			toReturn = FALSE;
 		}
-		else {printf("solo_pas_id\n");
-			return TRUE;}
+		else {return TRUE;}
 	}
 	
 	else
@@ -646,7 +631,6 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList)
 		
 		switch(Expr->op){
 			case INST:
-				printf("instantation\n");
 				/* On vérifie les paramètres maintenant. */
 				toReturn = toReturn && verifPorteeExpr(getChild(Expr, 1), listDecl, classObjList);
 				
@@ -659,11 +643,10 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList)
 					getChild(Expr, 0)->u.lvar->coeur->_type = classBuffer;
 				}
 								
-				printf("instantation_fin\n");
 				break;
 				
 			case E_SELECT:
-				printf("selection\n");
+
 				/* On cherche le ID_C, s'il existe ou non.*/
 				if(getChild(Expr, 0)->op == _ID && getChild(Expr, 0)->u.lvar->name[0] <= 90){
 					objectBuffer = FindObject(classObjList->listObj, getChild(Expr, 1)->u.lvar->name);
@@ -683,14 +666,10 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList)
 						case _ID:
 							classBuffer = getChild(Expr, 0)->u.lvar->coeur->_type;
 							objectBuffer = getChild(Expr, 0)->u.lvar->coeur->_obj;
-							
-							if(classBuffer != NIL(t_class)) printf("%s(%s)\n",getChild(Expr, 0)->u.lvar->name,classBuffer->name);
-							else printf("%s(%s)\n",getChild(Expr, 0)->u.lvar->name,objectBuffer->name);
 							break;
 							
 						case E_SELECT:
 							classBuffer = getChild(getChild(Expr, 0), 1)->u.lvar->coeur->_type;
-							printf("%s(%s)\n",getChild(getChild(Expr, 0), 1)->u.lvar->name,classBuffer->name);
 							break;
 							
 						case E_CALL_METHOD:
@@ -699,14 +678,11 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList)
 							}else{
 								classBuffer = getReturnO(getChild(getChild(Expr, 0), 1)->u.lvar->coeur->_obj, getChild(getChild(Expr, 0), 1)->u.lvar->name, classObjList);
 							}
-							printf("%s(%s)\n",getChild(getChild(Expr, 0), 1)->u.lvar->name,classBuffer->name);
 							break;
 						
 						case AND:
 						case _STR:
 							classBuffer = FindClass(classObjList->listClass, "String");
-							if(getChild(Expr, 0)->op == _STR) printf("%s(String)\n",getChild(Expr, 0)->u.str);
-							else printf("Expr(String)\n");
 							break;
 						
 						case NE:
@@ -721,15 +697,11 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList)
 						case MIN:	
 						case CST:
 							classBuffer = FindClass(classObjList->listClass, "Integer");
-							if(getChild(Expr, 0)->op == CST) printf("%d(Integer)\n",getChild(Expr, 0)->u.val);
-							else printf("Expr(Integer)\n");
 							break;
 							
 						case CAST:						
 						case INST:
 							classBuffer = getChild(getChild(Expr, 0), 0)->u.lvar->coeur->_type;
-							if(getChild(Expr, 0)->op == CAST)printf("CAST(%s)\n",classBuffer->name);
-							else printf("INST(%s)\n",classBuffer->name);
 							break;
 							
 						default:
@@ -780,11 +752,10 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList)
 					setError(VAR_NOT_FOUND);
 					toReturn = FALSE;
 				}
-				printf("selection_fin\n");		
 				break;
 				
 			case E_CALL_METHOD:
-				printf("appel_methode\n");
+
 				/* On cherche le ID_C, s'il existe ou non.*/
 				if(getChild(Expr, 0)->op == _ID && getChild(Expr, 0)->u.lvar->name[0] <= 90){
 					objectBuffer = FindObject(classObjList->listObj, getChild(Expr, 0)->u.lvar->name);
@@ -805,13 +776,10 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList)
 							classBuffer = getChild(Expr, 0)->u.lvar->coeur->_type;
 							objectBuffer = getChild(Expr, 0)->u.lvar->coeur->_obj;
 							
-							if(classBuffer != NIL(t_class)) printf("%s(%s)\n",getChild(Expr, 0)->u.lvar->name,classBuffer->name);
-							else printf("%s(%s)\n",getChild(Expr, 0)->u.lvar->name,objectBuffer->name);
 							break;
 							
 						case E_SELECT:
 							classBuffer = getChild(getChild(Expr, 0), 1)->u.lvar->coeur->_type;
-							printf("%s(%s)\n",getChild(getChild(Expr, 0), 1)->u.lvar->name,classBuffer->name);
 							break;
 							
 						case E_CALL_METHOD:
@@ -820,14 +788,11 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList)
 							}else{
 								classBuffer = getReturnO(getChild(getChild(Expr, 0), 1)->u.lvar->coeur->_obj, getChild(getChild(Expr, 0), 1)->u.lvar->name, classObjList);
 							}
-							printf("%s(%s)\n",getChild(getChild(Expr, 0), 1)->u.lvar->name,classBuffer->name);
 							break;
 						
 						case AND:
 						case _STR:
 							classBuffer = FindClass(classObjList->listClass, "String");
-							if(getChild(Expr, 0)->op == _STR) printf("%s(String)\n",getChild(Expr, 0)->u.str);
-							else printf("Expr(String)\n");
 							break;
 						
 						case NE:
@@ -842,15 +807,11 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList)
 						case MIN:	
 						case CST:
 							classBuffer = FindClass(classObjList->listClass, "Integer");
-							if(getChild(Expr, 0)->op == CST) printf("%d(Integer)\n",getChild(Expr, 0)->u.val);
-							else printf("Expr(Integer)\n");
 							break;
 							
 						case CAST:						
 						case INST:
 							classBuffer = getChild(getChild(Expr, 0), 0)->u.lvar->coeur->_type;
-							if(getChild(Expr, 0)->op == CAST)printf("CAST(%s)\n",classBuffer->name);
-							else printf("INST(%s)\n",classBuffer->name);
 							break;
 							
 						default:
@@ -902,9 +863,7 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList)
 				
 				/* On vérifie les paramètres maintenant. */
 				toReturn = toReturn && verifPorteeExpr(getChild(Expr, 2), listDecl, classObjList);
-				
-				
-				printf("appel_methode_fin\n");			
+							
 				break;
 				
 			case CAST:
@@ -925,10 +884,9 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList)
 			
 			default:
 				/**		Repressente tous les autres cas inutile a traiter.	*/
-				printf("+ ou - ou * ou etc..."); printOP(Expr->op);
 				for(i=0;i<Expr->nbChildren;i++)
 					toReturn = toReturn && verifPorteeExpr(getChild(Expr, i), listDecl, classObjList);
-				printf("+ ou - ou * ou etc... _fin\n");
+
 	
 		}
 	}
@@ -942,8 +900,6 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList)
  * */
 Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 	
-	printf("Typage # ");
-	
 	Vtypage result;
 	Vtypage veriFils[5];
 	int i;
@@ -952,12 +908,9 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 	
 	/*		Si le noeud est NIL, il est forcement juste car il n'y a pas de conflit de type.	*/
 	if(noeud == NIL(Tree)){
-		printf("NIL(Tree) ~ \n");
 		result.type.class = NIL(t_class);
 		return result;
 	}
-	
-	printOP(noeud->op);
 	
 	/**		On verifie que le typage est bon pour les fils. Grace a cela on peut connaitre le type d'une expression entiere.	*/
 	for(i=0 ; i<noeud->nbChildren ; i++){
@@ -984,11 +937,9 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 			return result;
 
 		case I_RETURN:
-			printf("return\n");
 			return result;
 		
 		case I_EXPRRELOP:
-			printf("relop\n");
 			return result;
 			
 		case I_ITE:
@@ -998,7 +949,6 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 			break;
 			
 		case I_AFF:
-			printf("aff\n");
 			if(0 == strcmp(veriFils[0].type.class->name, veriFils[1].type.class->name)){
 				return result;
 			}
@@ -1014,7 +964,6 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 		case MIN:
 		case MULT:
 		case DIVI:
-			printOP(noeud->op);
 			
 			if(noeud->nbChildren == 1){
 				/**		CAS opérateur unaire - et +.	*/
@@ -1032,7 +981,6 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 			break;
 			
 		case AND:
-			printf("&\n");
 			if(0 == strcmp(veriFils[0].type.class->name,"String") && 0 == strcmp(veriFils[1].type.class->name,"String")){
 				result.type.class = veriFils[0].type.class;
 				return result;
@@ -1040,43 +988,34 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 			break;
 			
 		case CST:
-			printf("constante\n");
 			result.type.class = FindClass(env->listClass, "Integer");
 			return result;
 			break;
 		
 		case _ID:
-			printf("id (%s) de type ", noeud->u.lvar->name);
 			
 			if(noeud->u.lvar->name[0] <= 91){
 				result.type.class = FindClass(env->listClass, noeud->u.lvar->name);
 				if(result.type.class == NIL(t_class)){
 					result.type.object = FindObject(env->listObj, noeud->u.lvar->name);
-					printf("(%s)\n", result.type.object->name);
 				}
 			}else{
 				/** Ce if ci-dessous est obligatoire, car sinon Seg Fault sur "Object.f()" : il y a un pointeur vers t_object et pas vers t_class */
 				if(noeud->u.lvar->coeur->_type != NIL(t_class)){
 					result.type.class = noeud->u.lvar->coeur->_type;
-					printf("(%s)\n", result.type.class->name);
 				}else{
 					result.type.object = noeud->u.lvar->coeur->_obj;
-					printf("(%s)\n", result.type.object->name);
 				}
 			}
-			printf("id_t_fin\n");
 			return result;
 			break;
 		
 		case _STR:
-			printf("string\n");
 			result.type.class = FindClass(env->listClass, "String");
 			return result;
 			break;
 			
-		case CAST:
-			printf("cast %d\n", AEstSuperDeB(getChild(noeud, 0)->u.lvar->name, veriFils[1].type.class->name, env));
-			
+		case CAST:			
 			if(AEstSuperDeB(getChild(noeud, 0)->u.lvar->name, veriFils[1].type.class->name, env)){
 				result.type.class = veriFils[0].type.class;
 				return result;
@@ -1084,14 +1023,11 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 			break;
 		
 		case E_SELECT: /* L'espression est faite dans la verif de portée */
-			printf("selection\n");
 			result.type.class = veriFils[1].type.class;
 			return result;
 			break;
 		
-		case E_CALL_METHOD:
-			printf("call_method\n");
-			
+		case E_CALL_METHOD:			
 			if(getChild(noeud, 0)->op == _ID){
 				if(getChild(noeud, 0)->u.lvar->name[0] <= 91){	
 					m = veriFils[1].type.object->methods;
@@ -1107,7 +1043,7 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 				}
 				m = m->next;
 			}
-			printf("call_method_fin\n");
+
 			return result;
 			break;
 			
@@ -1115,7 +1051,6 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 			return verifTypageSuccesFils(noeud->nbChildren, noeud, env);
 			
 		case INST:
-			printf("instantation\n");
 			result.type.class = veriFils[0].type.class;
 			return result;
 			break;
@@ -1128,7 +1063,7 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 	}
 	
 	printOP(noeud->op);
-	setErro(CONTEXT_ERROR);
+	setError(CONTEXT_ERROR);
 	result.succes = 0;
 	return result;
 }
@@ -1161,22 +1096,16 @@ Vtypage verifcationTypageListVarDecl(VarDeclP liste, list_ClassObjP env){
 		/**		On verifie son expression	*/
 		Vtypage expr = verifcationTypageNoeud(liste->coeur->value, env);
 		
-		printf("	%s : ", liste->name);
-		
 		/**		On verifie que cela correspond bien avec son type.	*/
 		if(!(expr.succes)){
 			result.succes = 0;
-			printf("0\n");
 			return result;
 		}else if(expr.type.class != NIL(t_class)){
 			if(strcmp(expr.type.class->name, liste->coeur->_type->name)){
 				result.succes = 0;
-				printf("0\n");
 				return result;
 			}
 		}
-		
-		printf("1\n");
 		liste = liste->next;
 	}
 	result.succes = 1;
@@ -1188,7 +1117,6 @@ int AEstSuperDeB(char* A, char* B,list_ClassObjP env){
 	t_class* i = FindClass(env->listClass, B);
 	
 	while(i != NIL(t_class)){
-		printf("On compare %s et %s = %d\n",i->name, A, !strcmp(i->name,A));
 		if(!strcmp(i->name,A)){
 		 return 1;
 		}
@@ -1222,7 +1150,6 @@ bool verificationTypageMethode(t_class* C, t_method* method, list_ClassObjP env)
 		
 		}else{
 			/** Cas 2 : la methode est de type 2 (avec bloc)*/
-			printf("ndfsdfukgsdufhfdhfhdsfh\n");
 			classBuffer = getReturnType(method->bloc, env);
 			if(!strcmp(classBuffer->name, "Void") && strcmp(method->returnType->name, "Void")){
 				if(isDeclared(method->bloc, "result")) classBuffer = method->returnType;
@@ -1235,7 +1162,6 @@ bool verificationTypageMethode(t_class* C, t_method* method, list_ClassObjP env)
 
 		
 		/*****ON VERIFIE SI LA METHODE EST BIEN REDEFINIE*****/
-		/*printf("ELLE EST REDEF ? %d\n", method->isRedef);*/
 		if(method->isRedef){
 			
 			t_class* Ci = C->superClass;
@@ -1415,7 +1341,6 @@ bool verificationTypage(list_ClassObjP env, TreeP core){
 t_class* getReturnType(TreeP tree, list_ClassObjP env){
 	
 	if(tree->nbChildren != 0){
-		printOP(tree->op);
 		t_class* res = NIL(t_class);
 		
 		int i;
@@ -1436,7 +1361,6 @@ t_class* getReturnType(TreeP tree, list_ClassObjP env){
 		}
 		return res;
 	}else{
-		printOP(tree->op);
 		return FindClass(env->listClass, "Void");
 	}
 }
