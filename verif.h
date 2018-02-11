@@ -28,6 +28,7 @@ Vtypage verifTypageSuccesFils(short nbre, TreeP noeud, list_ClassObjP env);
 int AEstSuperDeB(char* A, char* B,list_ClassObjP env);
 bool verificationTypageMethode(t_class* C, t_method* method, list_ClassObjP env);
 bool verificationTypageMethodeO(t_method* method, list_ClassObjP env);
+bool verificationTypageConstructeur(t_class* C, t_method* method, list_ClassObjP env);
 t_class* getReturnType(TreeP tree, list_ClassObjP env);
 bool isDeclared(TreeP tree, char* nameVar);
 

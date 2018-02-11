@@ -144,16 +144,6 @@ bool verifPorteeInst(TreeP inst, VarDeclP listDecl, list_ClassObjP classObjList)
 				  Expr = getChild(inst, 1);
 			toReturn = verifPorteeExpr(Obj, listDecl, classObjList)
 					&& verifPorteeExpr(Expr, listDecl, classObjList);
-			/* Affectation effectuee si valide au dessus */
-			if(toReturn){
-				if(!verifInit(Expr))
-				{
-					setError(INIT_ERROR);
-					toReturn = FALSE;
-				}
-				else setInitTrue(Obj);
-				
-			}
 			/*printf("%d et %d\n",verifPorteeExpr(Obj, listDecl, classObjList),verifPorteeExpr(Expr, listDecl, classObjList));
 			*/printf("fin_aff\n");
 		}
@@ -559,7 +549,7 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList)
 	
 	/* Si c'est un noeud NIL */
 	if(Expr == NIL(Tree)){
-		printf("noeud NIL\n");
+		printf("noeud NIL---------------------------------------\n");
 		return toReturn;
 	}
 	
@@ -615,7 +605,9 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList)
 		switch(Expr->op){
 			case INST:
 				printf("instantation\n");
+				/* On vérifie les paramètres maintenant. */
 				toReturn = toReturn && verifPorteeExpr(getChild(Expr, 1), listDecl, classObjList);
+				
 				classBuffer = FindClass(classObjList->listClass, getChild(Expr, 0)->u.lvar->name);
 				if(classBuffer == NIL(t_class)){
 					setError(CLASS_NOT_FOUND);
@@ -624,6 +616,7 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList)
 				else{
 					getChild(Expr, 0)->u.lvar->coeur->_type = classBuffer;
 				}
+								
 				printf("instantation_fin\n");
 				break;
 				
@@ -865,7 +858,11 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList)
 					setError(VAR_NOT_FOUND);
 					toReturn = FALSE;
 				}
-
+				
+				/* On vérifie les paramètres maintenant. */
+				toReturn = toReturn && verifPorteeExpr(getChild(Expr, 2), listDecl, classObjList);
+				
+				
 				printf("appel_methode_fin\n");			
 				break;
 				
@@ -884,9 +881,9 @@ bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList)
 					getChild(Expr, 0)->u.lvar->coeur->_type = classBuffer;
 				}
 				break;
-
+			
 			default:
-				printf("+ ou - ou * ou etc...\n");
+				printf("+ ou - ou * ou etc..."); printOP(Expr->op);
 				/*bool toReturn = TRUE;*/
 				for(i=0;i<Expr->nbChildren;i++)
 					toReturn = toReturn && verifPorteeExpr(getChild(Expr, i), listDecl, classObjList);
@@ -905,7 +902,7 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 	Vtypage result;
 	Vtypage veriFils[5];
 	int i;
-	t_method* m;
+	t_method* m = NIL(t_method);
 	result.succes = 1;
 	
 	if(noeud == NIL(Tree)){
@@ -914,8 +911,8 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 		return result;
 	}
 	
-	/*printOP(noeud->op);
-	printf(" # ");*/
+	printOP(noeud->op);
+	
 	
 	for(i=0 ; i<noeud->nbChildren ; i++){
 		veriFils[i] = verifcationTypageNoeud(getChild(noeud, i), env);
@@ -959,37 +956,31 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 				return result;
 			}
 			break;
-			
+		
+		case NE:
+		case EQ:
+		case LT:
+		case LE:
+		case GT:
+		case GE:
 		case SUM:
-			printf("+\n");
-			if(0 == strcmp(veriFils[0].type.class->name,"Integer") && 0 == strcmp(veriFils[1].type.class->name,"Integer")){
-				result.type.class = veriFils[0].type.class;
-				return result;
-			}
-			break;
-			
 		case MIN:
-			printf("-\n");
-			if(0 == strcmp(veriFils[0].type.class->name,"Integer") && 0 == strcmp(veriFils[1].type.class->name,"Integer")){
-				result.type.class = veriFils[0].type.class;
-				return result;
-			}
-			break;
-		
 		case MULT:
-			printf("*\n");
-			printf("%s et %s\n",veriFils[0].type.class->name, veriFils[1].type.class->name);
-			if(0 == strcmp(veriFils[0].type.class->name,"Integer") && 0 == strcmp(veriFils[1].type.class->name,"Integer")){
-				result.type.class = veriFils[0].type.class;
-				return result;
-			}
-			break;
-		
 		case DIVI:
-			printf("/\n");
-			if(0 == strcmp(veriFils[0].type.class->name,"Integer") && 0 == strcmp(veriFils[1].type.class->name,"Integer")){
-				result.type.class = veriFils[0].type.class;
-				return result;
+			printOP(noeud->op);
+			
+			if(noeud->nbChildren == 1){
+				/**		CAS opérateur unaire - et +.	*/
+				if(0 == strcmp(veriFils[0].type.class->name,"Integer")){
+					result.type.class = veriFils[0].type.class;
+					return result;
+				}
+			}else{
+				/**		Autres cas		*/
+				if(0 == strcmp(veriFils[0].type.class->name,"Integer") && 0 == strcmp(veriFils[1].type.class->name,"Integer")){
+					result.type.class = veriFils[0].type.class;
+					return result;
+				}
 			}
 			break;
 			
@@ -1008,19 +999,28 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 			break;
 		
 		case _ID:
-			printf("id\n");
+			printf("id (%s) de type ", noeud->u.lvar->name);
 			/*printf("%s   %c \n",noeud->u.lvar->name, noeud->u.lvar->name[0]);*/
 			if(noeud->u.lvar->name[0] <= 91){
 				result.type.class = FindClass(env->listClass, noeud->u.lvar->name);
-				if(result.type.class == NIL(t_class)) result.type.object = FindObject(env->listObj, noeud->u.lvar->name);
+				if(result.type.class == NIL(t_class)){
+					result.type.object = FindObject(env->listObj, noeud->u.lvar->name);
+					printf("(%s)\n", result.type.object->name);
+				}
 			}else{
-				result.type.class = noeud->u.lvar->coeur->_type;
+				/** Ce if ci-dessous est obligatoire, car sinon Seg Fault sur "Object.f()" : il y a un pointeur vers t_object et pas vers t_class */
+				if(noeud->u.lvar->coeur->_type != NIL(t_class)){
+					result.type.class = noeud->u.lvar->coeur->_type;
+					printf("(%s)\n", result.type.class->name);
+				}else{
+					result.type.object = noeud->u.lvar->coeur->_obj;
+					printf("(%s)\n", result.type.object->name);
+				}
 			}
-			/*TODO*/
 			printf("id_t_fin\n");
 			return result;
 			break;
-			
+		
 		case _STR:
 			printf("string\n");
 			result.type.class = FindClass(env->listClass, "String");
@@ -1028,9 +1028,9 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 			break;
 			
 		case CAST: /* TODO */
-			printf("cast %d\n", AEstSuperDeB(getChild(noeud, 0)->u.str, veriFils[1].type.class->name, env));
+			printf("cast %d\n", AEstSuperDeB(getChild(noeud, 0)->u.lvar->name, veriFils[1].type.class->name, env));
 			
-			if(AEstSuperDeB(getChild(noeud, 0)->u.str, veriFils[1].type.class->name, env)){
+			if(AEstSuperDeB(getChild(noeud, 0)->u.lvar->name, veriFils[1].type.class->name, env)){
 				result.type.class = veriFils[0].type.class;
 				return result;
 			}
@@ -1044,7 +1044,19 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 		
 		case E_CALL_METHOD: /*  */
 			printf("call_method\n");
-			m = veriFils[1].type.class->methods;
+			
+			if(getChild(noeud, 0)->op == _ID){
+				if(getChild(noeud, 0)->u.lvar->name[0] <= 91){	
+					m = veriFils[1].type.object->methods; 
+					printf("Le call donne %s\n", veriFils[1].type.object->name);
+					printf("avec %s\n", veriFils[1].type.object->attributes->name);
+				}
+			}
+			if(m == NIL(t_method)){
+				m = veriFils[1].type.class->methods;
+				printf("Le calle donne %s\n", veriFils[1].type.class->name);
+			}
+			
 			while(m != NIL(t_method)){
 				if(0 == strcmp(m->name, getChild(noeud, 1)->u.lvar->name)){
 					result.type.class = m->returnType;
@@ -1058,20 +1070,22 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 		case LIST_ARG: 
 			return verifTypageSuccesFils(noeud->nbChildren, noeud, env);
 			
-		case INST: /* TODO */
+		case INST:
 			printf("instantation\n");
 			result.type.class = veriFils[0].type.class;
 			return result;
 			break;
 		
 		default:
-			printf("etiquette NON RECONNUE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+			printOP(noeud->op);
+			printf("  etiquette NON RECONNUE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
 			setError(CONTEXT_ERROR);
 			break;
 			
 	}
 	
 	printOP(noeud->op);
+	/*setErro();*/
 	result.succes = 0;
 	return result;
 }
@@ -1124,7 +1138,8 @@ int AEstSuperDeB(char* A, char* B,list_ClassObjP env){
 	t_class* i = FindClass(env->listClass, B);
 	
 	while(i != NIL(t_class)){
-		if(0 == strcmp(i->name,A)){
+		printf("On compare %s et %s = %d\n",i->name, A, !strcmp(i->name,A));
+		if(!strcmp(i->name,A)){
 		 return 1;
 		}
 		i = i->superClass;
@@ -1148,15 +1163,16 @@ bool verificationTypageMethode(t_class* C, t_method* method, list_ClassObjP env)
 		t_class* classBuffer;
 		if(method->bloc->op != I_BLOC){
 			/** Cas 1 : la methode est de type 1 (sans bloc)*/
+			
 			classBuffer = verifcationTypageNoeud(method->bloc, env).type.class;
 			if(classBuffer == NIL(t_class)) classBuffer = FindClass(env->listClass, "Void");
+		
 		}else{
 			/** Cas 2 : la methode est de type 2 (avec bloc)*/
+			printf("ndfsdfukgsdufhfdhfhdsfh\n");
 			classBuffer = getReturnType(method->bloc, env);
-
 			if(!strcmp(classBuffer->name, "Void") && strcmp(method->returnType->name, "Void")){
-				/*printf("[%s] : %d\n", method->name, isDeclared(method->bloc, "result"));
-				*/if(isDeclared(method->bloc, "result")) classBuffer = method->returnType;
+				if(isDeclared(method->bloc, "result")) classBuffer = method->returnType;
 			}
 		}
 		
@@ -1166,7 +1182,7 @@ bool verificationTypageMethode(t_class* C, t_method* method, list_ClassObjP env)
 
 		
 		/*****ON VERIFIE SI LA METHODE EST BIEN REDEFINIE*****/
-		printf("ELLE EST REDEF ? %d\n", method->isRedef);
+		/*printf("ELLE EST REDEF ? %d\n", method->isRedef);*/
 		if(method->isRedef){
 			
 			t_class* Ci = C->superClass;
@@ -1208,25 +1224,68 @@ bool verificationTypageMethodeO(t_method* method, list_ClassObjP env){
 	bool toReturn;
 	
 	while(method != NIL(t_method)){
+		printf("\n\n	Typage de [%s]\n", method->name);
+		
 		toReturn = (verifcationTypageListVarDecl(method->parametres, env).succes);
+		printf("		Paramètres : %d\n", toReturn);
 		
 		toReturn = toReturn && (verifcationTypageNoeud(method->bloc, env).succes);
+		printf("		Corps : %d\n", toReturn);
 		
 		/* TYPE DE RETOUR OK ? */
-		t_class* classBuffer = getReturnType(method->bloc, env);
-		toReturn = toReturn && strcmp(method->returnType->name, classBuffer->name);
+		t_class* classBuffer;
+		if(method->bloc->op != I_BLOC){
+			/** Cas 1 : la methode est de type 1 (sans bloc)*/
+			
+			classBuffer = verifcationTypageNoeud(method->bloc, env).type.class;
+			if(classBuffer == NIL(t_class)) classBuffer = FindClass(env->listClass, "Void");
+		
+		}else{
+			/** Cas 2 : la methode est de type 2 (avec bloc)*/
+			printf("ndfsdfukgsdufhfdhfhdsfh\n");
+			classBuffer = getReturnType(method->bloc, env);
+			if(!strcmp(classBuffer->name, "Void") && strcmp(method->returnType->name, "Void")){
+				if(isDeclared(method->bloc, "result")) classBuffer = method->returnType;
+			}
+		}
+		
+		printf("		On attend [%s], on obtient [%s]\n", method->returnType->name, classBuffer->name);
+		toReturn = toReturn && !strcmp(method->returnType->name, classBuffer->name);
+		printf("		Type de retour : %d\n", toReturn);
+
 
 		if(method->isRedef){
 			/*setError();*/
 			toReturn = FALSE;
 		}
+		
+		method = method->next;
 	}
+	return toReturn;
+}
+
+bool verificationTypageConstructeur(t_class* C, t_method* method, list_ClassObjP env){
+	bool toReturn;
+	
+	if(method == NIL(t_method)){
+		printf("\n\n	Typage de [%s] : Cette classe ne possede pas de constructeur.\n", C->name);
+		toReturn = TRUE;
+	}else{
+		printf("\n\n	Typage de [%s]\n", method->name);
+			
+		toReturn = (verifcationTypageListVarDecl(method->parametres, env).succes);
+		printf("		Paramètres : %d\n", toReturn);
+			
+		toReturn = toReturn && (verifcationTypageNoeud(method->bloc, env).succes);
+		printf("		Corps : %d\n", toReturn);
+	}
+	
 	return toReturn;
 }
 
 bool verificationTypageEnvironnement(list_ClassObjP env){
 	
-	bool toReturn;
+	bool toReturn = TRUE;
 	t_class* i = env->listClass;
 	t_object* j = env->listObj;
 	
@@ -1241,8 +1300,8 @@ bool verificationTypageEnvironnement(list_ClassObjP env){
 			
 			toReturn = toReturn && (verificationTypageMethode(i, i->methods, env));
 			printf("%d Methodes\n",toReturn);
-			
-			toReturn = toReturn && (verificationTypageMethode(i, i->constructor, env));
+
+			toReturn = toReturn && (verificationTypageConstructeur(i, i->constructor, env));
 			printf("%d Constructor\n",toReturn);
 		}else{
 			printf("%d Parametres\n",toReturn);
@@ -1257,7 +1316,7 @@ bool verificationTypageEnvironnement(list_ClassObjP env){
 	while(j != NIL(t_object)){
 		printf("|||||||%s:\n",j->name);
 		
-		toReturn = toReturn && !(verifcationTypageListVarDecl(j->attributes, env).succes);
+		toReturn = toReturn && (verifcationTypageListVarDecl(j->attributes, env).succes);
 		printf("%d Attributs\n",toReturn);
 		
 		toReturn = toReturn && (verificationTypageMethodeO(j->methods, env));
@@ -1286,26 +1345,32 @@ bool verificationTypage(list_ClassObjP env, TreeP core){
 }
 
 t_class* getReturnType(TreeP tree, list_ClassObjP env){
-
-	if(tree->op == I_RETURN){
+	
+	
+	
+	/*if(tree->op == I_RETURN){
+		printf("ndfsdfukgsdufhfdhfhdsfh		%s\n",tree->u.lvar->coeur->_type->name);
 		printOP(tree->op);
-		return getChild(tree, 0)->u.lvar->coeur->_type;
-	}else if(tree->nbChildren != 0){
+		return tree->u.lvar->coeur->_type;
+		
+	}else */if(tree->nbChildren != 0){
 		printOP(tree->op);
 		t_class* res = NIL(t_class);
 		
 		int i;
-		for(i=0 ; i<tree->nbChildren ; i++){
-			t_class* ite = getReturnType(getChild(tree, i), env);
-			if(ite != NIL(t_class)){
-				if(res == NIL(t_class)){
-					res = ite;
+		for(i=0 ; i<tree->nbChildren ; i++){		
+			if(getChild(tree, i) != NIL(Tree)){
+				t_class* ite = getReturnType(getChild(tree, i), env);
+				if(ite != NIL(t_class)){
+					if(res == NIL(t_class)){
+						res = ite;
+					}else{
+						if(0 == strcmp(res->name, ite->name)) return res;
+						return NIL(t_class);
+					}
 				}else{
-					if(0 == strcmp(res->name, ite->name)) return res;
 					return NIL(t_class);
 				}
-			}else{
-				return NIL(t_class);
 			}
 		}
 		return res;
@@ -1646,12 +1711,14 @@ bool verificationSuperClass(list_ClassObjP classObjList){
 bool isDeclared(TreeP tree, char* nameVar){
 	int i;
 	
+	if(tree == NIL(Tree)) return FALSE;
+	
 	switch(tree->op){
 		case I_BLOC:
 			return isDeclared(getChild(tree, 1), nameVar);
 		
 		case LIST_INST:		
-			for(i=0 ; tree->nbChildren ; i++){
+			for(i=0 ; i<tree->nbChildren ; i++){
 				if(isDeclared(getChild(tree, i), nameVar)) return TRUE;
 			}
 			break;

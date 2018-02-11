@@ -12,7 +12,6 @@ class Point(xc: Integer, yc: Integer) {
   var w3: Integer := this.w2+1;  /* mais a servi a initialiser w3  */
   var name: String := "?";
 
-
   def getx() : Integer := this.x
   def gety() : Integer := this.y
   def getz() : Integer is { result := this.z; }
@@ -22,20 +21,29 @@ class Point(xc: Integer, yc: Integer) {
   def print() is { this.name.println(); }
 
   def printAll() is {
-		
 		/*this.getx().toString().print(); " ".print();
       this.gety().toString().print(); " ".print();
       this.getz().toString().print(); " ".print();
       this.w.toString().print(); " ".print();
       this.w2.toString().print(); " ".print();
-      this.w3.toString().print(); " ".print();*/
+      this.w3.toString().print(); " ".print();
       
-      /*" ".print();*/
+      " ".print();
       
-      (Point this).x = 1;
+      (Point this).x := 1 < "2";
       
-      /*this.print();*/
+      this.print();*/
+      
+      
   }
+  
+ /* def test1(num: Integer, cible: Integer, gn: GrandNombre) is {
+        if num <= cible then {
+	   gn.additionner(num);
+	   this.test1(num+1, cible, gn);
+	} else { }
+   }*/
+    
 }
 { 
   var p1: Point := new Point(1, 5);
