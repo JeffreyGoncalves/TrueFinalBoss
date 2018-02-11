@@ -1236,12 +1236,14 @@ bool verificationTypageMethodeO(t_method* method, list_ClassObjP env){
 			classBuffer = getReturnType(method->bloc, env);
 			if(!strcmp(classBuffer->name, "Void") && strcmp(method->returnType->name, "Void")){
 				if(isDeclared(method->bloc, "result")) classBuffer = method->returnType;
+				else setError(RETURN_ERROR);
 			}
 		}
 		
 		printf("		On attend [%s], on obtient [%s]\n", method->returnType->name, classBuffer->name);
 		toReturn = toReturn && !strcmp(method->returnType->name, classBuffer->name);
 		printf("		Type de retour : %d\n", toReturn);
+		if(strcmp(method->returnType->name, classBuffer->name)) setError(RETURN_ERROR);
 
 
 		if(method->isRedef){
@@ -1289,7 +1291,7 @@ bool verificationTypageEnvironnement(list_ClassObjP env){
 		printf("|||||||%s:\n",i->name);
 		
 		if(strcmp(i->name,"Void") && strcmp(i->name,"String") && strcmp(i->name,"Integer")){
-			toReturn = (verifcationTypageListVarDecl(i->parametres, env).succes);
+			toReturn = toReturn && (verifcationTypageListVarDecl(i->parametres, env).succes);
 			printf("%d Parametres\n",toReturn);
 			
 			toReturn = toReturn && (verifcationTypageListVarDecl(i->attributes, env).succes);

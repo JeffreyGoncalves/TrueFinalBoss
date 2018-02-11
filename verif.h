@@ -10,6 +10,10 @@
 #include "fonctions.h"
 #include "tp.h"
 
+/**		Cette structure est utilisee pour la verification du typage.
+ * 		Son but est de transporter la classe/objet ou autre info sur le type d'une expression.
+ * 		"succes" informe si l'expression est correcte ou non. 
+ * 	*/
 typedef struct Vtypage{
 	union{
 		VarDeclP variable;
@@ -20,6 +24,7 @@ typedef struct Vtypage{
 	int succes;
 }Vtypage, *VtypageP;
 
+/**		Verifications typages	*/
 bool verificationTypage(list_ClassObjP env, TreeP core);
 bool verificationTypageEnvironnement(list_ClassObjP env);
 Vtypage verifcationTypageListVarDecl(VarDeclP liste, list_ClassObjP env);
@@ -32,12 +37,17 @@ bool verificationTypageConstructeur(t_class* C, t_method* method, list_ClassObjP
 t_class* getReturnType(TreeP tree, list_ClassObjP env);
 bool isDeclared(TreeP tree, char* nameVar);
 
+t_class* getReturnC(t_class* class, char* nom_methode, list_ClassObjP env);
+t_class* getReturnO(t_object* object, char* nom_methode, list_ClassObjP env);
+
+/**		Autres verifications contextuelles	*/
 bool verificationParametres(TreeP block);
 bool verificationBoucleHeritage(t_class* class);
 bool verificationNomClasse(list_ClassObjP env, char* name);
 bool verificationNomMethod(t_method* env, char* name);
 bool verificationNomVarDecl(VarDeclP env, char* name);
 
+/**		Verifications portee	*/
 bool verifPorteeExpr(TreeP Expr, VarDeclP listDecl, list_ClassObjP classObjList);
 bool verifPorteeInst(TreeP inst, VarDeclP listDecl, list_ClassObjP classObjList);
 bool verifPorteeMeth(TreeP tree, t_class *class);
@@ -56,9 +66,6 @@ VarDeclP InitialisationSuperThisResultC(t_method* method, t_class* class, VarDec
 VarDeclP InitialisationSuperThisResultO(t_method* method, t_object* object, VarDeclP param);
 
 void afficheListVarDeclP(VarDeclP liste);
-
-t_class* getReturnC(t_class* class, char* nom_methode, list_ClassObjP env);
-t_class* getReturnO(t_object* object, char* nom_methode, list_ClassObjP env);
 
 bool verificationSuperClass(list_ClassObjP classObjList);
 #endif
