@@ -922,6 +922,7 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 	}
 	
 	/*		On traite les differents cas.	*/
+	t_class *exprClass = veriFils[1].type.class;
 	switch(noeud->op){
 		
 		case I_BLOC:
@@ -949,8 +950,12 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 			break;
 			
 		case I_AFF:
-			if(0 == strcmp(veriFils[0].type.class->name, veriFils[1].type.class->name)){
-				return result;
+			while(exprClass != NIL(t_class))
+			{
+				if(0 == strcmp(veriFils[0].type.class->name, exprClass->name)){
+					return result;
+				}
+				exprClass = exprClass->superClass;
 			}
 			break;
 		
@@ -1129,7 +1134,7 @@ int AEstSuperDeB(char* A, char* B,list_ClassObjP env){
  * 		Methodes de classes
  * */
 bool verificationTypageMethode(t_class* C, t_method* method, list_ClassObjP env){
-	bool toReturn;
+	bool toReturn = TRUE;
 	
 	while(method != NIL(t_method)){
 		printf("\n\n	Typage de [%s]\n", method->name);
@@ -1204,7 +1209,6 @@ bool verificationTypageMethode(t_class* C, t_method* method, list_ClassObjP env)
 		printf("		Redefinition : %d\n", toReturn);
 		method = method->next;
 	}
-	
 	return toReturn;
 }
 
