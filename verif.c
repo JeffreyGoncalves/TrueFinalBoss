@@ -1380,7 +1380,7 @@ t_class* getReturnType(TreeP tree, list_ClassObjP env){
 	}
 }
 
-/*
+
 bool verificationParametres(TreeP block){
 		TreeP tree = block;
 		bool toReturn = TRUE;
@@ -1465,7 +1465,7 @@ bool verificationParametres(TreeP block){
 			}
 		}
 		return toReturn;
-}*/
+}
 
 /* Verification contextuelle : Super
  * 		Verification des boucles d'heritage
