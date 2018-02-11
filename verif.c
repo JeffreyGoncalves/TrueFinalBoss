@@ -1384,14 +1384,19 @@ t_class* getReturnType(TreeP tree, list_ClassObjP env){
 bool verificationParametres(TreeP block){
 		TreeP tree = block;
 		bool toReturn = TRUE;
-		while(tree != NIL(Tree)){
+		int i=0;
+		
+		for(i=0;i<tree->nbChildren;i++){
+		
 			if(tree->op == E_CALL_METHOD){
-
+				
 				t_class* c = getChild(tree,3)->u.lvar->coeur->_type;
 
 				while(strcmp(getChild(tree,3)->u.str,c->methods->name) != 0){
+					
 					if(c->methods == NIL(t_method)){
 						setError(NO_EXISTING_METHOD);
+						return FALSE;
 					}
 					c->methods = c->methods->next;
 				}
@@ -1400,6 +1405,7 @@ bool verificationParametres(TreeP block){
 				VarDeclP entry = getChild(tree,4)->u.lvar;
 				int givenNb = 0;
 				while(entry != NULL){
+					printf("fine & ya ?\n");
 					entry = entry->next;
 					givenNb++;
 				}
@@ -1409,8 +1415,6 @@ bool verificationParametres(TreeP block){
 					setError(PARAM_ERROR_1);
 				}
 				else{
-
-				
 
 					entry = getChild(tree,4)->u.lvar;
 					VarDeclP PDecl = decl->parametres;
@@ -1427,7 +1431,7 @@ bool verificationParametres(TreeP block){
 				tree = getChild(tree,1);	
 			}
 			else if(tree->op == INST){
-
+				
 				t_method* constructor = getChild(tree,1)->u.lvar->coeur->_type->constructor;
 				if(strcmp(constructor->name,getChild(tree,1)->u.str) == 0){
 
@@ -1435,6 +1439,7 @@ bool verificationParametres(TreeP block){
 					VarDeclP entry = getChild(tree,4)->u.lvar;
 					int givenNb = 0;
 					while(entry != NULL){
+
 						entry = entry->next;
 						givenNb++;
 					}
@@ -1442,8 +1447,8 @@ bool verificationParametres(TreeP block){
 
 					if(toReturn == FALSE){
 					setError(PARAM_ERROR_1);
-					}
-					else{
+				}
+				else{
 
 					
 
@@ -1457,12 +1462,15 @@ bool verificationParametres(TreeP block){
 							}
 							entry = entry->next;
 							PDecl = PDecl->next; 
+						}
 					}
-				}
 					return toReturn;
 				}
 				else setError(NO_EXISTING_METHOD);
+					 return FALSE;
 			}
+				tree = getChild(tree,i);
+				
 		}
 		return toReturn;
 }
