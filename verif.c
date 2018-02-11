@@ -1047,14 +1047,11 @@ Vtypage verifcationTypageNoeud(TreeP noeud, list_ClassObjP env){
 			
 			if(getChild(noeud, 0)->op == _ID){
 				if(getChild(noeud, 0)->u.lvar->name[0] <= 91){	
-					m = veriFils[1].type.object->methods; 
-					printf("Le call donne %s\n", veriFils[1].type.object->name);
-					printf("avec %s\n", veriFils[1].type.object->attributes->name);
+					m = veriFils[1].type.object->methods;
 				}
 			}
 			if(m == NIL(t_method)){
 				m = veriFils[1].type.class->methods;
-				printf("Le calle donne %s\n", veriFils[1].type.class->name);
 			}
 			
 			while(m != NIL(t_method)){

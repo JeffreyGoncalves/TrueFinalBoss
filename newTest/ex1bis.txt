@@ -239,7 +239,7 @@ class A2() extends A() is {
   var clone1: Point;
   var clone2: Point;
 is
-  "Debut du programme".println();
+/*  "Debut du programme".println();
   p1.print(0);
   p2.print(0); 
   p2.move(p1.getx(), p1.gety(), 0);
@@ -259,12 +259,12 @@ is
   "Impression de tous les clones de p1:".println();
    p1.allClones();
   "Fin de l'impression de tous les clones".println();
-  
+*/
   /* Ne doit pas compiler car clone() renvoie statiquement un Point alors
    * que o est declare comme PointColore
    * o := o.clone();
    */
-
+/*
   "Valeur du compteur de nombre de points: ".println();
   CptPoint.howMany().toString().println();
 
@@ -274,15 +274,15 @@ is
   "test(Point, PointColore, PointNoir)".println();
   Test.test(p1, o, pn);
   "test(PointNoir, PointNoir, PointNoir)".println();
-  Test.test(pn, pn, pn);
-  p1 := pn; /* affectation entre pointeurs ! */
-  Test.test2(o);
+  */Test.test(pn, pn, pn);
+ /* p1 := pn; *//* affectation entre pointeurs ! */
+ /* Test.test2(o);
   Test.test2(pn);
-  o := pn;  /* Idem : on doit avoir de la liaison dynamique ci-dessous */
-
+  o := pn; */ /* Idem : on doit avoir de la liaison dynamique ci-dessous */
+/*
   "test(PointNoir, PointNoir, PointNoir)".println();
   Test.test(p1, o, pn);
   Test.test2(o);
   Test.test2(pn);
-  "\nDone".println();
+  "\nDone".println();*/
 }
