@@ -411,6 +411,9 @@ void compile(TreeP listClassObject, TreeP core){
 	printf("\n\n********			Paramètre			********\n");
 	if(!verificationParametres(core))
 		abort();
+
+	FILE* file = NULL;
+	makeCode(core,environnement,file);
 }
 
 void creationClasseIntegerStringVoid(list_ClassObjP env){	

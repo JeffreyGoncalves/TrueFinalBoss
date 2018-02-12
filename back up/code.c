@@ -2,6 +2,10 @@
 
 extern char* strdup(const char *);
 
+int nbObjets;
+t_object* obj;
+
+
 void makeCodeClasse(t_class* class, FILE* pFile) {
     ;
 }
@@ -31,9 +35,10 @@ int tailleAlloc(VarDeclP decl) {
     return taille;
 }
 
-void makeCode(TreeP tree, list_ClassObjP env, FILE* pFile) {
+void makeCode(TreeP tree,list_ClassObjP env, FILE* pFile) {
 
 	int cpt =0;
+	int currentOffset = 0;
     if(tree == NULL) {
         printf("-- null tree");
         return;
@@ -155,7 +160,7 @@ void makeCode(TreeP tree, list_ClassObjP env, FILE* pFile) {
         break;
         case _ID :
             /* on empile l'offset de la variable ou de l'objet independant ayant cet identifiant */
-            fprintf(pFile, "PUSHG %d\n", getOffsetObj(env->listObj, tree->u.lvar->coeur->_obj));
+            fprintf(pFile, "PUSHG %d\n", getOffsetObj(obj, tree->u.str));
         break;
         case I_AFF :
             fprintf (pFile, "-- Il y a une affectation\n");
@@ -172,8 +177,9 @@ void makeCode(TreeP tree, list_ClassObjP env, FILE* pFile) {
         break;
         case E_CALL_METHOD :
             fprintf(pFile, "-- Il y a un appel de methode\n");
+            currentOffset = GcClassObject(currentOffset,env,getChild(tree,0),file);
             GcCallMethod(env,file,list,tree);
-            makeCode(getChild(tree,0),env,file);
+            
         break;
         case I_ITE :
             fprintf(pFile, "-- Il y a un bloc If Then Else\n");
@@ -182,11 +188,9 @@ void makeCode(TreeP tree, list_ClassObjP env, FILE* pFile) {
         case I_BLOC :
             fprintf(pFile, "-- Il y a un bloc d'instructions\n");
             /*plusieurs instructions a lire*/
-                  int i;
-            for(i=0;i<tree->nbChildren;i++){
 
-            	makeCode(getChild(tree,i),env,pFile);
-            }
+            	makeCode(getChild(tree,0),env,pFile);
+            	makeCode(getChild(tree,1),env,pFile);
         break;
         case I_RETURN :
         /*pas s?r s?r du truc*/
@@ -224,11 +228,11 @@ void makeCodeAffect(TreeP exprG, TreeP exprD,list_ClassObjP env, FILE* pFile) {
 
 }
 
-int getOffsetObj(t_object* obj, t_object* listObj) {
+int getOffsetObj(t_object* obj, char* nom) {
     int i = 0;
-    while (listObj != NULL && listObj != obj) {
+    while (obj != NULL && strcmp(obj->name, nom)) {
         i++;
-        listObj = listObj->next;
+        obj = obj->next;
     }
     if (obj == NULL)
         printf("Objet introuvable\n");
@@ -408,24 +412,26 @@ void GcCallMethod(list_ClassObjP env,FILE* pFile,t_method* list,TreeP tree){
 	fprintf(pFile, "\t\tPOPN %d\n",1);
 }
 
+
+
 int GcClassObject(int currentOffset,list_ClassObjP env,TreeP tree, FILE* pFile){
 
-    int nbChamps = 0;
-    t_class* classObj;
-    if(tree->op == E_CALL_METHOD){
-        classObj = getChild(tree,0)->u.lvar->coeur->_type;
-        while(classObj->attributes != NULL){
-            nbChamps++;
-            classObj->attributes = classObj->attributes->next;
-        }
-        fprintf(pFile, "\t\tALLOC %d\n",nbChamps);
-        fprintf(pFile, "\t\tDUPN %d\n",1);
-        currentOffset++;
-        fprintf(pFile, "\t\tPUSHG %d\n",currentOffset);
-        fprintf(pFile, "\t\tSTORE %d\n",0);
+	int nbChamps = 0;
+	t_class* classObj;
+	if(tree->op == E_CALL_METHOD){
+		classObj = getChild(tree,0)->u.lvar->coeur->_type;
+		while(classObj->attributes != NULL){
+			nbChamps++;
+			classObj->attributes = classObj->attributes->next;
+		}
+		fprintf(pFile, "\t\tALLOC %d\n",nbChamps);
+		fprintf(pFile, "\t\tDUPN %d\n",1);
+		currentOffset++;
+		fprintf(pFile, "\t\tPUSHG %d\n",currentOffset);
+		fprintf(pFile, "\t\tSTORE %d\n",0);
 
-        return currentOffset;
-    }
+		return currentOffset;
+	}
 
-    return currentOffset;
+	return currentOffset;
 }

@@ -9,6 +9,7 @@
 #include <string.h>
 #include "tp.h"
 #include "verif.h"
+#include "code.h"
 
 VarDeclP giveAllAttributes(TreeP tree, t_class* firstClass);
 t_method* giveAllMethod(TreeP tree, t_class* firstClass);
