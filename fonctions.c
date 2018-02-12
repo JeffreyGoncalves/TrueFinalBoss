@@ -311,7 +311,7 @@ t_method* MakeMethod(TreeP TreeM,t_class* listClass){
 					method->nbParametres = 0;
 				}
 
-			/*TYPE DE RETOUR*/ /*ici le l'option facultative de type de retour est a prendre en compte*/
+			/*TYPE DE RETOUR*/ /*ici l'option facultative de type de retour est a prendre en compte*/
 			method->returnType = NEW(1,t_class);
 			if(getChild(TreeM,3) == NIL(Tree)){
 				method->returnType->name = "Void"; 		/* On lie la 'vraie' classe lors de la vérification contextuelle de portée.*/

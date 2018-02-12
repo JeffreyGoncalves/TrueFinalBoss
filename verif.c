@@ -1390,9 +1390,9 @@ bool verificationParametres(TreeP block){
 		
 			if(tree->op == E_CALL_METHOD){
 				
-				t_class* c = getChild(tree,3)->u.lvar->coeur->_type;
+				t_class* c = getChild(tree,1)->u.lvar->coeur->_type;
 
-				while(strcmp(getChild(tree,3)->u.str,c->methods->name) != 0){
+				while(strcmp(getChild(tree,1)->u.str,c->methods->name) != 0){
 					
 					if(c->methods == NIL(t_method)){
 						setError(NO_EXISTING_METHOD);
@@ -1428,12 +1428,12 @@ bool verificationParametres(TreeP block){
 						PDecl = PDecl->next; 
 					}
 				}
-				tree = getChild(tree,1);	
+				tree = getChild(tree,0);	
 			}
 			else if(tree->op == INST){
 				
-				t_method* constructor = getChild(tree,1)->u.lvar->coeur->_type->constructor;
-				if(strcmp(constructor->name,getChild(tree,1)->u.str) == 0){
+				t_method* constructor = getChild(tree,0)->u.lvar->coeur->_type->constructor;
+				if(strcmp(constructor->name,getChild(tree,0)->u.str) == 0){
 
 					
 					VarDeclP entry = getChild(tree,4)->u.lvar;

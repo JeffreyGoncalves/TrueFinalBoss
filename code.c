@@ -5,69 +5,7 @@ extern char* strdup(const char *);
 int nbObjets;
 t_object* obj;
 
-/*int main(int argc, char **argv) {
 
-	printf("Construction de l'arbre de test\n");
-
-//    TreeP tree = makeNode(2, SUM);
-//    setChild(tree, 0, makeLeafInt(CST, 2));
-//    setChild(tree, 1, makeNode(2, MULT));
-//    setChild(getChild(tree, 1), 0, makeLeafInt(CST, 3));
-//    setChild(getChild(tree, 1), 1, makeNode(2, E_SELECT));
-//    TreeP selectTr = getChild(getChild(tree, 1), 1);
-//    setChild(selectTr, 0, makeLeafStr(_ID, "obj"));
-//    setChild(selectTr, 1, makeLeafStr(_ID, "attr"));
-
-    TreeP aff1 = makeNode(2, I_AFF);
-    setChild(aff1, 0, makeNode(2, E_SELECT));
-    setChild(getChild(aff1, 0), 0, makeLeafStr(_ID, "obj1"));
-    setChild(getChild(aff1, 0), 1, makeLeafStr(_ID, "attr"));
-    setChild(aff1, 1, makeLeafInt(CST, 7));
-    TreeP aff2 = makeNode(2, I_AFF);
-    setChild(aff2, 0, makeNode(2, E_SELECT));
-    setChild(getChild(aff2, 0), 0, makeLeafStr(_ID, "obj2"));
-    setChild(getChild(aff2, 0), 1, makeLeafStr(_ID, "attr"));
-    setChild(aff2, 1, makeLeafInt(CST, 5));
-    TreeP tree = makeNode(2, LIST_INST);
-    setChild(tree, 0, aff1);
-    setChild(tree, 1, makeNode(2, LIST_INST));
-    setChild(getChild(tree, 1), 0, aff2);
-    setChild(getChild(tree, 1), 1, NULL);
-
-    VarDeclP declA = NEW (1, VarDecl);
-    declA = makeVarDeclP("attr", "Integer", NULL);
-    obj = NEW(1, t_object);
-    obj->attributes = declA;
-    obj->name = "obj1";
-    VarDeclP declA2 = NEW (1, VarDecl);
-    declA2 = makeVarDeclP("attr", "Integer", NULL);
-    t_object* obj2 = NEW(1, t_object);
-    obj2->attributes = declA2;
-    obj2->name = "obj2";
-    obj->next = obj2;
-
-	FILE* pFile;
-	pFile = fopen("myfile.txt", "w");
-	if (pFile==NULL) {
-        printf("erreur fichier\n");
-        return 0;
-	}
-	printf("Ecriture du code\n");
-
-	makeCodeObjet(obj, pFile);
-
-    fprintf(pFile, "START\n");
-	makeCode(tree, pFile);
-    fprintf(pFile, "PUSHS \"resultat = \"\n");
-    fprintf(pFile, "WRITES\n");
-    fprintf(pFile, "WRITEI\n");
-    fprintf(pFile, "PUSHS\"\\n\"\n");
-    fprintf(pFile, "WRITES\n");
-    fprintf(pFile, "STOP\n");
-
-    fclose (pFile);
-	return 0;
-}*/
 void makeCodeClasse(t_class* class, FILE* pFile) {
     ;
 }
@@ -97,103 +35,113 @@ int tailleAlloc(VarDeclP decl) {
     return taille;
 }
 
-void makeCode(TreeP tree, FILE* pFile) {
+void makeCode(TreeP tree,list_ClassObjP env, FILE* pFile) {
 
+	int cpt =0;
     if(tree == NULL) {
         printf("-- null tree");
         return;
     }
 
+    FILE* file = fopen("../Interprete/ResultGC","r+");
+    if(cpt != 1)
+    {
+    	t_method* list = InitMethod(env,file);
+    	CallMethod(env,file,list);
+    	InitTV(env,file,list);
+    	cpt = 1;
+    } 	
+
 	switch(tree->op) {
 
 	    case LIST_CLASS :
-            makeCode(getChild(tree, 0), pFile);
+            makeCode(getChild(tree, 0),env, pFile);
             fprintf(pFile, "-- Il y a une definition de classe\n");
         break;
 	    case LIST_VAR_DEF :
             fprintf(pFile, "-- Il y a une definition de variable\n");
-            makeCode(getChild(tree, 1), pFile);
+            makeCode(getChild(tree, 1),env, pFile);
         break;
 		case SUM :
             fprintf (pFile, "-- Il y a une somme\n");
-            makeCode(getChild(tree, 0), pFile);
-            makeCode(getChild(tree, 1), pFile);
+            makeCode(getChild(tree, 0),env, pFile);
+            makeCode(getChild(tree, 1),env, pFile);
             fprintf (pFile, "ADD\n");
             fprintf (pFile, "-- Fin de la somme\n");
 		break;
 		case MULT :
             fprintf (pFile, "-- Il y a un produit\n");
-            makeCode(getChild(tree, 0), pFile);
-            makeCode(getChild(tree, 1), pFile);
+            makeCode(getChild(tree, 0),env, pFile);
+            makeCode(getChild(tree, 1),env, pFile);
             fprintf (pFile, "MUL\n");
             fprintf (pFile, "-- Fin du produit\n");
 		break;
 		case MIN :
             fprintf (pFile, "-- Il y a une soustraction\n");
 		    if (tree->nbChildren == 2) {
-                makeCode(getChild(tree, 0), pFile);
-                makeCode(getChild(tree, 1), pFile);
+                makeCode(getChild(tree, 0),env, pFile);
+                makeCode(getChild(tree, 1),env, pFile);
 		    } else {
                 fprintf (pFile, "PUSHI 0\n");
-                makeCode(getChild(tree, 0), pFile);
+                makeCode(getChild(tree, 0),env, pFile);
 		    }
             fprintf (pFile, "SUB\n");
             fprintf (pFile, "-- Fin de la soustraction\n");
 		break;
 		case DIVI :
             fprintf (pFile, "-- Il y a une division\n");
-            makeCode(getChild(tree, 0), pFile);
-            makeCode(getChild(tree, 1), pFile);
+            makeCode(getChild(tree, 0),env, pFile);
+            makeCode(getChild(tree, 1),env, pFile);
             fprintf (pFile, "DIV\n");
             fprintf (pFile, "-- Fin du division\n");
 		break;
 		case EQ :
             fprintf (pFile, "-- Il y a une egalite\n");
-            makeCode(getChild(tree, 0), pFile);
-            makeCode(getChild(tree, 1), pFile);
+            makeCode(getChild(tree, 0),env, pFile);
+            makeCode(getChild(tree, 1),env, pFile);
             fprintf (pFile, "EQUAL\n");
             fprintf (pFile, "-- Fin de l egalite\n");
 		break;
 		case NE :
             fprintf (pFile, "-- Il y a une inegalite\n");
-            makeCode(getChild(tree, 0), pFile);
-            makeCode(getChild(tree, 1), pFile);
+            makeCode(getChild(tree, 0),env, pFile);
+            makeCode(getChild(tree, 1),env, pFile);
             fprintf (pFile, "EQUAL\n");
             fprintf (pFile, "NOT\n");
             fprintf (pFile, "-- Fin de l inegalite\n");
 		break;
 		case LT :
             fprintf (pFile, "-- Il y a un inferieur strict\n");
-            makeCode(getChild(tree, 0), pFile);
-            makeCode(getChild(tree, 1), pFile);
+            makeCode(getChild(tree, 0),env, pFile);
+            makeCode(getChild(tree, 1),env, pFile);
             fprintf (pFile, "INF\n");
             fprintf (pFile, "-- Fin du inferieur strict\n");
 		break;
 		case LE :
             fprintf (pFile, "-- Il y a un inferieur ou egal\n");
-            makeCode(getChild(tree, 0), pFile);
-            makeCode(getChild(tree, 1), pFile);
+            makeCode(getChild(tree, 0),env, pFile);
+            makeCode(getChild(tree, 1),env, pFile);
             fprintf (pFile, "INFEQ\n");
             fprintf (pFile, "-- Fin du inferieur ou egal\n");
 		break;
 		case GT :
             fprintf (pFile, "-- Il y a un superieur strict\n");
-            makeCode(getChild(tree, 0), pFile);
-            makeCode(getChild(tree, 1), pFile);
+            makeCode(getChild(tree, 0),env, pFile);
+            makeCode(getChild(tree, 1),env, pFile);
             fprintf (pFile, "SUP\n");
             fprintf (pFile, "-- Fin du superieur strict\n");
 		break;
 		case GE :
             fprintf (pFile, "-- Il y a un superieur ou egal\n");
-            makeCode(getChild(tree, 0), pFile);
-            makeCode(getChild(tree, 1), pFile);
+            makeCode(getChild(tree, 0),env, pFile);
+            makeCode(getChild(tree, 1),env, pFile);
             fprintf (pFile, "SUPEQ\n");
             fprintf (pFile, "-- Fin du superieur ou egal\n");
 		break;
 		case AND : /* on utilise '&' pour les concatenations */
             fprintf (pFile, "-- Il y a une concatenation\n");
-            makeCode(getChild(tree, 0), pFile);
-            makeCode(getChild(tree, 1), pFile);
+            makeCode(getChild(tree, 0),env, pFile);
+            makeCode(getChild(tree, 1),env, pFile);
             fprintf (pFile, "CONCAT\n");
             fprintf (pFile, "-- Fin de la concatenation\n");
 		break;
@@ -202,7 +150,7 @@ void makeCode(TreeP tree, FILE* pFile) {
 		break;
 		case E_SELECT :
             fprintf (pFile, "-- Il y a une selection (R)\n");
-            makeCode(getChild(tree, 0), pFile);/* On ecrit le code donnant l'offset de l'expression */
+            makeCode(getChild(tree, 0),env, pFile);/* On ecrit le code donnant l'offset de l'expression */
             char* strAttr = getChild(tree, 1)->u.str;
             VarDeclP attrs = getChild(tree, 0)->u.lvar->coeur->_obj->attributes;
             fprintf(pFile, "LOAD %d\n", getOffsetAttr(attrs, strAttr));
@@ -218,16 +166,17 @@ void makeCode(TreeP tree, FILE* pFile) {
             fprintf (pFile, "-- Fin de l'affectation\n");
         break;
         case LIST_INST :
-            makeCode(getChild(tree, 0), pFile);
-            makeCode(getChild(tree, 1), pFile);
+            makeCode(getChild(tree, 0),env, pFile);
+            makeCode(getChild(tree, 1),env, pFile);
         break;
         case CAST :
             fprintf(pFile, "-- Il y a un cast\n" );
             /*je vois pas comment faire celui-l?*/
         break;
         case E_CALL_METHOD :
-            fprintf(pFile, "Il y a un appel de methode\n");
-            /*faudra probablement faire une fonction a part*/
+            fprintf(pFile, "-- Il y a un appel de methode\n");
+            GcCallMethod(env,file,list,tree);
+            makeCode(getChild(tree,0),env,file);
         break;
         case I_ITE :
             fprintf(pFile, "-- Il y a un bloc If Then Else\n");
@@ -239,7 +188,7 @@ void makeCode(TreeP tree, FILE* pFile) {
                   int i;
             for(i=0;i<tree->nbChildren;i++){
 
-            	makeCode(getChild(tree,i),pFile);
+            	makeCode(getChild(tree,i),env,pFile);
             }
         break;
         case I_RETURN :
@@ -255,7 +204,7 @@ void makeCode(TreeP tree, FILE* pFile) {
             fprintf (pFile, "-- Il y a quelque chose\n");
 		break;
 	}
-
+	fclose(file);
 }
 
 void makeCodeAffect(TreeP exprG, TreeP exprD, FILE* pFile) {
@@ -302,14 +251,25 @@ int getOffsetAttr(VarDeclP decl, char* nom) {
 }
 
 int getOffsetMeth(t_method* meth, char* nom){
-	int i = 0;
+	int offset = 0;
 	while (meth != NULL && strcmp(meth->name, nom)){
-		i++;
+		offset++;
 		meth = meth->next;
 	}
 	if(meth == NULL)
 		printf("Methode introuvable\n");
-	return i;
+	return offset;
+}
+
+int getOffsetClass(t_class* class, char* nom){
+	int offset = 0;
+	while (class != NULL && strcmp(class->name,nom)){
+		offset++;
+		class = class->next;
+	}
+	if(class == NULL)
+		printf("Classe introuvable\n");
+	return offset;
 }
 
 void InitTV(list_ClassObjP env, FILE* pFile,t_method* list){
@@ -413,7 +373,7 @@ void CallMethod(list_ClassObjP env, FILE* pFile, t_method* list){
 
 				if(!env->listClass->methods->isRedef)
 				{
-					sprintf(label+5,"%d\n",getOffsetMeth(list,env->listClass->methods->name));
+					sprintf(label+5,"%d",getOffsetMeth(list,env->listClass->methods->name));
 					fprintf(pFile, "%s :\t",label);
 					fprintf(pFile, "PUSHL %d\n",-1);
 					fprintf(pFile, "\t\tDUPN %d\n",1);
@@ -430,4 +390,23 @@ void CallMethod(list_ClassObjP env, FILE* pFile, t_method* list){
 
 		free(label);
 	}
+}
+
+void GcCallMethod(list_ClassObj env,FILE* pFile,t_method* list,TreeP tree){
+	char* label = malloc(6*sizeof(char));
+	sprintf(label,"%s","call");
+	t_class* classes = env->listClass;
+
+	while(classes != NULL && strcmp(classes->methods->name,getChild(tree,1)->u.lvar->name)){
+		classes->methods = classes->methods->next;
+
+		if(classes->methods->next == NULL)
+			classes = classes->next;
+	}
+
+	fprintf(pFile,"\t\tPUSHL %d\n",getOffsetClass(env->listClass,classes->name));
+	sprintf(label+5,"%d",getOffsetMeth(list,classes->methods->name));
+	fprintf(pFile, "\t\tPUSHA %s\n", label);
+	fprintf(pFile, "\t\tCALL\n");
+	fprintf(pFile, "\t\tPOPN %d\n",1);
 }
