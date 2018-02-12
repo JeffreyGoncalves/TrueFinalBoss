@@ -1,0 +1,56 @@
+		JUMP init
+-- Corps des methodes
+print :	PUSHS print
+		WRITES
+		RETURN
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+-- Il y a un bloc d'instructions
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+-- Il y a quelque chose
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+-- Il y a quelque chose
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+-- Il y a quelque chose
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+-- Il y a quelque chose

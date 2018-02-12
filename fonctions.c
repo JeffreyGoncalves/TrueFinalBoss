@@ -412,8 +412,11 @@ void compile(TreeP listClassObject, TreeP core){
 	if(!verificationParametres(core))
 		abort();
 
-	FILE* file = NULL;
-	makeCode(core,environnement,file);
+	FILE* file = fopen ("ResultGC.txt","w");
+	if(file != NULL){
+		makeCode(core,environnement,file);
+	}
+	fclose(file);
 }
 
 void creationClasseIntegerStringVoid(list_ClassObjP env){	

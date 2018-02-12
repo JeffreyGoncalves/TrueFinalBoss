@@ -35,17 +35,16 @@ void makeCode(TreeP tree, list_ClassObjP env, FILE* pFile) {
 
 	int cpt =0;
     if(tree == NULL) {
-        printf("-- null tree");
+        printf("-- null tree\n");
         return;
     }
 
     t_method* list = NIL(t_method);
-    FILE* file = fopen("../Interprete/ResultGC","r+");
     if(cpt != 1)
     {
-    	list = InitMethod(env,file);
-    	CallMethod(env,file,list);
-    	InitTV(env,file,list);
+    	list = InitMethod(env,pFile);
+    	CallMethod(env,pFile,list);
+    	InitTV(env,pFile,list);
     	cpt = 1;
     } 	
 
@@ -172,8 +171,8 @@ void makeCode(TreeP tree, list_ClassObjP env, FILE* pFile) {
         break;
         case E_CALL_METHOD :
             fprintf(pFile, "-- Il y a un appel de methode\n");
-            GcCallMethod(env,file,list,tree);
-            makeCode(getChild(tree,0),env,file);
+            GcCallMethod(env,pFile,list,tree);
+            makeCode(getChild(tree,0),env,pFile);
         break;
         case I_ITE :
             fprintf(pFile, "-- Il y a un bloc If Then Else\n");
@@ -201,7 +200,6 @@ void makeCode(TreeP tree, list_ClassObjP env, FILE* pFile) {
             fprintf (pFile, "-- Il y a quelque chose\n");
 		break;
 	}
-	fclose(file);
 }
 
 void makeCodeAffect(TreeP exprG, TreeP exprD,list_ClassObjP env, FILE* pFile) {
@@ -321,6 +319,7 @@ t_method* InitMethod(list_ClassObjP env, FILE* pFile){
 	{
 		char* label = malloc(10*sizeof(char));
 		int i = 0;
+     
 		fprintf(pFile, "\t\tJUMP %s\n","init");
 		fprintf(pFile, "-- Corps des methodes\n");
 		while(env->listClass->next != NIL(t_class)){
@@ -351,7 +350,6 @@ t_method* InitMethod(list_ClassObjP env, FILE* pFile){
 			env->listClass = env->listClass->next;
 		}
 
-		free(label);
 		return list;	
 	}
 	return NULL;
@@ -385,7 +383,6 @@ void CallMethod(list_ClassObjP env, FILE* pFile, t_method* list){
 			env->listClass = env->listClass->next;
 		}
 
-		free(label);
 	}
 }
 
