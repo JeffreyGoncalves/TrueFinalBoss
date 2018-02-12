@@ -381,7 +381,7 @@ void CallMethod(list_ClassObjP env, FILE* pFile, t_method* list){
 					fprintf(pFile, "\t\tLOAD %d\n",0);
 					fprintf(pFile, "\t\tLOAD %d\n",getOffsetMeth(list,env->listClass->methods->name));
 					fprintf(pFile, "\t\tCALL\n");
-					fprintf(pFile, "\t\tRETRUN\n");
+					fprintf(pFile, "\t\tRETURN\n");
 				}
 				env->listClass->methods = env->listClass->methods->next;
 			}
