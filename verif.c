@@ -1381,7 +1381,7 @@ t_class* getReturnType(TreeP tree, list_ClassObjP env){
 }
 
 
-bool verificationParametres(TreeP block){
+/*bool verificationParametres(TreeP block){
 		TreeP tree = block;
 		bool toReturn = TRUE;
 		int i=0;
@@ -1391,145 +1391,160 @@ bool verificationParametres(TreeP block){
 			if(tree->op == E_CALL_METHOD){
 				
 				t_class* c = getChild(tree,1)->u.lvar->coeur->_type;
-
-				while(strcmp(getChild(tree,1)->u.lvar->name,c->methods->name) != 0){
-					
-					if(c->methods == NIL(t_method)){
-						setError(NO_EXISTING_METHOD);
-					}
-					c->methods = c->methods->next;
-				}
-				
-				t_method* decl = c->methods;
-				TreeP entry = NULL;
-				printf("Methode : %s\n", decl->name);
-				/* On verifie d'abord le nombre de parametres entres
-				 * lors de l'appel methode. Dans le cas 0, il suffit
-				 * de comparer avec le nombre requis. Sinon il faut
-				 * aussi verifier le type des arguments */
-				if(getChild(tree,2) == NIL(Tree)){
-					/* Cas ou l'appel methode utilise 0 arguments */
-					if(decl->nbParametres != 0){
-						setError(PARAM_ERROR_1);
-						toReturn = FALSE;
-					}
-				}
-				else{
-					/* Cas ou l'appel utilise au moins 1 argument */
-					if(decl->nbParametres == 0) {
-						setError(PARAM_ERROR_1);
-						toReturn = FALSE;
-					}
-					else {
-						int givenNb = 1;
-						entry = getChild(tree,2);
-						while(getChild(entry, 1) != NIL(Tree)){
-							entry = getChild(entry, 1);
-							givenNb++;
-						}
-						/* Verification de nombre */
-						if(givenNb != decl->nbParametres) 
-						{
+				if(c != NIL(t_class))
+				{
+					t_method* method = c->methods;
+					while(strcmp(getChild(tree,1)->u.lvar->name,method->name)){
+						if(method == NIL(t_method)){
+							setError(NO_EXISTING_METHOD);
 							toReturn = FALSE;
-							setError(PARAM_ERROR_1);
 						}
-						/* Succès sur le nombre d'arguments, verification de type */
-						else
-						{
-							entry = getChild(tree,2);
-							VarDeclP param = decl->parametres;
-							do
-							{
-								TreeP argTree = getChild(entry, 0);
-								/* On recupere le type de l'expression de l'argument actuel */
-								switch(argTree->op)
-								{
-									case CST : /* Integer */
-										if(strcmp(param->coeur->_type->name, "Integer"))
-										{
-											setError(PARAM_ERROR_2);
-											toReturn = FALSE;
-										}
-										break;
-									case _STR : /* String */
-										if(strcmp(param->coeur->_type->name, "String"))
-										{
-											setError(PARAM_ERROR_2);
-											toReturn = FALSE;
-										}
-										break;
-									case _ID :
-										if(argTree->u.lvar->coeur->_type == NIL(t_class))
-										{
-											setError(PARAM_ERROR_3);
-											toReturn = FALSE;
-										}
-										else
-										{
-											t_class *argClass = argTree->u.lvar->coeur->_type;
-											while(strcmp(argClass->name, param->coeur->_type->name))
-											{
-												if(argClass->superClass == NIL(t_class))
-												{
-													setError(PARAM_ERROR_2);
-													toReturn = FALSE;
-													break;
-												}
-												else argClass = argClass->superClass;
-											}
-										}
-										break;
-									case E_SELECT :
-										argTree = getChild(argTree, 1);
-										if(argTree->u.lvar->coeur->_type == NIL(t_class))
-										{
-											setError(PARAM_ERROR_3);
-											toReturn = FALSE;
-										}
-										else
-										{
-											t_class *argClass = argTree->u.lvar->coeur->_type;
-											while(strcmp(argClass->name, param->coeur->_type->name))
-											{
-												if(argClass->superClass == NIL(t_class))
-												{
-													setError(PARAM_ERROR_2);
-													toReturn = FALSE;
-													break;
-												}
-												else argClass = argClass->superClass;
-											}
-										}
-										break;
-									case E_CALL_METHOD :
-										
-										break;
-								}
-								if(!toReturn)break;
-								param = param->next;
-								
-							}while(getChild(entry, 1) != NIL(Tree));
-						}
+						method = method->next;
 					}
-				}
-
-				/*if(toReturn == FALSE){
 					
-				}
-				else{
-					if(getChild(tree,2) == NULL){printf("meh\n");}
-					entry = getChild(tree,2)->u.lvar;
-					VarDeclP PDecl = decl->parametres;
-					while(entry != NIL(VarDecl) && PDecl !=NIL(VarDecl)){
-
-						toReturn = toReturn && ((strcmp(PDecl->coeur->_type->name,entry->coeur->_type->name) == 0) ? TRUE : FALSE);
-						if(toReturn == FALSE){
-							setError(PARAM_ERROR_2);
+					t_method* decl = method;
+					TreeP entry = NULL;
+					printf("Methode : %s\n", decl->name);*/
+					/* On verifie d'abord le nombre de parametres entres
+					 * lors de l'appel methode. Dans le cas 0, il suffit
+					 * de comparer avec le nombre requis. Sinon il faut
+					 * aussi verifier le type des arguments */
+					/*if(getChild(tree,2) == NIL(Tree)){*/
+						/* Cas ou l'appel methode utilise 0 arguments */
+						/*if(decl->nbParametres != 0){
+							setError(PARAM_ERROR_1);
+							toReturn = FALSE;
 						}
-						entry = entry->next;
-						PDecl = PDecl->next; 
 					}
-				}*/
+					else{*/
+						/* Cas ou l'appel utilise au moins 1 argument */
+						/*if(decl->nbParametres == 0) {
+							setError(PARAM_ERROR_1);
+							toReturn = FALSE;
+						}
+						else {
+							int givenNb = 1;
+							entry = getChild(tree,2);
+							while(getChild(entry, 1) != NIL(Tree)){
+								entry = getChild(entry, 1);
+								givenNb++;
+							}
+							printf("NBPARAM : %d, %d\n", givenNb, decl->nbParametres);*/
+							/* Verification de nombre */
+							/*if(givenNb != decl->nbParametres) 
+							{
+								toReturn = FALSE;
+								setError(PARAM_ERROR_1);
+							}*/
+							/* Succès sur le nombre d'arguments, verification de type */
+							/*else
+							{
+								entry = getChild(tree,2);
+								VarDeclP param = decl->parametres;
+								do
+								{
+									TreeP argTree = getChild(entry, 0);*/
+									/* On recupere le type de l'expression de l'argument actuel */
+									/*switch(argTree->op)
+									{
+										case CST : *//* Integer */
+											/*if(strcmp(param->coeur->_type->name, "Integer"))
+											{
+												setError(PARAM_ERROR_2);
+												toReturn = FALSE;
+											}
+											break;
+										case _STR : *//* String */
+											/*if(strcmp(param->coeur->_type->name, "String"))
+											{
+												setError(PARAM_ERROR_2);
+												toReturn = FALSE;
+											}
+											break;
+										case _ID :
+											if(argTree->u.lvar->coeur->_type == NIL(t_class))
+											{
+												setError(PARAM_ERROR_3);
+												toReturn = FALSE;
+											}
+											else
+											{
+												t_class *argClass = argTree->u.lvar->coeur->_type;
+												while(strcmp(argClass->name, param->coeur->_type->name))
+												{
+													if(argClass->superClass == NIL(t_class))
+													{
+														setError(PARAM_ERROR_2);
+														toReturn = FALSE;
+														break;
+													}
+													else argClass = argClass->superClass;
+												}
+											}
+											break;
+										case E_SELECT :
+											argTree = getChild(argTree, 1);
+											if(argTree->u.lvar->coeur->_type == NIL(t_class))
+											{
+												setError(PARAM_ERROR_3);
+												toReturn = FALSE;
+											}
+											else
+											{
+												t_class *argClass = argTree->u.lvar->coeur->_type;
+												while(strcmp(argClass->name, param->coeur->_type->name))
+												{
+													if(argClass->superClass == NIL(t_class))
+													{
+														setError(PARAM_ERROR_2);
+														toReturn = FALSE;
+														break;
+													}
+													else argClass = argClass->superClass;
+												}
+											}
+											break;
+										case E_CALL_METHOD :*/
+											/* CAS ID_C.ID(ARGS) */
+											/*if(argTree->nbChildren == 0)
+											{
+												char* methodName = getChild(argTree, 1)->u.lvar->name;
+												t_object *obj = getChild(argTree, 0)->u.lvar->coeur->_obj;
+												t_class *exprClass = NIL(t_class);
+												t_method *methIterator = obj->methods;
+												while(methIterator != NIL(t_method))
+												{
+													if(!strcmp(methIterator->name, methodName))
+													{
+														exprClass = methIterator->returnType;
+													}
+												}*/
+												/* Ne devrait jamais arriver, mais mieux vaut être prudent */
+												/*
+												if(exprClass == NIL(t_class))
+												{
+													setError(NO_EXISTING_METHOD);
+													toReturn = FALSE;
+												}
+												else if(strcmp(exprClass->name, param->coeur->_type->name))
+												{
+														setError(PARAM_ERROR_2);
+														toReturn = FALSE;
+												}
+											}*/
+											/* CAS (ExprRelop).ID(ARGS) */
+											/* CAS Object.ID(ARGS) */
+											/*break;
+									}
+									if(!toReturn)break;
+									param = param->next;
+									
+								}while(param != NIL(VarDecl));
+							}
+						}
+					}
+					if(toReturn)printf("OK !\n");
+				}
 			}
 			else if(tree->op == INST){
 				
@@ -1576,7 +1591,7 @@ bool verificationParametres(TreeP block){
 				
 		}
 		return toReturn;
-}
+}*/
 
 /* Verification contextuelle : Super
  * 		Verification des boucles d'heritage

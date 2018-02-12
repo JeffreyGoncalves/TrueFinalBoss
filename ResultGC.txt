@@ -1,5 +1,68 @@
 		JUMP init
 -- Corps des methodes
+R1f :	PUSHS f
+		WRITES
+		RETURN
+test :	PUSHS test
+		WRITES
+		RETURN
+R2estGris :	PUSHS estGris
+		WRITES
+		RETURN
+R3estGris :	PUSHS estGris
+		WRITES
+		RETURN
+R4colore :	PUSHS colore
+		WRITES
+		RETURN
+couleur :	PUSHS couleur
+		WRITES
+		RETURN
+colore :	PUSHS colore
+		WRITES
+		RETURN
+R5clone :	PUSHS clone
+		WRITES
+		RETURN
+estGris :	PUSHS estGris
+		WRITES
+		RETURN
+blanc :	PUSHS blanc
+		WRITES
+		RETURN
+noir :	PUSHS noir
+		WRITES
+		RETURN
+name :	PUSHS name
+		WRITES
+		RETURN
+setName :	PUSHS setName
+		WRITES
+		RETURN
+getx :	PUSHS getx
+		WRITES
+		RETURN
+gety :	PUSHS gety
+		WRITES
+		RETURN
+cloned :	PUSHS cloned
+		WRITES
+		RETURN
+move :	PUSHS move
+		WRITES
+		RETURN
+print :	PUSHS print
+		WRITES
+		RETURN
+clone :	PUSHS clone
+		WRITES
+		RETURN
+allClones :	PUSHS allClones
+		WRITES
+		RETURN
+egal :	PUSHS egal
+		WRITES
+		RETURN
 print :	PUSHS print
 		WRITES
 		RETURN
@@ -8,6 +71,440 @@ print :	PUSHS print
 init :-- Debut main
 		JUMP main
 -- Il y a un bloc d'instructions
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+-- Il y a quelque chose
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+-- Il y a quelque chose
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+-- Il y a quelque chose
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+-- Il y a quelque chose
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+-- Il y a quelque chose
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+-- Il y a quelque chose
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+-- Il y a quelque chose
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+-- Il y a quelque chose
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+-- Il y a quelque chose
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+-- Il y a quelque chose
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+-- Il y a quelque chose
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+-- Il y a quelque chose
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+-- Il y a une affectation
+-- Fin de l'affectation
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+-- Il y a quelque chose
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+-- Il y a quelque chose
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+-- Il y a un bloc If Then Else
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+-- Il y a une affectation
+-- Fin de l'affectation
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+-- Il y a quelque chose
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+-- Il y a quelque chose
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+-- Il y a quelque chose
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+-- Il y a quelque chose
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+-- Il y a une affectation
+-- Fin de l'affectation
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+-- Il y a quelque chose
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+-- Il y a quelque chose
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+-- Il y a quelque chose
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+-- Il y a quelque chose
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+-- Il y a quelque chose
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+-- Il y a quelque chose
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+-- Il y a une affectation
+-- Fin de l'affectation
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+-- Il y a quelque chose
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+-- Il y a quelque chose
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+-- Il y a une affectation
+-- Fin de l'affectation
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
+-- Il y a quelque chose
+		JUMP init
+-- Corps des methodes
+-- Appel des methodes
+-- Initilisation des tables virtuelles
+init :-- Debut main
+		JUMP main
 		JUMP init
 -- Corps des methodes
 -- Appel des methodes

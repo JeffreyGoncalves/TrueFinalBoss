@@ -409,8 +409,9 @@ void compile(TreeP listClassObject, TreeP core){
 		abort();
 		
 	printf("\n\n********			Paramètre			********\n");
-	if(!verificationParametres(core))
-		abort();
+	/*if(!verificationParametres(core))
+		abort();*/
+	/* Trop bugge pour etre utilise */
 
 	FILE* file = fopen ("ResultGC.txt","w");
 	if(file != NULL){
