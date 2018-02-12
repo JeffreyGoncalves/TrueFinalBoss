@@ -1392,33 +1392,36 @@ bool verificationParametres(TreeP block){
 				
 				t_class* c = getChild(tree,1)->u.lvar->coeur->_type;
 
-				while(strcmp(getChild(tree,1)->u.str,c->methods->name) != 0){
+				while(strcmp(getChild(tree,1)->u.lvar->name,c->methods->name) != 0){
 					
 					if(c->methods == NIL(t_method)){
 						setError(NO_EXISTING_METHOD);
-						return FALSE;
 					}
 					c->methods = c->methods->next;
 				}
 				
 				t_method* decl = c->methods;
-				VarDeclP entry = getChild(tree,2)->u.lvar;
-				int givenNb = 0;
-				while(entry != NULL){
-					printf("fine & ya ?\n");
-					entry = entry->next;
-					givenNb++;
+				VarDeclP entry = NULL;
+				if(getChild(tree,2) != NULL){
+
+					 entry = getChild(tree,2)->u.lvar;
+				
+					int givenNb = 0;
+					while(entry != NULL){	
+						entry = entry->next;
+						givenNb++;
+					}
+					toReturn = toReturn && ((decl->nbParametres == givenNb) ? TRUE : FALSE);
 				}
-				toReturn = toReturn && ((decl->nbParametres == givenNb) ? TRUE : FALSE);
 
 				if(toReturn == FALSE){
 					setError(PARAM_ERROR_1);
 				}
 				else{
-
+					if(getChild(tree,2) == NULL){printf("meh\n");}
 					entry = getChild(tree,2)->u.lvar;
 					VarDeclP PDecl = decl->parametres;
-					while(entry != NIL(VarDecl) || PDecl !=NIL(VarDecl)){
+					while(entry != NIL(VarDecl) && PDecl !=NIL(VarDecl)){
 
 						toReturn = toReturn && ((strcmp(PDecl->coeur->_type->name,entry->coeur->_type->name) == 0) ? TRUE : FALSE);
 						if(toReturn == FALSE){
@@ -1427,13 +1430,12 @@ bool verificationParametres(TreeP block){
 						entry = entry->next;
 						PDecl = PDecl->next; 
 					}
-				}
-				tree = getChild(tree,0);	
+				}	
 			}
 			else if(tree->op == INST){
 				
 				t_method* constructor = getChild(tree,0)->u.lvar->coeur->_type->constructor;
-				if(strcmp(constructor->name,getChild(tree,0)->u.str) == 0){
+				if(strcmp(constructor->name,getChild(tree,0)->u.lvar->name) == 0){
 
 					
 					VarDeclP entry = getChild(tree,1)->u.lvar;
@@ -1447,7 +1449,6 @@ bool verificationParametres(TreeP block){
 
 					if(toReturn == FALSE){
 						setError(PARAM_ERROR_1);
-						return FALSE;
 					}
 					else{
 
