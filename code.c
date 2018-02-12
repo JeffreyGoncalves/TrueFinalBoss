@@ -43,10 +43,11 @@ void makeCode(TreeP tree,list_ClassObjP env, FILE* pFile) {
         return;
     }
 
+    t_method* list = NIL(t_method);
     FILE* file = fopen("../Interprete/ResultGC","r+");
     if(cpt != 1)
     {
-    	t_method* list = InitMethod(env,file);
+    	list = InitMethod(env,file);
     	CallMethod(env,file,list);
     	InitTV(env,file,list);
     	cpt = 1;
@@ -162,7 +163,7 @@ void makeCode(TreeP tree,list_ClassObjP env, FILE* pFile) {
         break;
         case I_AFF :
             fprintf (pFile, "-- Il y a une affectation\n");
-            makeCodeAffect(getChild(tree, 0), getChild(tree, 1), pFile);
+            makeCodeAffect(getChild(tree, 0), getChild(tree, 1),env, pFile);
             fprintf (pFile, "-- Fin de l'affectation\n");
         break;
         case LIST_INST :
@@ -207,14 +208,14 @@ void makeCode(TreeP tree,list_ClassObjP env, FILE* pFile) {
 	fclose(file);
 }
 
-void makeCodeAffect(TreeP exprG, TreeP exprD, FILE* pFile) {
+void makeCodeAffect(TreeP exprG, TreeP exprD,list_ClassObjP env, FILE* pFile) {
 
 	switch(exprG->op) {
 	    case E_SELECT :
-            makeCode(getChild(exprG, 0), pFile);/* On ecrit le code donnant l'offset de l'expression */
+            makeCode(getChild(exprG, 0), env,pFile);/* On ecrit le code donnant l'offset de l'expression */
             char* strAttr = getChild(exprG, 1)->u.str;
             VarDeclP attrs = getChild(exprG, 0)->u.lvar->coeur->_obj->attributes;
-            makeCode(exprD, pFile);
+            makeCode(exprD,env, pFile);
             fprintf(pFile, "STORE %d\n", getOffsetAttr(attrs, strAttr));
         break;
         case _ID :
@@ -392,7 +393,7 @@ void CallMethod(list_ClassObjP env, FILE* pFile, t_method* list){
 	}
 }
 
-void GcCallMethod(list_ClassObj env,FILE* pFile,t_method* list,TreeP tree){
+void GcCallMethod(list_ClassObjP env,FILE* pFile,t_method* list,TreeP tree){
 	char* label = malloc(6*sizeof(char));
 	sprintf(label,"%s","call");
 	t_class* classes = env->listClass;
