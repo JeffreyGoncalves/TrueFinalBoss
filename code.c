@@ -35,7 +35,7 @@ int tailleAlloc(VarDeclP decl) {
     return taille;
 }
 
-void makeCode(TreeP tree,list_ClassObjP env, FILE* pFile) {
+void makeCode(TreeP tree, list_ClassObjP env, FILE* pFile) {
 
 	int cpt =0;
     if(tree == NULL) {
@@ -151,7 +151,7 @@ void makeCode(TreeP tree,list_ClassObjP env, FILE* pFile) {
 		break;
 		case E_SELECT :
             fprintf (pFile, "-- Il y a une selection (R)\n");
-            makeCode(getChild(tree, 0),env, pFile);/* On ecrit le code donnant l'offset de l'expression */
+            makeCode(getChild(tree, 0), env, pFile);/* On ecrit le code donnant l'offset de l'expression */
             char* strAttr = getChild(tree, 1)->u.str;
             VarDeclP attrs = getChild(tree, 0)->u.lvar->coeur->_obj->attributes;
             fprintf(pFile, "LOAD %d\n", getOffsetAttr(attrs, strAttr));
@@ -159,20 +159,20 @@ void makeCode(TreeP tree,list_ClassObjP env, FILE* pFile) {
         break;
         case _ID :
             /* on empile l'offset de la variable ou de l'objet independant ayant cet identifiant */
-            fprintf(pFile, "PUSHG %d\n", getOffsetObj(obj, tree->u.str));
+            fprintf(pFile, "PUSHG %d\n", getOffsetObj(env->listObj, tree->u.str));
         break;
         case I_AFF :
             fprintf (pFile, "-- Il y a une affectation\n");
-            makeCodeAffect(getChild(tree, 0), getChild(tree, 1),env, pFile);
+            makeCodeAffect(getChild(tree, 0), getChild(tree, 1), env, pFile);
             fprintf (pFile, "-- Fin de l'affectation\n");
         break;
         case LIST_INST :
-            makeCode(getChild(tree, 0),env, pFile);
-            makeCode(getChild(tree, 1),env, pFile);
+            makeCode(getChild(tree, 0), env, pFile);
+            makeCode(getChild(tree, 1), env, pFile);
         break;
         case CAST :
             fprintf(pFile, "-- Il y a un cast\n" );
-            /*je vois pas comment faire celui-l?*/
+            /*je vois pas comment faire celui-la*/
         break;
         case E_CALL_METHOD :
             fprintf(pFile, "-- Il y a un appel de methode\n");
@@ -186,20 +186,18 @@ void makeCode(TreeP tree,list_ClassObjP env, FILE* pFile) {
         case I_BLOC :
             fprintf(pFile, "-- Il y a un bloc d'instructions\n");
             /*plusieurs instructions a lire*/
-                  int i;
-            for(i=0;i<tree->nbChildren;i++){
-
-            	makeCode(getChild(tree,i),env,pFile);
+            makeCode(getChild(tree, 0), env, pFile);
+            makeCode(getChild(tree, 1), env, pFile);
             }
         break;
         case I_RETURN :
-        /*pas s?r s?r du truc*/
+			/*pas sur sur du truc*/
         break;
         case CLASS_NAME :
             /*dunno how to do dis Oo*/
         break;
         case _OVERRIDE :
-            /*pas s?r s?r*/
+            /*pas sur sur*/
         break;
 		default :
             fprintf (pFile, "-- Il y a quelque chose\n");
@@ -208,18 +206,22 @@ void makeCode(TreeP tree,list_ClassObjP env, FILE* pFile) {
 	fclose(file);
 }
 
-void makeCodeAffect(TreeP exprG, TreeP exprD,list_ClassObjP env, FILE* pFile) {
+void makeCodeAffect(TreeP exprG, TreeP exprD, list_ClassObjP env, FILE* pFile) {
 
 	switch(exprG->op) {
 	    case E_SELECT :
-            makeCode(getChild(exprG, 0), env,pFile);/* On ecrit le code donnant l'offset de l'expression */
+            makeCode(getChild(exprG, 0), env, pFile); /* On ecrit le code donnant l'offset de l'expression */
             char* strAttr = getChild(exprG, 1)->u.str;
             VarDeclP attrs = getChild(exprG, 0)->u.lvar->coeur->_obj->attributes;
-            makeCode(exprD,env, pFile);
+            makeCode(exprD, env, pFile);
             fprintf(pFile, "STORE %d\n", getOffsetAttr(attrs, strAttr));
         break;
         case _ID :
-            ;
+			fprintf((pFile, "PUSHG %d\n", tree->getOffsetObj(exprG->u.lvar->name, env->listObj); /* On ecrit le code donnant l'offset de l'objet */
+            char* strAttr = getChild(exprG, 1)->u.str;
+            VarDeclP attrs = getChild(exprG, 0)->u.lvar->coeur->_obj->attributes;
+            makeCode(exprD, env, pFile);
+            fprintf(pFile, "STORE %d\n", getOffsetAttr(attrs, strAttr));
         break;
         default :
             fprintf (pFile, "-- On veut faire une affectation a autre chose qu'une variable ou un champ \n");
@@ -228,7 +230,7 @@ void makeCodeAffect(TreeP exprG, TreeP exprD,list_ClassObjP env, FILE* pFile) {
 
 }
 
-int getOffsetObj(t_object* obj, char* nom) {
+int getOffsetObj(t_object* obj, t_object* listObj) {
     int i = 0;
     while (obj != NULL && strcmp(obj->name, nom)) {
         i++;
