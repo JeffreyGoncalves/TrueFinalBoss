@@ -93,6 +93,7 @@ typedef unsigned char bool;
 #define NO_EXISTING_METHOD 47 /*This method does not exist in its class*/
 #define PARAM_ERROR_1 48 /*Wrong number of parameters*/
 #define PARAM_ERROR_2 49 /*A parameter or several parameters do not have the right type*/
+#define PARAM_ERROR_3 54 /*A parameter or several parameters are objects and not instances of a class */
 #define EVAL_ERROR	50	/* dubious when writing a compiler ! */
 #define OVERRIDE_ERROR 51 /* Override forbidden for methods of object */
 #define VAR_NOT_FOUND 52 /* Variable not found */

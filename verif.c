@@ -1401,21 +1401,120 @@ bool verificationParametres(TreeP block){
 				}
 				
 				t_method* decl = c->methods;
-				VarDeclP entry = NULL;
-				if(getChild(tree,2) != NULL){
-
-					 entry = getChild(tree,2)->u.lvar;
-				
-					int givenNb = 0;
-					while(entry != NULL){	
-						entry = entry->next;
-						givenNb++;
+				TreeP entry = NULL;
+				printf("Methode : %s\n", decl->name);
+				/* On verifie d'abord le nombre de parametres entres
+				 * lors de l'appel methode. Dans le cas 0, il suffit
+				 * de comparer avec le nombre requis. Sinon il faut
+				 * aussi verifier le type des arguments */
+				if(getChild(tree,2) == NIL(Tree)){
+					/* Cas ou l'appel methode utilise 0 arguments */
+					if(decl->nbParametres != 0){
+						setError(PARAM_ERROR_1);
+						toReturn = FALSE;
 					}
-					toReturn = toReturn && ((decl->nbParametres == givenNb) ? TRUE : FALSE);
+				}
+				else{
+					/* Cas ou l'appel utilise au moins 1 argument */
+					if(decl->nbParametres == 0) {
+						setError(PARAM_ERROR_1);
+						toReturn = FALSE;
+					}
+					else {
+						int givenNb = 1;
+						entry = getChild(tree,2);
+						while(getChild(entry, 1) != NIL(Tree)){
+							entry = getChild(entry, 1);
+							givenNb++;
+						}
+						/* Verification de nombre */
+						if(givenNb != decl->nbParametres) 
+						{
+							toReturn = FALSE;
+							setError(PARAM_ERROR_1);
+						}
+						/* Succès sur le nombre d'arguments, verification de type */
+						else
+						{
+							entry = getChild(tree,2);
+							VarDeclP param = decl->parametres;
+							do
+							{
+								TreeP argTree = getChild(entry, 0);
+								/* On recupere le type de l'expression de l'argument actuel */
+								switch(argTree->op)
+								{
+									case CST : /* Integer */
+										if(strcmp(param->coeur->_type->name, "Integer"))
+										{
+											setError(PARAM_ERROR_2);
+											toReturn = FALSE;
+										}
+										break;
+									case _STR : /* String */
+										if(strcmp(param->coeur->_type->name, "String"))
+										{
+											setError(PARAM_ERROR_2);
+											toReturn = FALSE;
+										}
+										break;
+									case _ID :
+										if(argTree->u.lvar->coeur->_type == NIL(t_class))
+										{
+											setError(PARAM_ERROR_3);
+											toReturn = FALSE;
+										}
+										else
+										{
+											t_class *argClass = argTree->u.lvar->coeur->_type;
+											while(strcmp(argClass->name, param->coeur->_type->name))
+											{
+												if(argClass->superClass == NIL(t_class))
+												{
+													setError(PARAM_ERROR_2);
+													toReturn = FALSE;
+													break;
+												}
+												else argClass = argClass->superClass;
+											}
+										}
+										break;
+									case E_SELECT :
+										argTree = getChild(argTree, 1);
+										if(argTree->u.lvar->coeur->_type == NIL(t_class))
+										{
+											setError(PARAM_ERROR_3);
+											toReturn = FALSE;
+										}
+										else
+										{
+											t_class *argClass = argTree->u.lvar->coeur->_type;
+											while(strcmp(argClass->name, param->coeur->_type->name))
+											{
+												if(argClass->superClass == NIL(t_class))
+												{
+													setError(PARAM_ERROR_2);
+													toReturn = FALSE;
+													break;
+												}
+												else argClass = argClass->superClass;
+											}
+										}
+										break;
+									case E_CALL_METHOD :
+										
+										break;
+								}
+								if(!toReturn)break;
+								param = param->next;
+								
+							}while(getChild(entry, 1) != NIL(Tree));
+						}
+					}
 				}
 
-				if(toReturn == FALSE){
-					setError(PARAM_ERROR_1);
+				/*if(toReturn == FALSE){
+					
 				}
 				else{
 					if(getChild(tree,2) == NULL){printf("meh\n");}
@@ -1430,7 +1529,7 @@ bool verificationParametres(TreeP block){
 						entry = entry->next;
 						PDecl = PDecl->next; 
 					}
-				}	
+				}*/
 			}
 			else if(tree->op == INST){
 				
@@ -1473,7 +1572,7 @@ bool verificationParametres(TreeP block){
 					return FALSE;
 				} 
 			}
-			verificationParametres(getChild(tree,i));
+			if(getChild(tree,i) != NIL(Tree))verificationParametres(getChild(tree,i));
 				
 		}
 		return toReturn;
